@@ -2,6 +2,8 @@ import React from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { ErrorBoundary } from "../ErrorBoundary";
+import { nativeSupport } from "@/lib/diagnostics";
 
 interface MarkdownContentProps {
   markdown: string;
@@ -203,19 +205,33 @@ const components: Components = {
   },
 };
 
+// remark-gfm's autolink-literal extension builds a lookbehind regex, which is a
+// SyntaxError on WebKit older than Safari 16.4 — i.e. on most of macOS Monterey.
+// The throw lands mid-render, so without this the whole React root unmounts and
+// the window goes blank (#1617). Tables and bare-URL autolinks are the only
+// things lost by dropping it.
+const remarkPlugins = nativeSupport.regExpLookbehind ? [remarkGfm] : [];
+
 export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   markdown,
 }) => {
   return (
     <div className="space-y-3">
-      <ReactMarkdown
-        allowedElements={allowedElements}
-        components={components}
-        remarkPlugins={[remarkGfm]}
-        skipHtml
+      {/* Release notes are not worth taking the app down for: if anything in the
+          markdown pipeline still throws, fall back to the raw source. */}
+      <ErrorBoundary
+        context="release notes markdown"
+        fallback={<pre className="whitespace-pre-wrap text-sm">{markdown}</pre>}
       >
-        {markdown}
-      </ReactMarkdown>
+        <ReactMarkdown
+          allowedElements={allowedElements}
+          components={components}
+          remarkPlugins={remarkPlugins}
+          skipHtml
+        >
+          {markdown}
+        </ReactMarkdown>
+      </ErrorBoundary>
     </div>
   );
 };

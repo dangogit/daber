@@ -1,30 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { platform } from "@tauri-apps/plugin-os";
-import App from "./App";
-import {
-  applyTheme,
-  getStoredTheme,
-  syncThemeFromSettings,
-} from "./lib/utils/theme";
+// Imported here rather than from App.tsx so the stylesheet stays part of the
+// entry chunk and keeps its <link> in index.html. Pulling it in through the
+// dynamic import below would defer it and flash unstyled content on every launch.
+import "./App.css";
+import { installCrashHandlers, reportFatal } from "./lib/crashScreen";
+import { installCompatShims } from "./lib/compat";
 
-// Set platform before render so CSS can scope per-platform (e.g. scrollbar styles)
-document.documentElement.dataset.platform = platform();
+installCrashHandlers();
+installCompatShims();
 
-// Apply the last-known theme synchronously before render to avoid a flash of
-// the wrong palette, then reconcile with the persisted setting once it loads.
-applyTheme(getStoredTheme());
-syncThemeFromSettings();
-
-// Initialize i18n
-import "./i18n";
-
-// Initialize model store (loads models and sets up event listeners)
-import { useModelStore } from "./stores/modelStore";
-useModelStore.getState().initialize();
-
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+// The rest of the app is loaded dynamically on purpose. `import` statements are
+// hoisted, so anything imported statically here would evaluate *before* the two
+// calls above — and a module-evaluation throw in i18n, the model store or React
+// itself is exactly the failure we need to be installed in time to catch.
+import("./bootstrap").catch((error) => reportFatal(error, "startup"));

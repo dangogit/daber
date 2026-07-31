@@ -8,10 +8,10 @@ import {
   checkMicrophonePermission,
 } from "tauri-plugin-macos-permissions-api";
 import { ModelStateEvent, RecordingErrorEvent } from "./lib/types/events";
-import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
@@ -290,7 +290,12 @@ function App() {
         dir={direction}
         className="h-screen flex flex-col select-none cursor-default"
       >
-        <WhatsNewGate />
+        {/* The What's New modal is the only markdown renderer in the app and the
+            first thing drawn after an update — a throw here used to blank the
+            whole window (#1617). Skipping it is always better than that. */}
+        <ErrorBoundary context="whats new" fallback={null}>
+          <WhatsNewGate />
+        </ErrorBoundary>
         {/* Main content area that takes remaining space */}
         <div className="flex-1 flex overflow-hidden">
           <Sidebar

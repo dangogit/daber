@@ -1,13 +1,24 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { readFileSync } from "fs";
 import { resolve } from "path";
 
 const host = process.env.TAURI_DEV_HOST;
 
+const appVersion = JSON.parse(
+  readFileSync(resolve(__dirname, "package.json"), "utf-8"),
+).version as string;
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [react(), tailwindcss()],
+
+  // Surfaced on the crash screen so a bug report identifies its own build
+  // without the reporter having to find the version in a window they cannot open.
+  define: {
+    __APP_VERSION__: JSON.stringify(appVersion),
+  },
 
   // Path aliases
   resolve: {

@@ -4,6 +4,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>handy</title>
+    <script>
+      // Runs before any module, so it catches failures that stop the bundle from
+      // evaluating at all. src/lib/crashScreen.ts drains this and takes over.
+      // ES5 only: this is the one thing that has to run on every engine.
+      window.__handyEarlyErrors = [];
+      window.addEventListener("error", function (event) {
+        window.__handyEarlyErrors.push({
+          kind: "error",
+          value: event.error || event.message,
+        });
+      });
+      window.addEventListener("unhandledrejection", function (event) {
+        window.__handyEarlyErrors.push({
+          kind: "rejection",
+          value: event.reason,
+        });
+      });
+      // Absolute last resort: if even crashScreen.ts never evaluated, say
+      // something rather than showing an empty window.
+      setTimeout(function () {
+        var root = document.getElementById("root");
+        if (root && root.childElementCount === 0) {
+          root.textContent =
+            "Handy could not load its interface. Please report this at " +
+            "github.com/cjpais/Handy/issues along with your macOS and Safari versions.";
+          root.setAttribute(
+            "style",
+            "padding:24px;font:13px/1.5 sans-serif;color:#f4f2f0;background:#1c1b1a;" +
+              "position:fixed;top:0;left:0;right:0;bottom:0;",
+          );
+        }
+      }, 15000);
+    </script>
   </head>
 
   <body>
