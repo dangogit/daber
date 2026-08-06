@@ -35,8 +35,19 @@ Then, with a config from this directory:
 
 ```bash
 livekit-wakeword setup --config configs/prod.yaml   # ~16 GB of negatives, RIRs, noise
-livekit-wakeword run /path/to/hey_claude_en.yaml
+PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.5 livekit-wakeword run /path/to/hey_claude_en.yaml
 ```
+
+**The cap is not optional on Apple Silicon.** MPS defaults to a high watermark of 1.7x the
+Metal recommended working set, which on a 24 GB Mac is roughly 32 GB, and unified memory
+means every one of those GPU buffers is system RAM. Piper holds its allocations across the
+whole synthesis pass rather than freeing per clip, so an uncapped run reaches a 28 GB
+footprint somewhere around clip 7500 of 8000, fills swap, and hangs the machine. At `0.5`
+the allocator raises an out-of-memory error instead, which is a failure you can read.
+
+The run is also not resumable: clips already written to `output/<model_name>/` are ignored on
+restart and regenerated from scratch. Expect roughly an hour of synthesis before training
+steps even begin, and do not start it on a machine you need for anything else.
 
 Pass `--skip-acav` to `setup` to avoid the 16 GB ACAV100M download. Expect more
 false triggers if you do: that corpus is what teaches the model to stay quiet
