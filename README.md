@@ -50,51 +50,91 @@ launches normally, from a Release, AirDrop or a link alike.
 ### Signing and notarizing it properly
 
 This removes the warning entirely and is the difference between "a file someone
-sent me" and "an app." It needs an Apple Developer account, and it is a
-one-time setup — after it, `bun run tauri build` signs and notarizes on its own.
+sent me" and "an app." It is a one-time setup — after it,
+`./scripts/build-signed.sh` signs, notarizes and staples on its own.
 
-**1. Get a Developer ID Application certificate onto this Mac.** In the
-[Developer portal](https://developer.apple.com/account/resources/certificates/list),
-create a _Developer ID Application_ certificate, download the `.cer`, and
-double-click it to install. Verify:
+**Only the Account Holder can create the certificate.** Not an Admin, not an App
+Manager. The Developer portal greys the option out, and the App Store Connect
+API returns the same refusal, so there is no way around it from a script:
 
-```bash
-security find-identity -v -p codesigning
+```
+403 FORBIDDEN_ERROR — This operation can only be performed by the Account Holder.
 ```
 
-You want a line reading `Developer ID Application: <name> (TEAMID)`. Anything
-else — an "Apple Development" certificate, or none at all — will not notarize.
+Check who that is under
+[Users and Access](https://appstoreconnect.apple.com/access/users); the role
+column reads `Account Holder, Admin` for exactly one person. Sign in as them for
+step 2. An Apple Development or Apple Distribution certificate is not a
+substitute — neither one notarizes.
 
-**2. Make an app-specific password** at
-[appleid.apple.com](https://appleid.apple.com/account/manage) → Sign-In and
-Security → App-Specific Passwords. This is not your Apple ID password.
-
-**3. Put all four in the Keychain**, never in a file:
+**1. Make a signing request.** The private key stays on this Mac; only the
+request leaves it. Both halves belong in the Keychain rather than in a file:
 
 ```bash
-security add-generic-password -a danielgoldman -s daber-apple-id -w '<your-apple-id-email>'
-security add-generic-password -a danielgoldman -s daber-apple-password -w '<app-specific-password>'
-security add-generic-password -a danielgoldman -s daber-apple-team-id -w '<TEAMID>'
-security add-generic-password -a danielgoldman -s daber-signing-identity -w 'Developer ID Application: <name> (TEAMID)'
+openssl req -new -newkey rsa:2048 -nodes -keyout developerID.key -out developerID.csr -subj "/emailAddress=<your-email>/CN=<your name>/C=IL"
+security add-generic-password -U -a danielgoldman -s daber-developerid-key -w "$(< developerID.key)"
+security add-generic-password -U -a danielgoldman -s daber-developerid-csr -w "$(< developerID.csr)"
+rm -P developerID.key
 ```
 
-**4. Build with them exported:**
+This is already done on this Mac — recover the request to upload with:
+
+```bash
+security find-generic-password -a danielgoldman -s daber-developerid-csr -w | xxd -r -p > developerID.csr
+```
+
+**2. Trade it for a certificate.** Signed in as the Account Holder, go to
+[Certificates](https://developer.apple.com/account/resources/certificates/list),
+add a _Developer ID Application_ certificate, upload `developerID.csr`, and
+download the `.cer`.
+
+**3. Install the pair into the Keychain.** A certificate alone signs nothing —
+codesign needs it married to the key that requested it:
+
+```bash
+./scripts/install-developer-id.sh ~/Downloads/developerID_application.cer
+```
+
+It refuses a certificate that does not match the stored key, and finishes by
+printing the identities. You want a `Developer ID Application: <name> (TEAMID)`
+line.
+
+**4. Store the App Store Connect key** that notarization authenticates with. In
+[Users and Access → Integrations](https://appstoreconnect.apple.com/access/integrations/api),
+generate a Team key with **Admin** access — an Admin may do this — and note the
+Issuer ID above the table. The `.p8` downloads exactly once.
+
+```bash
+security add-generic-password -U -a danielgoldman -s daber-asc-key-id -w '<KEY ID>'
+security add-generic-password -U -a danielgoldman -s daber-asc-issuer-id -w '<ISSUER ID>'
+security add-generic-password -U -a danielgoldman -s daber-asc-api-key -w "$(< ~/Downloads/AuthKey_<KEY ID>.p8)"
+rm -P ~/Downloads/AuthKey_<KEY ID>.p8
+```
+
+An API key is used rather than an Apple ID and app-specific password because it
+is scoped to one team, belongs to no individual, and can be revoked without
+touching anything else. This is already done on this Mac, under the key named
+_Daber Notarization_; confirm Apple still accepts it with:
+
+```bash
+security find-generic-password -a danielgoldman -s daber-asc-key-id -w
+```
+
+So steps 1 and 4 are behind us. Step 2 is the only one that needs a person, and
+it needs the Account Holder specifically.
+
+**5. Build:**
 
 ```bash
 ./scripts/build-signed.sh
 ```
 
-That script reads the four values from the Keychain, exports them under the
-names Tauri expects, and runs the build. Notarization adds a few minutes — the
-`.dmg` is uploaded to Apple and the result stapled to the bundle.
+It finds the Developer ID identity itself, builds, notarizes both the `.app` and
+the `.dmg`, staples the tickets, and prints Gatekeeper's verdict. Notarization
+adds a few minutes while Apple scans the upload.
 
-Confirm it worked:
-
-```bash
-spctl -a -vvv -t install "/Applications/Daber.app"
-```
-
-`source=Notarized Developer ID` means anyone can now open it by double-clicking.
+`source=Notarized Developer ID` in that verdict means anyone can now open it by
+double-clicking.
 
 ### Auto-updates are off
 
