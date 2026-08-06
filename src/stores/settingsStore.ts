@@ -78,9 +78,6 @@ const settingUpdaters: {
 } = {
   always_on_microphone: (value) =>
     commands.updateMicrophoneMode(value as boolean),
-  wakeword_enabled: (value) => commands.updateWakewordEnabled(value as boolean),
-  wakeword_threshold: (value) =>
-    commands.updateWakewordThreshold(value as number),
   audio_feedback: (value) =>
     commands.changeAudioFeedbackSetting(value as boolean),
   audio_feedback_volume: (value) =>

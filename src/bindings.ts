@@ -697,41 +697,6 @@ async updateMicrophoneMode(alwaysOn: boolean) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Whether a wake word classifier is installed. When false the feature cannot
- * be turned on, and the settings UI says so rather than offering a dead toggle.
- */
-async isWakewordAvailable() : Promise<boolean> {
-    return await TAURI_INVOKE("is_wakeword_available");
-},
-/**
- * Turn wake word spotting on or off at runtime.
- * 
- * Enabling also switches the microphone to always-on: the spotter only ever
- * sees audio while the stream is open. Disabling deliberately leaves the
- * microphone mode alone — the user may have chosen always-on for its own sake,
- * and silently reverting it would be surprising.
- */
-async updateWakewordEnabled(enabled: boolean) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("update_wakeword_enabled", { enabled }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
- * Set the confidence a window must reach to fire, in `0.0..=1.0`. Applies to
- * the running spotter immediately.
- */
-async updateWakewordThreshold(threshold: number) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("update_wakeword_threshold", { threshold }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async getMicrophoneMode() : Promise<Result<boolean, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_microphone_mode") };
@@ -992,18 +957,7 @@ reliable_paste?: boolean; typing_tool?: TypingTool; external_script_path?: strin
  * not gated on this — that follows model capability. Migrated from the old
  * `overlay_position` (position `none` → style `None`).
  */
-overlay_style?: OverlayStyle; 
-/**
- * Start a recording when the wake phrase is heard, as an alternative to
- * pressing the shortcut. Requires `always_on_microphone`: the spotter can
- * only listen while the microphone stream is open.
- */
-wakeword_enabled?: boolean; 
-/**
- * Confidence in `0.0..=1.0` the classifier must reach to fire. Lower
- * catches more, at the cost of more false triggers.
- */
-wakeword_threshold?: number }
+overlay_style?: OverlayStyle }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }

@@ -599,16 +599,6 @@
         "label": "Visa nyheter",
         "description": "Visa versionsinformation efter Handy-uppdateringar"
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "Aktiveringsord",
-        "description": "Startar inspelning när du säger \"hey Claude\", utan att trycka på kortkommandot. Kräver alltid påslagen mikrofon, som aktiveras automatiskt."
-      },
-      "sensitivity": {
-        "title": "Känslighet för aktiveringsord",
-        "description": "Högre värde fångar frasen oftare men ger fler falska starter. Sänk det om inspelningen startar av sig själv."
-      }
     }
   },
   "footer": {

@@ -599,16 +599,6 @@
         "label": "顯示新功能",
         "description": "Handy 更新後顯示版本資訊"
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "喚醒詞",
-        "description": "說「hey Claude」即可開始錄音，不必按快捷鍵。需要麥克風常開，該選項會自動開啟。"
-      },
-      "sensitivity": {
-        "title": "喚醒詞靈敏度",
-        "description": "調高會更常辨識到該短語，但誤觸發也會增加。若錄音自行開始，請調低。"
-      }
     }
   },
   "footer": {

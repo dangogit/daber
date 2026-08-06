@@ -299,18 +299,6 @@ fn create_audio_recorder(
             move |frame| {
                 router.feed(frame);
             }
-        })
-        // Idle audio goes to the wake word spotter, when one is installed.
-        // Resolved from state per frame rather than captured: the recorder can
-        // be rebuilt (device change, stream recovery) independently of the
-        // spotter's lifetime, and a `try_state` lookup at ~33 Hz is free.
-        .with_monitor_callback({
-            let app_handle = app_handle.clone();
-            move |frame| {
-                if let Some(spotter) = app_handle.try_state::<crate::wakeword::WakewordSpotter>() {
-                    spotter.feed(frame);
-                }
-            }
         });
 
     Ok(recorder)

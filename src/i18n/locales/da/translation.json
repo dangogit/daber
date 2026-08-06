@@ -599,16 +599,6 @@
           "details": "Handys lokale tale-til-tekst funktionalitet er bygget på transcribe.cpp og ggml. Tak for det fantastiske arbejde af Georgi Gerganov og bidragyderne."
         }
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "Aktiveringsord",
-        "description": "Start optagelse, når du siger \"hey Claude\", uden at trykke på genvejen. Kræver mikrofonen altid tændt, hvilket slås til automatisk."
-      },
-      "sensitivity": {
-        "title": "Følsomhed for aktiveringsord",
-        "description": "Højere fanger sætningen oftere, men giver flere falske starter. Sænk den, hvis optagelsen starter af sig selv."
-      }
     }
   },
   "footer": {

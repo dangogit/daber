@@ -599,16 +599,6 @@
         "label": "새 소식 표시",
         "description": "Handy 업데이트 후 릴리스 노트를 표시합니다"
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "호출어",
-        "description": "\"hey Claude\"라고 말하면 단축키를 누르지 않아도 녹음이 시작됩니다. 항상 켜진 마이크가 필요하며 자동으로 활성화됩니다."
-      },
-      "sensitivity": {
-        "title": "호출어 민감도",
-        "description": "높이면 문구를 더 자주 인식하지만 잘못된 실행도 늘어납니다. 녹음이 저절로 시작되면 낮추세요."
-      }
     }
   },
   "footer": {

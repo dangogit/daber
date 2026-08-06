@@ -599,16 +599,6 @@
           "details": "Handy's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
         }
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "Wake phrase",
-        "description": "Start recording when you say \"hey Claude\", without pressing the shortcut. Requires the always-on microphone, which is switched on automatically."
-      },
-      "sensitivity": {
-        "title": "Wake phrase sensitivity",
-        "description": "Higher catches the phrase more often but triggers more false starts. Lower it if recording begins on its own."
-      }
     }
   },
   "footer": {

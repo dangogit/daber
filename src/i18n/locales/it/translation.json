@@ -599,16 +599,6 @@
         "label": "Mostra novità",
         "description": "Mostra le note di rilascio dopo gli aggiornamenti di Handy"
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "Parola di attivazione",
-        "description": "Avvia la registrazione quando dici \"hey Claude\", senza premere la scorciatoia. Richiede il microfono sempre attivo, che viene acceso automaticamente."
-      },
-      "sensitivity": {
-        "title": "Sensibilità della parola di attivazione",
-        "description": "Un valore più alto riconosce la frase più spesso, ma provoca più avvii indesiderati. Abbassalo se la registrazione parte da sola."
-      }
     }
   },
   "footer": {

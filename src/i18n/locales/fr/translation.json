@@ -599,16 +599,6 @@
         "label": "Afficher les nouveautés",
         "description": "Afficher les notes de version après les mises à jour de Handy"
       }
-    },
-    "wakeword": {
-      "enabled": {
-        "label": "Mot d'activation",
-        "description": "Démarre l'enregistrement quand vous dites « hey Claude », sans appuyer sur le raccourci. Nécessite le microphone toujours actif, qui s'active automatiquement."
-      },
-      "sensitivity": {
-        "title": "Sensibilité du mot d'activation",
-        "description": "Une valeur plus élevée détecte la phrase plus souvent, mais provoque plus de déclenchements intempestifs. Baissez-la si l'enregistrement démarre tout seul."
-      }
     }
   },
   "footer": {

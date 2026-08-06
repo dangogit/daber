@@ -24,7 +24,6 @@ mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
 mod utils;
-mod wakeword;
 
 pub use cli::CliArgs;
 #[cfg(debug_assertions)]
@@ -162,14 +161,6 @@ fn initialize_core_logic(app_handle: &AppHandle) {
         TranscriptionManager::new(app_handle, model_manager.clone())
             .expect("Failed to initialize transcription manager"),
     );
-    // Before the recording manager: the wake word requires the always-on
-    // microphone, and `init` persists that setting so the manager below opens
-    // the stream on startup. The recorder's monitor callback resolves the
-    // spotter from Tauri state, so it must also be managed before audio flows.
-    if let Some(spotter) = wakeword::init(app_handle) {
-        app_handle.manage(spotter);
-    }
-
     let recording_manager = Arc::new(
         AudioRecordingManager::new(app_handle, transcription_manager.stream_router())
             .expect("Failed to initialize recording manager"),
@@ -696,9 +687,6 @@ pub fn run(cli_args: CliArgs) {
             commands::models::is_model_loading,
             commands::models::rescan_local_models,
             commands::audio::update_microphone_mode,
-            commands::wakeword::is_wakeword_available,
-            commands::wakeword::update_wakeword_enabled,
-            commands::wakeword::update_wakeword_threshold,
             commands::audio::get_microphone_mode,
             commands::audio::get_windows_microphone_permission_status,
             commands::audio::open_microphone_privacy_settings,
