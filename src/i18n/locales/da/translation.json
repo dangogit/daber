@@ -581,16 +581,6 @@
         "title": "Appdatamappe",
         "description": "Placering, hvor Daber gemmer sine data"
       },
-      "sourceCode": {
-        "title": "Kildekode",
-        "description": "Se kildekode og bidrag",
-        "button": "Vis på GitHub"
-      },
-      "supportDevelopment": {
-        "title": "Støt udviklingen",
-        "description": "Hjælp os med at fortsætte udviklingen af Daber",
-        "button": "Donér"
-      },
       "acknowledgments": {
         "title": "Anerkendelser",
         "ggml": {

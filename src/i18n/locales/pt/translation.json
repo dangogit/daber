@@ -577,16 +577,6 @@
         "title": "Diretório de Dados do App",
         "description": "Local onde o Daber armazena seus dados"
       },
-      "sourceCode": {
-        "title": "Código Fonte",
-        "description": "Visualizar código fonte e contribuir",
-        "button": "Ver no GitHub"
-      },
-      "supportDevelopment": {
-        "title": "Apoiar o Desenvolvimento",
-        "description": "Ajude-nos a continuar construindo o Daber",
-        "button": "Doar"
-      },
       "acknowledgments": {
         "title": "Agradecimentos",
         "ggml": {

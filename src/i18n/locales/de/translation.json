@@ -577,16 +577,6 @@
         "title": "App-Datenverzeichnis",
         "description": "Speicherort der Daber-Daten"
       },
-      "sourceCode": {
-        "title": "Quellcode",
-        "description": "Quellcode ansehen und beitragen",
-        "button": "Auf GitHub ansehen"
-      },
-      "supportDevelopment": {
-        "title": "Entwicklung unterstützen",
-        "description": "Hilf uns, Daber weiterzuentwickeln",
-        "button": "Spenden"
-      },
       "acknowledgments": {
         "title": "Danksagungen",
         "ggml": {

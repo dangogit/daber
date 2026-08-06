@@ -1,21 +1,16 @@
 import React from "react";
 
 /**
- * The name, held in a constant rather than inlined as JSX text. A wordmark is
- * the product's identity, not translatable copy — it reads דבר in every locale
- * — and keeping it out of the markup also keeps the i18n lint rule honest
- * instead of suppressed.
- */
-const WORDMARK = "דבר";
-
-/**
- * The Daber wordmark: the mark, then the name in Hebrew.
+ * The Daber wordmark: the voice mark, then the name.
  *
- * Laid out left-to-right on purpose even though the word is Hebrew — a logo is
- * an image, not running text, and the mark reads as the "start" of it in either
- * script direction. The name is set in live text rather than outlines so it
- * picks up the system's Hebrew face and stays crisp at any size; the app is
- * macOS-first, where that face is dependable.
+ * The Hebrew is drawn as outlines rather than an SVG `<text>` element. Live
+ * text inherits `direction: rtl` from the document when the UI is in Hebrew,
+ * which runs the word leftward out of its box and over the mark, and it also
+ * depends on whichever Hebrew face the system happens to have. Outlines have
+ * neither problem and render identically everywhere.
+ *
+ * Colours come from the theme tokens, so the mark and the name both follow
+ * light and dark mode instead of being pinned to one background.
  */
 const DaberTextLogo = ({
   width,
@@ -30,30 +25,24 @@ const DaberTextLogo = ({
     width={width}
     height={height}
     className={className}
-    viewBox="0 0 420 140"
+    viewBox="0 0 312 78"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     role="img"
-    aria-label={WORDMARK}
+    aria-label="Daber"
   >
     <g className="fill-logo-primary">
-      <rect x="8" y="58" width="16" height="26" rx="8" />
-      <rect x="34" y="42" width="16" height="58" rx="8" />
-      <rect x="60" y="22" width="16" height="98" rx="8" />
-      <rect x="86" y="48" width="16" height="46" rx="8" />
-      <rect x="112" y="64" width="16" height="14" rx="8" />
+      <rect x="10" y="32.0" width="12" height="14" rx="6.0" />
+      <rect x="30" y="24.0" width="12" height="30" rx="6.0" />
+      <rect x="50" y="13.0" width="12" height="52" rx="6.0" />
+      <rect x="70" y="26.0" width="12" height="26" rx="6.0" />
+      <rect x="90" y="33.0" width="12" height="12" rx="6.0" />
     </g>
-    <text
-      x="158"
-      y="98"
-      className="fill-text"
-      fontSize="86"
-      fontWeight="700"
-      letterSpacing="2"
-      fontFamily="'SF Hebrew', 'Arial Hebrew', 'Noto Sans Hebrew', system-ui, sans-serif"
-    >
-      {WORDMARK}
-    </text>
+    <g className="fill-text" transform="translate(124 68.0)">
+      <path d="M156.3232421875 0.927734375Q152.7587890625 0.927734375 150.74462890625 -1.18408203125Q148.73046875 -3.2958984375 148.73046875 -7.03125V-47.16796875H124.0234375Q121.38671875 -47.16796875 119.73876953125 -48.828125Q118.0908203125 -50.48828125 118.0908203125 -53.125Q118.0908203125 -55.7861328125 119.73876953125 -57.43408203125Q121.38671875 -59.08203125 124.0234375 -59.08203125H169.287109375Q171.923828125 -59.08203125 173.54736328125 -57.43408203125Q175.1708984375 -55.7861328125 175.1708984375 -53.125Q175.1708984375 -50.48828125 173.53515625 -48.828125Q171.8994140625 -47.16796875 169.23828125 -47.16796875H163.916015625V-7.03125Q163.916015625 -3.2958984375 161.90185546875 -1.18408203125Q159.8876953125 0.927734375 156.3232421875 0.927734375Z" />
+      <path d="M64.35546875 0.0Q61.71875 0.0 60.07080078125 -1.66015625Q58.4228515625 -3.3203125 58.4228515625 -5.95703125Q58.4228515625 -8.6181640625 60.07080078125 -10.26611328125Q61.71875 -11.9140625 64.35546875 -11.9140625H89.55078125V-34.130859375Q89.55078125 -39.1357421875 88.623046875 -41.9677734375Q87.6953125 -44.7998046875 85.31494140625 -45.98388671875Q82.9345703125 -47.16796875 78.564453125 -47.16796875H64.5263671875Q61.8896484375 -47.16796875 60.24169921875 -48.828125Q58.59375 -50.48828125 58.59375 -53.125Q58.59375 -55.7861328125 60.24169921875 -57.43408203125Q61.8896484375 -59.08203125 64.5263671875 -59.08203125H79.4921875Q86.6455078125 -59.08203125 91.49169921875 -57.861328125Q96.337890625 -56.640625 99.25537109375 -53.77197265625Q102.1728515625 -50.9033203125 103.45458984375 -45.95947265625Q104.736328125 -41.015625 104.736328125 -33.544921875V-11.9140625H108.544921875Q111.2548828125 -11.9140625 112.8662109375 -10.302734375Q114.4775390625 -8.69140625 114.4775390625 -5.95703125Q114.4775390625 -3.2470703125 112.8662109375 -1.62353515625Q111.2548828125 0.0 108.544921875 0.0Z" />
+      <path d="M42.5537109375 1.0498046875Q38.96484375 1.07421875 36.9384765625 -1.03759765625Q34.912109375 -3.1494140625 34.912109375 -6.884765625V-32.3486328125Q34.912109375 -37.8662109375 33.935546875 -41.11328125Q32.958984375 -44.3603515625 30.26123046875 -45.76416015625Q27.5634765625 -47.16796875 22.314453125 -47.16796875H8.251953125Q5.615234375 -47.16796875 3.96728515625 -48.828125Q2.3193359375 -50.48828125 2.3193359375 -53.125Q2.3193359375 -55.7861328125 3.96728515625 -57.43408203125Q5.615234375 -59.08203125 8.251953125 -59.08203125H22.314453125Q32.8857421875 -59.08203125 38.9404296875 -56.54296875Q44.9951171875 -54.00390625 47.54638671875 -48.15673828125Q50.09765625 -42.3095703125 50.09765625 -32.421875V-6.884765625Q50.09765625 -3.173828125 48.10791015625 -1.07421875Q46.1181640625 1.025390625 42.5537109375 1.0498046875Z" />
+    </g>
   </svg>
 );
 

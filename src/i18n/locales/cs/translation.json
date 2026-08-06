@@ -577,16 +577,6 @@
         "title": "Adresář dat aplikace",
         "description": "Umístění, kde Daber ukládá data"
       },
-      "sourceCode": {
-        "title": "Zdrojový kód",
-        "description": "Zobrazit zdrojový kód a přispět",
-        "button": "Zobrazit na GitHubu"
-      },
-      "supportDevelopment": {
-        "title": "Podpořte vývoj",
-        "description": "Pomozte nám pokračovat ve vývoji Daber",
-        "button": "Přispět"
-      },
       "acknowledgments": {
         "title": "Poděkování",
         "ggml": {

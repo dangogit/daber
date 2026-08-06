@@ -577,16 +577,6 @@
         "title": "תיקיית נתוני אפליקציה",
         "description": "המיקום שבו דבר שומר את הנתונים שלו"
       },
-      "sourceCode": {
-        "title": "קוד מקור",
-        "description": "צפה בקוד המקור ותרום",
-        "button": "צפה ב-GitHub"
-      },
-      "supportDevelopment": {
-        "title": "תמיכה בפיתוח",
-        "description": "עזור לנו להמשיך לבנות את דבר",
-        "button": "תרומה"
-      },
       "acknowledgments": {
         "title": "תודות",
         "ggml": {

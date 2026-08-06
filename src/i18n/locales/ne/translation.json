@@ -581,16 +581,6 @@
         "title": "एप डेटा डाइरेक्टरी",
         "description": "Daber ले आफ्नो डेटा भण्डारण गर्ने स्थान"
       },
-      "sourceCode": {
-        "title": "स्रोत कोड",
-        "description": "स्रोत कोड हेर्नुहोस् र योगदान गर्नुहोस्",
-        "button": "GitHub मा हेर्नुहोस्"
-      },
-      "supportDevelopment": {
-        "title": "विकासलाई सहयोग गर्नुहोस्",
-        "description": "Daber निर्माण जारी राख्न हामीलाई सहयोग गर्नुहोस्",
-        "button": "दान गर्नुहोस्"
-      },
       "acknowledgments": {
         "title": "आभार",
         "ggml": {

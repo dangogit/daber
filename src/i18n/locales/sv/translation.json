@@ -577,16 +577,6 @@
         "title": "Mapp för appdata",
         "description": "Plats där Daber lagrar sina data"
       },
-      "sourceCode": {
-        "title": "Källkod",
-        "description": "Visa källkod och bidra",
-        "button": "Visa på GitHub"
-      },
-      "supportDevelopment": {
-        "title": "Stöd utvecklingen",
-        "description": "Hjälp oss att fortsätta bygga Daber",
-        "button": "Donera"
-      },
       "acknowledgments": {
         "title": "Tack till",
         "ggml": {

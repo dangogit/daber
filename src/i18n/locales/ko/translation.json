@@ -577,16 +577,6 @@
         "title": "앱 데이터 디렉토리",
         "description": "Daber가 데이터를 저장하는 위치"
       },
-      "sourceCode": {
-        "title": "소스 코드",
-        "description": "소스 코드 보기 및 기여",
-        "button": "GitHub에서 보기"
-      },
-      "supportDevelopment": {
-        "title": "개발 지원",
-        "description": "Daber 개발을 계속할 수 있도록 도와주세요",
-        "button": "후원하기"
-      },
       "acknowledgments": {
         "title": "감사의 말",
         "ggml": {
