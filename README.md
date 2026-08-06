@@ -7,8 +7,13 @@
 >    — Whisper Large v3 Turbo fine-tuned for Hebrew — and opens in Hebrew with
 >    the transcription language already set. No model picker, no settings trip.
 > 2. **"Hey Claude" starts a recording.** An always-on spotter listens to the
->    idle microphone and fires the same action the keyboard shortcut does. Off by
->    default; the toggle lives in General settings.
+>    idle microphone and fires the same action the keyboard shortcut does.
+>
+>    **No classifier ships with the fork yet**, so the feature is dormant: the
+>    toggle stays hidden until one is installed, and the app behaves exactly like
+>    upstream. Training one is a single command but a multi-hour job — see
+>    [wakeword-training/](wakeword-training/README.md). Drop the resulting
+>    `.onnx` into the app data directory and the toggle appears; no rebuild.
 >
 > Design notes: [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-and-wakeword-design.md).
 > Wake word training: [wakeword-training/](wakeword-training/README.md).

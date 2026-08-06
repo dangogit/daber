@@ -29,7 +29,10 @@ n_samples: 8000
 n_samples_val: 1600
 n_background_samples: 1500
 n_background_samples_val: 400
-tts_batch_size: 50
+# 16, not the upstream default of 50: Apple Silicon shares GPU memory with the
+# whole system, and batches of 50 exhausted it partway through an 8000-clip run
+# (kIOGPUCommandBufferCallbackErrorOutOfMemory at 94%).
+tts_batch_size: 16
 
 # Phrases that must NOT trigger. The bare product name matters most: this app
 # is used while talking and writing about Claude all day, so "claude" on its own

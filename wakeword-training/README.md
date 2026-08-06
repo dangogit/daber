@@ -4,14 +4,19 @@ Configs for producing the "hey Claude" classifiers this fork ships. Training is
 done with [livekit-wakeword](https://github.com/livekit/livekit-wakeword), which
 synthesizes its own training data — no recording required.
 
-The app loads whatever it finds; you do not have to retrain to use it.
+**No classifier ships with the fork today.** Until one is trained and installed,
+the wake phrase feature is dormant and its toggle does not appear in settings.
+Everything else about the app is unaffected.
 
 ## What the app expects
 
-| File                                       | Where                                        |
-| ------------------------------------------ | -------------------------------------------- |
-| `hey_claude_en.onnx`, `hey_claude_he.onnx` | `src-tauri/resources/wakeword/` (shipped)    |
-| same names                                 | `<app data>/wakeword/` (drop-in, no rebuild) |
+| File                                       | Where                                             |
+| ------------------------------------------ | ------------------------------------------------- |
+| `hey_claude_en.onnx`, `hey_claude_he.onnx` | `src-tauri/resources/wakeword/` (needs a rebuild) |
+| same names                                 | `<app data>/wakeword/` (drop-in, no rebuild)      |
+
+On macOS the app data directory is
+`~/Library/Application Support/ai.saasit.handy-he/wakeword/`.
 
 Both files are optional. Any that are present are loaded together and the
 highest score wins, so the trigger fires whether the phrase comes out closer to

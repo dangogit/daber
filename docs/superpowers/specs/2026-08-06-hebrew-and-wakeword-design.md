@@ -123,7 +123,13 @@ same way it does for any hands-free start: Silero VAD detects the end of speech.
 
 ### Models
 
-Two classifiers ship and vote, with the higher score winning:
+**Status: no classifier is trained yet, so the feature ships dormant.** The
+first training attempt exhausted GPU memory partway through synthesis, and the
+retry was called off rather than risk swapping a machine that was in use — the
+job needs an uninterrupted multi-hour run on a machine nobody is working on.
+The code path is complete and tested; installing a `.onnx` is all that is left.
+
+The intended shape is two classifiers that ship and vote, higher score winning:
 
 - `hey_claude_en.onnx` — Piper backbone, 904 speakers, the primary model
 - `hey_claude_he.onnx` — VoxCPM2, Hebrew phrase, the second voter
