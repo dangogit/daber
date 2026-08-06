@@ -1,0 +1,90 @@
+# =============================================================================
+# "hey Claude" wake word — English rendering, Piper VITS backbone
+# =============================================================================
+#
+# Trained with https://github.com/livekit/livekit-wakeword. See README.md in
+# this directory for how to run it and where the exported model belongs.
+#
+# Why English for a Hebrew-first app: LiveKit's own docs note that multilingual
+# models score worse, because the frozen Google speech-embedding front-end was
+# trained predominantly on English and because VoxCPM produces less diverse
+# synthetic speech than Piper's 904-speaker pool. "Hey Claude" spoken with an
+# Israeli accent stays close to the English phonemes, so this model is the
+# primary one; hey_claude_he.yaml is the Hebrew counterpart and both ship, with
+# whichever scores higher winning at runtime.
+# =============================================================================
+
+model_name: hey_claude_en
+
+# Spelling variants that phonemize to how the phrase actually gets said,
+# including the Israeli "klod" vowel.
+target_phrases:
+  - "hey claude"
+  - "hey clawed"
+  - "hey clode"
+
+tts_backend: piper_vits
+
+n_samples: 8000
+n_samples_val: 1600
+n_background_samples: 1500
+n_background_samples_val: 400
+tts_batch_size: 50
+
+# Phrases that must NOT trigger. The bare product name matters most: this app
+# is used while talking and writing about Claude all day, so "claude" on its own
+# has to stay silent.
+custom_negative_phrases:
+  - "claude"
+  - "cloud"
+  - "the cloud"
+  - "hey cloud"
+  - "hey clyde"
+  - "hey claudia"
+  - "hey close"
+  - "hey code"
+  - "hey call"
+  - "hey cold"
+  - "hey clone"
+  - "hey glaude"
+  - "they clawed"
+  - "okay claude"
+  - "claude code"
+  - "ask claude"
+
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [0.75, 1.0, 1.25]
+slerp_weights: [0.2, 0.35, 0.5, 0.65, 0.8]
+
+piper_tts:
+  checkpoint_relpath: piper/en-us-libritts-high.pt
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: small
+
+steps: 30000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 3000
+# An always-on desktop trigger has to be quiet. One false start per ten hours is
+# the target; the exported threshold is tuned against this.
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50

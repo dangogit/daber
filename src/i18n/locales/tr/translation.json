@@ -599,6 +599,16 @@
         "label": "Yenilikleri Göster",
         "description": "Handy güncellemelerinden sonra sürüm notlarını göster"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Uyandırma sözcüğü",
+        "description": "\"hey Claude\" dediğinizde kısayola basmadan kayıt başlar. Otomatik olarak açılan, sürekli açık mikrofonu gerektirir."
+      },
+      "sensitivity": {
+        "title": "Uyandırma sözcüğü hassasiyeti",
+        "description": "Yüksek değer ifadeyi daha sık yakalar ama yanlış başlatmaları artırır. Kayıt kendiliğinden başlıyorsa değeri düşürün."
+      }
     }
   },
   "footer": {

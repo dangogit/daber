@@ -599,6 +599,16 @@
         "label": "Zobrazovat novinky",
         "description": "Zobrazovat poznámky k vydání po aktualizacích Handy"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Aktivační fráze",
+        "description": "Spustí nahrávání, když řeknete „hey Claude“, bez stisknutí zkratky. Vyžaduje trvale zapnutý mikrofon, který se aktivuje automaticky."
+      },
+      "sensitivity": {
+        "title": "Citlivost aktivační fráze",
+        "description": "Vyšší hodnota frázi zachytí častěji, ale způsobí více falešných spuštění. Snižte ji, pokud se nahrávání spouští samo."
+      }
     }
   },
   "footer": {

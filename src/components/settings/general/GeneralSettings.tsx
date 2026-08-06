@@ -11,6 +11,7 @@ import { AudioFeedback } from "../AudioFeedback";
 import { useSettings } from "../../../hooks/useSettings";
 import { VolumeSlider } from "../VolumeSlider";
 import { MuteWhileRecording } from "../MuteWhileRecording";
+import { WakeWord } from "../WakeWord";
 import { ModelSettingsCard } from "./ModelSettingsCard";
 
 export const GeneralSettings: React.FC = () => {
@@ -27,6 +28,7 @@ export const GeneralSettings: React.FC = () => {
         {!isLinux && !pushToTalk && (
           <ShortcutInput shortcutId="cancel" grouped={true} />
         )}
+        <WakeWord />
       </SettingsGroup>
       <ModelSettingsCard />
       <SettingsGroup title={t("settings.sound.title")}>

@@ -77,6 +77,7 @@ pub struct AudioRecorder {
     vad: Option<VadConfig>,
     level_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
     audio_cb: Option<AudioFrameCallback>,
+    monitor_cb: Option<AudioFrameCallback>,
     /// Which input channel to use. None = average all (original behavior).
     selected_channel: Option<usize>,
     /// Preferred stream config cached per device name. The two HAL property
@@ -97,6 +98,7 @@ impl AudioRecorder {
             vad: None,
             level_cb: None,
             audio_cb: None,
+            monitor_cb: None,
             selected_channel: None,
             config_cache: Arc::new(Mutex::new(None)),
         })
@@ -139,6 +141,23 @@ impl AudioRecorder {
         self
     }
 
+    /// Register a callback that receives real-time 16 kHz frames while the
+    /// stream is open and Handy is **not** recording — the mirror image of
+    /// [`with_audio_callback`](Self::with_audio_callback). Frames are raw: no
+    /// VAD is applied, since the point is to observe idle audio rather than
+    /// capture speech.
+    ///
+    /// Only useful in always-on microphone mode, where the stream stays open
+    /// between recordings. Same threading contract as the audio callback: it
+    /// runs on the consumer thread, so it must be cheap.
+    pub fn with_monitor_callback<F>(mut self, cb: F) -> Self
+    where
+        F: Fn(&[f32]) + Send + Sync + 'static,
+    {
+        self.monitor_cb = Some(Arc::new(cb));
+        self
+    }
+
     pub fn with_selected_channel(mut self, channel: Option<u16>) -> Self {
         self.set_selected_channel(channel);
         self
@@ -178,6 +197,7 @@ impl AudioRecorder {
         let level_cb = self.level_cb.clone();
         // Move the optional real-time audio frame callback into the worker thread
         let audio_cb = self.audio_cb.clone();
+        let monitor_cb = self.monitor_cb.clone();
         let selected_channel = self.selected_channel;
         let config_cache = Arc::clone(&self.config_cache);
 
@@ -314,6 +334,7 @@ impl AudioRecorder {
                         cmd_rx,
                         level_cb,
                         audio_cb,
+                        monitor_cb,
                         stop_flag,
                         stream_running_at,
                     );
@@ -604,6 +625,7 @@ fn run_consumer(
     cmd_rx: mpsc::Receiver<Cmd>,
     level_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
     audio_cb: Option<AudioFrameCallback>,
+    monitor_cb: Option<AudioFrameCallback>,
     stop_flag: Arc<AtomicBool>,
     stream_running_at: Instant,
 ) {
@@ -806,6 +828,14 @@ fn run_consumer(
 
         // ---------- existing pipeline ------------------------------------ //
         frame_resampler.push(&raw, &mut |frame: &[f32]| {
+            // Idle audio goes to the monitor (wake word spotting); recording
+            // audio goes to the capture pipeline. Never both, so the spotter
+            // cannot hear — and re-trigger on — the user's own dictation.
+            if !recording {
+                if let Some(cb) = &monitor_cb {
+                    cb(frame);
+                }
+            }
             handle_frame(
                 frame,
                 recording,
