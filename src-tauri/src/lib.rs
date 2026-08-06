@@ -876,18 +876,52 @@ pub fn run(cli_args: CliArgs) {
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
-                    .title("Handy")
+                    .title("דבר")
                     .inner_size(680.0, 570.0)
                     .min_inner_size(680.0, 570.0)
                     .resizable(true)
                     .maximizable(true)
                     .visible(false);
 
+            // macOS draws the window background itself, through a blurred view
+            // of whatever is behind it. The webview must therefore paint
+            // nothing of its own — see the `--color-background: transparent`
+            // override in App.css — or the blur is covered up.
+            #[cfg(target_os = "macos")]
+            {
+                // Overlay, not Transparent: Transparent leaves the title bar
+                // strip showing the desktop straight through, so the top of the
+                // window is whatever colour the wallpaper happens to be and the
+                // title text sits on it. Overlay runs the content — and with it
+                // the glass — up under the traffic lights instead.
+                win_builder = win_builder
+                    .transparent(true)
+                    .title_bar_style(tauri::TitleBarStyle::Overlay);
+            }
+
             if let Some(data_dir) = portable::data_dir() {
                 win_builder = win_builder.data_directory(data_dir.join("webview"));
             }
 
-            win_builder.build()?;
+            let main_window = win_builder.build()?;
+
+            // Vibrancy is cosmetic: if the private API is unavailable the window
+            // just falls back to the solid background the CSS still defines, so
+            // a failure here is logged rather than fatal.
+            #[cfg(target_os = "macos")]
+            {
+                use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+                if let Err(e) = apply_vibrancy(
+                    &main_window,
+                    NSVisualEffectMaterial::UnderWindowBackground,
+                    None,
+                    None,
+                ) {
+                    log::warn!("Could not apply window vibrancy: {e}");
+                }
+            }
+            #[cfg(not(target_os = "macos"))]
+            let _ = &main_window;
 
             let mut settings = get_settings(app.handle());
 

@@ -291,8 +291,11 @@ function App() {
     content = (
       <div
         dir={direction}
-        className="h-screen flex flex-col select-none cursor-default"
+        className="titlebar-inset h-screen flex flex-col select-none cursor-default"
       >
+        {/* The strip the traffic lights float over — draggable, like the
+            native title bar it replaces. */}
+        <div className="titlebar-drag absolute inset-x-0 top-0 h-7" />
         <WhatsNewGate />
         {/* Main content area that takes remaining space */}
         <div className="flex-1 flex overflow-hidden">

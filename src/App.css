@@ -65,7 +65,7 @@
  * Explicit theme override, driven by the `theme` setting via
  * `document.documentElement.dataset.theme`. When set, the higher-specificity
  * attribute selectors win over the `prefers-color-scheme` media query above,
- * so a user can keep Handy light or dark regardless of the OS setting.
+ * so a user can keep Daber light or dark regardless of the OS setting.
  * `system` (or no attribute) leaves the OS in charge.
  */
 :root[data-theme="light"] {
@@ -75,6 +75,10 @@
   --color-logo-stroke: var(--light-color-logo-stroke);
   --color-warning: var(--light-color-warning);
   --color-error: var(--light-color-error);
+  --color-glass-fill: var(--light-glass-fill);
+  --color-glass-edge: var(--light-glass-edge);
+  --color-glass-hairline: var(--light-glass-hairline);
+  --color-glass-shadow: var(--light-glass-shadow);
 }
 
 :root[data-theme="dark"] {
@@ -84,11 +88,70 @@
   --color-logo-stroke: var(--dark-color-logo-stroke);
   --color-warning: var(--dark-color-warning);
   --color-error: var(--dark-color-error);
+  --color-glass-fill: var(--dark-glass-fill);
+  --color-glass-edge: var(--dark-glass-edge);
+  --color-glass-hairline: var(--dark-glass-hairline);
+  --color-glass-shadow: var(--dark-glass-shadow);
 }
 
 /* macOS - tint native overlay scrollbar thumb */
 :root[data-platform="macos"] {
   scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/*
+ * On macOS the window itself is translucent: AppKit draws a blurred view of
+ * whatever is behind it (see `apply_vibrancy` in lib.rs). The webview has to
+ * paint nothing over that, or the blur is hidden behind a flat rectangle —
+ * hence the transparent background here, scoped to the one platform where the
+ * native material actually exists. Everywhere else the solid colour stands.
+ */
+:root[data-platform="macos"],
+:root[data-platform="macos"] body,
+:root[data-platform="macos"] #root {
+  background-color: transparent;
+}
+
+/*
+ * With an overlay title bar the window has no chrome of its own, so the traffic
+ * lights float over the app's own top-left corner. This keeps content clear of
+ * them and leaves the strip draggable, the way a native title bar would be.
+ */
+:root[data-platform="macos"] .titlebar-inset {
+  padding-top: 28px;
+}
+
+:root[data-platform="macos"] .titlebar-drag {
+  -webkit-app-region: drag;
+}
+
+/*
+ * A pane of glass: a translucent wash, a hairline that catches the edge, and a
+ * highlight along the top the way light lands on a real pane. The blur is what
+ * separates it from what shows through the window behind it.
+ */
+.glass {
+  background-color: var(--color-glass-fill);
+  border: 1px solid var(--color-glass-hairline);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 0 var(--color-glass-edge),
+    0 1px 3px 0 var(--color-glass-shadow);
+}
+
+/*
+ * The sidebar sits deeper than the content panes — less fill, no top
+ * highlight — so the two read as different planes rather than one flat sheet.
+ */
+.glass-sidebar {
+  background-color: color-mix(
+    in srgb,
+    var(--color-glass-fill),
+    transparent 40%
+  );
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
 }
 
 /* Custom Scrollbar - only on Windows/Linux; macOS uses native overlay scrollbars */

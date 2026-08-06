@@ -27,6 +27,26 @@
   --dark-color-warning: #fbbf24;
   --dark-color-error: #f87171;
 
+  /* Liquid glass. Surfaces are a translucent wash of the background colour
+     rather than a fixed grey, so they tint with the theme; the hairline and
+     the top highlight are what actually read as glass, by catching an edge the
+     way a real pane does. Only meaningful over a translucent window — see the
+     `data-platform="macos"` block in App.css. */
+  --light-glass-fill: rgba(255, 255, 255, 0.55);
+  --light-glass-edge: rgba(255, 255, 255, 0.75);
+  --light-glass-hairline: rgba(11, 31, 42, 0.1);
+  --light-glass-shadow: rgba(11, 31, 42, 0.08);
+
+  --dark-glass-fill: rgba(232, 244, 248, 0.06);
+  --dark-glass-edge: rgba(232, 244, 248, 0.14);
+  --dark-glass-hairline: rgba(232, 244, 248, 0.1);
+  --dark-glass-shadow: rgba(0, 0, 0, 0.32);
+
+  --color-glass-fill: var(--light-glass-fill);
+  --color-glass-edge: var(--light-glass-edge);
+  --color-glass-hairline: var(--light-glass-hairline);
+  --color-glass-shadow: var(--light-glass-shadow);
+
   /* Tokens that do not change between light and dark */
   --color-background-ui: #0e7490;
   --color-text-stroke: #f6f6f6;
@@ -50,5 +70,9 @@
     --color-logo-stroke: var(--dark-color-logo-stroke);
     --color-warning: var(--dark-color-warning);
     --color-error: var(--dark-color-error);
+    --color-glass-fill: var(--dark-glass-fill);
+    --color-glass-edge: var(--dark-glass-edge);
+    --color-glass-hairline: var(--dark-glass-hairline);
+    --color-glass-shadow: var(--dark-glass-shadow);
   }
 }
