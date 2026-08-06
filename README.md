@@ -15,6 +15,50 @@
 >
 > Everything below is upstream's README and still applies.
 
+## Installing it
+
+Grab `Handy HE_<version>_aarch64.dmg` from
+[Releases](https://github.com/dangogit/handy-he/releases), or build it yourself:
+
+```bash
+bun install && bun run tauri build
+```
+
+The bundle lands in `src-tauri/target/release/bundle/`. Drag the app to
+Applications, open it, and grant microphone and accessibility permissions when
+asked.
+
+It installs alongside an existing Handy rather than replacing it — different
+bundle id, so separate settings, models, history and permissions. Both can be
+installed at once; only the shortcuts would collide, and those are configurable.
+
+First launch downloads the 1.6 GB Hebrew model. Nothing to choose.
+
+## Sharing it with other people
+
+The build is **ad-hoc signed, not notarized**, so macOS refuses to open it on a
+first double-click: _"Apple could not verify this app is free of malware."_
+Whoever you send it to has to right-click the app once and choose **Open**, then
+confirm. After that it opens normally. Same story whether they get it from a
+Release, AirDrop, or a link.
+
+Removing that friction needs an Apple Developer account ($99/year) and a
+notarization pass in the build. With one, set `APPLE_ID`, `APPLE_PASSWORD` and
+`APPLE_TEAM_ID` (or the `APPLE_API_KEY` trio) before `tauri build` and the step
+runs automatically — no code changes.
+
+**Apple Silicon only.** The bundle is `aarch64`; an Intel Mac needs an `x86_64`
+build.
+
+### Auto-updates are off
+
+`createUpdaterArtifacts` is disabled. Enabling it needs a signing keypair
+(`bun run tauri signer generate`), the public half in `tauri.conf.json`, and the
+private half in `TAURI_SIGNING_PRIVATE_KEY` at build time. The config still
+carries upstream's public key, which must be replaced first — otherwise a
+published update fails verification. Until then, sharing means sharing a new
+`.dmg`.
+
 ---
 
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/WVBeWsNXK4)
