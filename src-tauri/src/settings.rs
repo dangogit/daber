@@ -473,27 +473,10 @@ pub struct AppSettings {
     /// `overlay_position` (position `none` → style `None`).
     #[serde(default = "default_overlay_style")]
     pub overlay_style: OverlayStyle,
-    /// Start a recording when the wake phrase is heard, as an alternative to
-    /// pressing the shortcut. Requires `always_on_microphone`: the spotter can
-    /// only listen while the microphone stream is open.
-    #[serde(default = "default_wakeword_enabled")]
-    pub wakeword_enabled: bool,
-    /// Confidence in `0.0..=1.0` the classifier must reach to fire. Lower
-    /// catches more, at the cost of more false triggers.
-    #[serde(default = "default_wakeword_threshold")]
-    pub wakeword_threshold: f32,
 }
 
 fn default_model() -> String {
     "".to_string()
-}
-
-fn default_wakeword_enabled() -> bool {
-    false
-}
-
-fn default_wakeword_threshold() -> f32 {
-    0.5
 }
 
 const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 1;
@@ -924,8 +907,6 @@ pub fn get_default_settings() -> AppSettings {
         extra_recording_buffer_ms: 0,
         vad_enabled: default_vad_enabled(),
         overlay_style: default_overlay_style(),
-        wakeword_enabled: default_wakeword_enabled(),
-        wakeword_threshold: default_wakeword_threshold(),
     }
 }
 

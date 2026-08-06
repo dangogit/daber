@@ -1,22 +1,17 @@
 # handy-he
 
-> A fork of [cjpais/handy](https://github.com/cjpais/handy) with two changes:
+> A fork of [cjpais/handy](https://github.com/cjpais/handy) with one change:
+> **Hebrew out of the box.**
 >
-> 1. **Hebrew out of the box.** First run downloads
->    [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
->    — Whisper Large v3 Turbo fine-tuned for Hebrew — and opens in Hebrew with
->    the transcription language already set. No model picker, no settings trip.
-> 2. **"Hey Claude" starts a recording.** An always-on spotter listens to the
->    idle microphone and fires the same action the keyboard shortcut does.
+> First run downloads
+> [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
+> — Whisper Large v3 Turbo fine-tuned for Hebrew — and opens in Hebrew with the
+> transcription language already set. No model picker, no settings trip. Press
+> the shortcut, speak Hebrew, get Hebrew.
 >
->    **No classifier ships with the fork yet**, so the feature is dormant: the
->    toggle stays hidden until one is installed, and the app behaves exactly like
->    upstream. Training one is a single command but a multi-hour job — see
->    [wakeword-training/](wakeword-training/README.md). Drop the resulting
->    `.onnx` into the app data directory and the toggle appears; no rebuild.
->
-> Design notes: [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-and-wakeword-design.md).
-> Wake word training: [wakeword-training/](wakeword-training/README.md).
+> Everything else is upstream's, including the keyboard shortcut that starts a
+> recording. Design notes:
+> [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
 >
 > Everything below is upstream's README and still applies.
 

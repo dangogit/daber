@@ -84,16 +84,6 @@ tauri-plugin-dialog = "2.6"
 hf-hub = { git = "https://github.com/cjpais/hf-hub", branch = "cancellable-downloads", features = [
   "tokio",
 ] }
-# Wake word spotting. The `livekit-wakeword` crate is vendored into
-# `src/wakeword/livekit_wakeword` rather than depended on — see that module's
-# docs — so its dependencies are declared here. `ort` is pinned to the version
-# vad-rs already resolves to, which is the whole point of vendoring.
-ort = { version = "=2.0.0-rc.12", default-features = false, features = [
-  "ndarray",
-  "std",
-] }
-ndarray = "0.17.2"
-thiserror = "2"
 
 [target.'cfg(unix)'.dependencies]
 signal-hook = "0.3"
