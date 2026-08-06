@@ -1,18 +1,23 @@
-/* Handy Colors */
+/* Daber Colors */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
      light/dark pair; the active tokens below and the `data-theme` overrides
-     in App.css reference these, so a hex value lives in exactly one place. */
-  --light-color-text: #0f0f0f;
-  --light-color-background: #fbfbfb;
-  --light-color-logo-primary: #faa2ca;
-  --light-color-logo-stroke: #382731;
+     in App.css reference these, so a hex value lives in exactly one place.
 
-  --dark-color-text: #fbfbfb;
-  --dark-color-background: #2c2b29;
-  --dark-color-logo-primary: #f28cbb;
-  --dark-color-logo-stroke: #fad1ed;
+     Deep blue carries the brand; turquoise is the single accent, reserved for
+     the mark and for live states. Backgrounds are tinted a few degrees toward
+     the same blue rather than neutral grey, so the accent sits in the palette
+     instead of on top of it. */
+  --light-color-text: #0b1f2a;
+  --light-color-background: #fafcfd;
+  --light-color-logo-primary: #0e7490;
+  --light-color-logo-stroke: #083344;
+
+  --dark-color-text: #e8f4f8;
+  --dark-color-background: #0d1b24;
+  --dark-color-logo-primary: #2dd4bf;
+  --dark-color-logo-stroke: #99f6e4;
 
   /* Semantic status colors. First used by SecureInputWarning; intended to
      replace the ad-hoc yellow-500/red-500 usages (e.g. ui/Alert.tsx) over
@@ -23,7 +28,7 @@
   --dark-color-error: #f87171;
 
   /* Tokens that do not change between light and dark */
-  --color-background-ui: #da5893;
+  --color-background-ui: #0e7490;
   --color-text-stroke: #f6f6f6;
   --color-mid-gray: #808080;
 

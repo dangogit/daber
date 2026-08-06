@@ -1,24 +1,27 @@
-# handy-he
+# דבר (Daber)
 
-> A fork of [cjpais/handy](https://github.com/cjpais/handy) with one change:
-> **Hebrew out of the box.**
->
-> First run downloads
-> [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
-> — Whisper Large v3 Turbo fine-tuned for Hebrew — and opens in Hebrew with the
-> transcription language already set. No model picker, no settings trip. Press
-> the shortcut, speak Hebrew, get Hebrew.
->
-> Everything else is upstream's, including the keyboard shortcut that starts a
-> recording. Design notes:
-> [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
->
-> Everything below is upstream's README and still applies.
+**Hebrew dictation for the Mac.** Press a shortcut, speak Hebrew, and the text
+lands wherever your cursor is. Nothing leaves the machine.
+
+Built on [cjpais/handy](https://github.com/cjpais/handy), which does the hard
+parts — audio capture, voice activity detection, local Whisper inference,
+pasting into whatever app is in front. Daber changes what it opens as: the
+Hebrew model, the Hebrew interface, and the Hebrew transcription language are
+what you get on first launch, with nothing to configure.
+
+The model is
+[ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
+— Whisper Large v3 Turbo fine-tuned on Hebrew, and considerably better at it
+than the generic multilingual builds. It downloads itself on first run (1.6 GB).
+
+Design notes:
+[docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
+Everything below the divider is upstream's README and still applies.
 
 ## Installing it
 
-Grab `Handy HE_<version>_aarch64.dmg` from
-[Releases](https://github.com/dangogit/handy-he/releases), or build it yourself:
+Grab `Daber_<version>_aarch64.dmg` from
+[Releases](https://github.com/dangogit/daber/releases), or build it yourself:
 
 ```bash
 bun install && bun run tauri build
@@ -36,19 +39,62 @@ First launch downloads the 1.6 GB Hebrew model. Nothing to choose.
 
 ## Sharing it with other people
 
-The build is **ad-hoc signed, not notarized**, so macOS refuses to open it on a
-first double-click: _"Apple could not verify this app is free of malware."_
-Whoever you send it to has to right-click the app once and choose **Open**, then
-confirm. After that it opens normally. Same story whether they get it from a
-Release, AirDrop, or a link.
+As built, Daber is **ad-hoc signed and not notarized**, so macOS refuses the
+first double-click: _"Apple could not verify this app is free of malware."_ The
+person you send it to has to right-click once and choose **Open**. After that it
+launches normally, from a Release, AirDrop or a link alike.
 
-Removing that friction needs an Apple Developer account ($99/year) and a
-notarization pass in the build. With one, set `APPLE_ID`, `APPLE_PASSWORD` and
-`APPLE_TEAM_ID` (or the `APPLE_API_KEY` trio) before `tauri build` and the step
-runs automatically — no code changes.
+**Apple Silicon only.** The bundle is `aarch64`; an Intel Mac needs its own
+`x86_64` build.
 
-**Apple Silicon only.** The bundle is `aarch64`; an Intel Mac needs an `x86_64`
-build.
+### Signing and notarizing it properly
+
+This removes the warning entirely and is the difference between "a file someone
+sent me" and "an app." It needs an Apple Developer account, and it is a
+one-time setup — after it, `bun run tauri build` signs and notarizes on its own.
+
+**1. Get a Developer ID Application certificate onto this Mac.** In the
+[Developer portal](https://developer.apple.com/account/resources/certificates/list),
+create a _Developer ID Application_ certificate, download the `.cer`, and
+double-click it to install. Verify:
+
+```bash
+security find-identity -v -p codesigning
+```
+
+You want a line reading `Developer ID Application: <name> (TEAMID)`. Anything
+else — an "Apple Development" certificate, or none at all — will not notarize.
+
+**2. Make an app-specific password** at
+[appleid.apple.com](https://appleid.apple.com/account/manage) → Sign-In and
+Security → App-Specific Passwords. This is not your Apple ID password.
+
+**3. Put all four in the Keychain**, never in a file:
+
+```bash
+security add-generic-password -a danielgoldman -s daber-apple-id -w '<your-apple-id-email>'
+security add-generic-password -a danielgoldman -s daber-apple-password -w '<app-specific-password>'
+security add-generic-password -a danielgoldman -s daber-apple-team-id -w '<TEAMID>'
+security add-generic-password -a danielgoldman -s daber-signing-identity -w 'Developer ID Application: <name> (TEAMID)'
+```
+
+**4. Build with them exported:**
+
+```bash
+./scripts/build-signed.sh
+```
+
+That script reads the four values from the Keychain, exports them under the
+names Tauri expects, and runs the build. Notarization adds a few minutes — the
+`.dmg` is uploaded to Apple and the result stapled to the bundle.
+
+Confirm it worked:
+
+```bash
+spctl -a -vvv -t install "/Applications/Daber.app"
+```
+
+`source=Notarized Developer ID` means anyone can now open it by double-clicking.
 
 ### Auto-updates are off
 

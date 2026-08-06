@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0E7490"/>
+      <stop offset="55%" stop-color="#0A5570"/>
+      <stop offset="100%" stop-color="#062E45"/>
+    </linearGradient>
+    <linearGradient id="bars" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5EEAD4"/>
+      <stop offset="100%" stop-color="#2DD4BF"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.20"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- macOS leaves roughly a 10% margin around the plate -->
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#plate)"/>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+
+  <!-- The mark: five bars, peak off-centre so it reads as speech, not a meter -->
+  <g fill="url(#bars)">
+    <rect x="286" y="466" width="72" height="92"  rx="36"/>
+    <rect x="390" y="378" width="72" height="268" rx="36"/>
+    <rect x="494" y="286" width="72" height="452" rx="36"/>
+    <rect x="598" y="400" width="72" height="224" rx="36"/>
+    <rect x="702" y="482" width="72" height="60"  rx="30"/>
+  </g>
+</svg>
