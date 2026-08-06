@@ -2633,6 +2633,27 @@ mod tests {
     use std::io::Write;
     use tempfile::TempDir;
 
+    /// The fork's whole premise is that the Hebrew model leads the list. The
+    /// sort keys on catalog rank, and this model is deliberately not in the
+    /// bundled catalog, so without the override it would rank `u32::MAX` and
+    /// sort behind all 67 catalog entries.
+    #[test]
+    fn hebrew_model_outranks_every_catalog_model() {
+        assert_eq!(ModelManager::sort_rank(IVRIT_MODEL_ID), 0);
+
+        for descriptor in crate::catalog::CATALOG.iter() {
+            assert!(
+                ModelManager::sort_rank(&descriptor.id) > 0,
+                "{} should sort behind the Hebrew default",
+                descriptor.id
+            );
+        }
+
+        // An id in neither the catalog nor the override still sorts last
+        // rather than wrapping to the front.
+        assert_eq!(ModelManager::sort_rank("not-a-real-model"), u32::MAX);
+    }
+
     #[test]
     fn test_effective_language_accepts_chinese_script_intent_for_zh_capability() {
         let languages = vec!["zh".to_string()];
