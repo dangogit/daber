@@ -93,8 +93,16 @@ Upstream's resampling path is dropped with it, since audio always arrives at
 `SpotterCore` holds a 2-second sliding window and scores it every 250 ms of
 fresh audio, so a phrase straddling a window boundary is still caught.
 
-Two rules keep it honest:
+Three rules keep it honest:
 
+- **Two consecutive windows must clear the threshold.** Measured against
+  LiveKit's reference recordings, a spoken wake phrase lights up three windows
+  in a row above 0.99, while the negative clip produces exactly one isolated
+  window at 0.76 with every neighbour below 0.001. Requiring two in a row
+  rejects that entire class of false trigger for one hop (~250 ms) of latency.
+  This rule was added _because_ of that measurement — a sliding scan surfaces
+  false positives that scoring a whole clip in one go never reveals, which is
+  why upstream's own integration test does not see them.
 - **A detection empties the window.** The next one cannot happen until two more
   seconds of audio arrive, which is what stops one utterance from firing on
   every overlapping window. An explicit cooldown timer was written first and
@@ -132,8 +140,9 @@ the settings UI hides the toggle rather than offering a dead control.
 
 ## Testing
 
-- `SpotterCore` policy: partial windows, threshold edges, live threshold changes, gap handling, a detector that always errors, and sample clamping — nine synchronous tests, no sleeps
-- the Rust suite and the frontend typecheck/lint
+- `SpotterCore` policy: partial windows, threshold edges, live threshold changes, consecutive-hit requirements, gap handling, a detector that always errors, and sample clamping — twelve synchronous tests against a fake clock, no sleeps
+- real speech through the whole vendored stack: LiveKit's own "hey LiveKit" recordings are fed frame by frame through the actual classifier and the actual windowing policy, asserting the phrase fires and unrelated audio does not. The phrase is theirs, not ours — what this proves is that the inference path and trigger policy work on real audio, independent of which phrase the shipped classifier detects.
+- the Rust suite and the frontend typecheck/lint/translation checks
 - the built app on macOS: Hebrew UI and model download on first run, then the wake phrase spoken aloud
 
 ## Out of scope

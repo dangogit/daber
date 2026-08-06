@@ -51,6 +51,18 @@ const CONTINUITY_GAP: Duration = Duration::from_millis(300);
 /// and stale frames are worthless to a wake word anyway.
 const QUEUE_DEPTH: usize = 32;
 
+/// Overlapping windows that must clear the threshold back to back before the
+/// phrase is accepted.
+///
+/// A spoken wake phrase lasts far longer than one hop, so it lights up several
+/// consecutive windows — measured against LiveKit's reference recordings, the
+/// positive clip scores >0.99 across three in a row. Isolated single-window
+/// spikes are the shape false positives take: the same measurement puts one
+/// window of the negative clip at 0.76 with every neighbour below 0.001.
+/// Requiring two in a row rejects that whole class of trigger, at the cost of
+/// one hop (~250 ms) of extra latency.
+const CONSECUTIVE_HITS: u32 = 2;
+
 /// Sliding-window scoring with continuity handling.
 ///
 /// A detection clears the window, so the next one cannot happen until a further
@@ -66,6 +78,7 @@ struct SpotterCore {
     window: Vec<f32>,
     since_last_score: usize,
     last_frame_at: Option<Instant>,
+    consecutive_hits: u32,
 }
 
 impl SpotterCore {
@@ -75,6 +88,7 @@ impl SpotterCore {
             window: Vec::with_capacity(WINDOW_SAMPLES + HOP_SAMPLES),
             since_last_score: 0,
             last_frame_at: None,
+            consecutive_hits: 0,
         }
     }
 
@@ -113,6 +127,16 @@ impl SpotterCore {
 
         if score < threshold {
             debug!("Wake word window scored {score:.3}");
+            self.consecutive_hits = 0;
+            return false;
+        }
+
+        self.consecutive_hits += 1;
+        if self.consecutive_hits < CONSECUTIVE_HITS {
+            debug!(
+                "Wake word window scored {score:.3}; {}/{CONSECUTIVE_HITS} consecutive",
+                self.consecutive_hits
+            );
             return false;
         }
 
@@ -124,6 +148,7 @@ impl SpotterCore {
     fn reset_window(&mut self) {
         self.window.clear();
         self.since_last_score = 0;
+        self.consecutive_hits = 0;
     }
 }
 
@@ -307,6 +332,26 @@ mod tests {
         }
     }
 
+    /// Returns a prepared sequence of scores, one per window, so a test can
+    /// describe the exact score shape it cares about. Runs out to zero.
+    struct ScriptedDetector {
+        scores: std::vec::IntoIter<f32>,
+    }
+
+    impl ScriptedDetector {
+        fn new(scores: Vec<f32>) -> Self {
+            Self {
+                scores: scores.into_iter(),
+            }
+        }
+    }
+
+    impl WakewordDetector for ScriptedDetector {
+        fn score(&mut self, _window: &[i16]) -> anyhow::Result<f32> {
+            Ok(self.scores.next().unwrap_or(0.0))
+        }
+    }
+
     /// Fails every scoring attempt, standing in for a corrupt model file.
     struct FailingDetector;
 
@@ -318,6 +363,13 @@ mod tests {
 
     /// The recorder's frame size: 30 ms at 16 kHz.
     const FRAME: usize = 480;
+
+    /// Audio needed to reach the first firing: one full window, plus a hop for
+    /// each additional consecutive hit the policy demands. The extra frame per
+    /// hop covers frame quantisation — audio arrives in 30 ms frames, so a hop
+    /// boundary is only crossed on the frame after it is due.
+    const TO_FIRST_FIRE: usize =
+        WINDOW_SAMPLES + (HOP_SAMPLES + FRAME) * (CONSECUTIVE_HITS as usize - 1);
 
     struct Harness {
         core: SpotterCore,
@@ -378,10 +430,10 @@ mod tests {
     }
 
     #[test]
-    fn full_window_above_threshold_fires_once() {
+    fn sustained_high_scores_fire_exactly_once() {
         let mut h = Harness::new(fixed(0.99));
-        // Well past the first full window: without a cooldown every hop after it
-        // would fire again.
+        // Well past the first firing: without the post-detection window reset
+        // every subsequent hop would fire again.
         h.feed(0.5, WINDOW_SAMPLES + HOP_SAMPLES * 6);
         assert_eq!(h.fires, 1, "one phrase fires exactly once");
     }
@@ -389,7 +441,7 @@ mod tests {
     #[test]
     fn a_detection_costs_a_full_window_before_the_next_one() {
         let mut h = Harness::new(fixed(0.99));
-        h.feed(0.5, WINDOW_SAMPLES);
+        h.feed(0.5, TO_FIRST_FIRE);
         assert_eq!(h.fires, 1);
 
         // Anything short of a full fresh window cannot fire again, however
@@ -398,8 +450,38 @@ mod tests {
         assert_eq!(h.fires, 1, "a partial window after a detection is silent");
 
         // A second genuine utterance, once the window refills, does fire.
-        h.feed(0.5, FRAME * 2);
+        h.feed(0.5, HOP_SAMPLES * CONSECUTIVE_HITS as usize);
         assert_eq!(h.fires, 2, "a later phrase fires again");
+    }
+
+    #[test]
+    fn one_isolated_high_window_is_not_enough() {
+        // The shape a false positive takes: a single window spikes above the
+        // threshold while its neighbours sit far below it.
+        let mut h = Harness::new(Box::new(ScriptedDetector::new(vec![
+            0.01, 0.99, 0.01, 0.01,
+        ])));
+        h.feed(0.5, WINDOW_SAMPLES + HOP_SAMPLES * 3);
+        assert_eq!(h.fires, 0, "an isolated spike must not trigger recording");
+    }
+
+    #[test]
+    fn two_windows_in_a_row_are_enough() {
+        let mut h = Harness::new(Box::new(ScriptedDetector::new(vec![
+            0.01, 0.99, 0.99, 0.01,
+        ])));
+        h.feed(0.5, WINDOW_SAMPLES + HOP_SAMPLES * 3);
+        assert_eq!(h.fires, 1, "consecutive hits are a real phrase");
+    }
+
+    #[test]
+    fn a_gap_between_hits_restarts_the_count() {
+        // Above, below, above: never two in a row, so nothing fires.
+        let mut h = Harness::new(Box::new(ScriptedDetector::new(vec![
+            0.99, 0.01, 0.99, 0.01,
+        ])));
+        h.feed(0.5, WINDOW_SAMPLES + HOP_SAMPLES * 3);
+        assert_eq!(h.fires, 0, "hits must be consecutive, not merely frequent");
     }
 
     #[test]
@@ -440,7 +522,7 @@ mod tests {
         assert_eq!(h.fires, 0, "audio either side of a gap is not one window");
 
         // A fresh full window after the gap still works.
-        h.feed(0.5, WINDOW_SAMPLES);
+        h.feed(0.5, TO_FIRST_FIRE);
         assert_eq!(h.fires, 1, "spotting resumes after the gap");
     }
 
