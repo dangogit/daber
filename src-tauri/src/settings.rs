@@ -473,10 +473,27 @@ pub struct AppSettings {
     /// `overlay_position` (position `none` → style `None`).
     #[serde(default = "default_overlay_style")]
     pub overlay_style: OverlayStyle,
+    /// Start a recording when the wake phrase is heard, as an alternative to
+    /// pressing the shortcut. Requires `always_on_microphone`: the spotter can
+    /// only listen while the microphone stream is open.
+    #[serde(default = "default_wakeword_enabled")]
+    pub wakeword_enabled: bool,
+    /// Confidence in `0.0..=1.0` the classifier must reach to fire. Lower
+    /// catches more, at the cost of more false triggers.
+    #[serde(default = "default_wakeword_threshold")]
+    pub wakeword_threshold: f32,
 }
 
 fn default_model() -> String {
     "".to_string()
+}
+
+fn default_wakeword_enabled() -> bool {
+    false
+}
+
+fn default_wakeword_threshold() -> f32 {
+    0.5
 }
 
 const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 1;
@@ -518,7 +535,9 @@ fn default_whats_new_last_seen_version() -> String {
 }
 
 fn default_selected_language() -> String {
-    "auto".to_string()
+    // Hebrew-first fork. The bundled ivrit.ai model has degraded language
+    // detection by design, so "auto" would actively hurt here.
+    "he".to_string()
 }
 
 fn default_overlay_position() -> OverlayPosition {
@@ -589,9 +608,9 @@ fn default_post_process_enabled() -> bool {
 }
 
 fn default_app_language() -> String {
-    tauri_plugin_os::locale()
-        .map(|l| l.replace('_', "-"))
-        .unwrap_or_else(|| "en".to_string())
+    // Hebrew-first fork: the UI opens in Hebrew (RTL) regardless of system
+    // locale. Changeable in settings like any other language.
+    "he".to_string()
 }
 
 fn default_show_tray_icon() -> bool {
@@ -865,7 +884,7 @@ pub fn get_default_settings() -> AppSettings {
         clamshell_microphone: None,
         selected_output_device: None,
         translate_to_english: false,
-        selected_language: "auto".to_string(),
+        selected_language: default_selected_language(),
         overlay_position: default_overlay_position(),
         debug_mode: false,
         log_level: default_log_level(),
@@ -905,6 +924,8 @@ pub fn get_default_settings() -> AppSettings {
         extra_recording_buffer_ms: 0,
         vad_enabled: default_vad_enabled(),
         overlay_style: default_overlay_style(),
+        wakeword_enabled: default_wakeword_enabled(),
+        wakeword_threshold: default_wakeword_threshold(),
     }
 }
 

@@ -23,6 +23,10 @@ mod download;
 
 use download::{HttpDownloadOutcome, DOWNLOAD_STALL_TIMEOUT};
 
+/// The Hebrew-tuned Whisper this fork defaults to. Referenced by the onboarding
+/// flow and the settings defaults, so it lives in one place.
+pub const IVRIT_MODEL_ID: &str = "ivrit-turbo";
+
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub enum EngineType {
     /// Any GGML/GGUF model loaded through transcribe-cpp (Whisper, Parakeet,
@@ -541,6 +545,41 @@ impl ModelManager {
         .map(String::from)
         .collect();
 
+        // Hebrew-specialised Whisper. This fork ships it as the default: the
+        // stock multilingual Whisper models are noticeably weaker on Hebrew.
+        // Per the model card, language detection and the translation task were
+        // both degraded during fine-tuning, so the language token has to be set
+        // to Hebrew explicitly — hence `supported_languages: ["he"]` and no
+        // detection/translation support.
+        available_models.insert(
+            IVRIT_MODEL_ID.to_string(),
+            ModelInfo {
+                id: IVRIT_MODEL_ID.to_string(),
+                name: "ivrit.ai Hebrew Turbo".to_string(),
+                description: "Whisper Large v3 Turbo fine-tuned for Hebrew. Most accurate for Hebrew; not for other languages.".to_string(),
+                filename: "ggml-model.bin".to_string(),
+                source: ModelSource::HuggingFace {
+                    repo_id: "ivrit-ai/whisper-large-v3-turbo-ggml".to_string(),
+                    revision: "2130c78e4a9cb4914cc4df91a1c3031407789705".to_string(),
+                },
+                size_mb: 1625,
+                is_downloaded: false,
+                is_downloading: false,
+                partial_size: 0,
+                is_directory: false,
+                engine_type: EngineType::TranscribeCpp,
+                accuracy_score: 0.90,
+                speed_score: 0.40,
+                supports_translation: false,
+                is_recommended: true,
+                supported_languages: vec!["he".to_string()],
+                supports_language_selection: false,
+                is_custom: false,
+                supports_streaming: false,
+                supports_language_detection: false,
+            },
+        );
+
         available_models.insert(
             "small".to_string(),
             ModelInfo {
@@ -769,7 +808,9 @@ impl ModelManager {
                 accuracy_score: 0.80,
                 speed_score: 0.85,
                 supports_translation: false,
-                is_recommended: true,
+                // Not recommended in this fork: Parakeet V3 covers 25 European
+                // languages and Hebrew is not one of them.
+                is_recommended: false,
                 supported_languages: parakeet_v3_languages,
                 supports_language_selection: false,
                 is_custom: false,
@@ -1144,6 +1185,18 @@ impl ModelManager {
         Ok(manager)
     }
 
+    /// Editorial sort rank, lower first. The fork's Hebrew default leads the
+    /// list; everything else keeps its catalog rank (shifted by one so the
+    /// Hebrew model can never tie with a rank-0 catalog entry). Ids missing from
+    /// the catalog already rank `u32::MAX`, so the shift saturates rather than
+    /// wrapping them to the front.
+    fn sort_rank(model_id: &str) -> u32 {
+        if model_id == IVRIT_MODEL_ID {
+            return 0;
+        }
+        crate::catalog::rank_of(model_id).saturating_add(1)
+    }
+
     pub fn get_available_models(&self) -> Vec<ModelInfo> {
         let mut list: Vec<ModelInfo> = {
             let models = self.available_models.lock().unwrap();
@@ -1154,8 +1207,8 @@ impl ModelManager {
         // and name. `ModelInfo` doesn't carry rank, so resolve it by id from the
         // catalog here.
         list.sort_by(|a, b| {
-            crate::catalog::rank_of(&a.id)
-                .cmp(&crate::catalog::rank_of(&b.id))
+            Self::sort_rank(&a.id)
+                .cmp(&Self::sort_rank(&b.id))
                 .then((!a.is_recommended).cmp(&(!b.is_recommended)))
                 .then(b.accuracy_score.total_cmp(&a.accuracy_score))
                 .then(b.speed_score.total_cmp(&a.speed_score))
@@ -2579,6 +2632,27 @@ mod tests {
     use super::*;
     use std::io::Write;
     use tempfile::TempDir;
+
+    /// The fork's whole premise is that the Hebrew model leads the list. The
+    /// sort keys on catalog rank, and this model is deliberately not in the
+    /// bundled catalog, so without the override it would rank `u32::MAX` and
+    /// sort behind all 67 catalog entries.
+    #[test]
+    fn hebrew_model_outranks_every_catalog_model() {
+        assert_eq!(ModelManager::sort_rank(IVRIT_MODEL_ID), 0);
+
+        for descriptor in crate::catalog::CATALOG.iter() {
+            assert!(
+                ModelManager::sort_rank(&descriptor.id) > 0,
+                "{} should sort behind the Hebrew default",
+                descriptor.id
+            );
+        }
+
+        // An id in neither the catalog nor the override still sorts last
+        // rather than wrapping to the front.
+        assert_eq!(ModelManager::sort_rank("not-a-real-model"), u32::MAX);
+    }
 
     #[test]
     fn test_effective_language_accepts_chinese_script_intent_for_zh_capability() {

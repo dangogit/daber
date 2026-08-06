@@ -599,6 +599,16 @@
         "label": "Hiển thị điểm mới",
         "description": "Hiển thị ghi chú phát hành sau khi Handy cập nhật"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Từ đánh thức",
+        "description": "Bắt đầu ghi âm khi bạn nói \"hey Claude\", không cần nhấn phím tắt. Yêu cầu micrô luôn bật, và nó sẽ được bật tự động."
+      },
+      "sensitivity": {
+        "title": "Độ nhạy của từ đánh thức",
+        "description": "Giá trị cao hơn nhận ra cụm từ thường xuyên hơn nhưng gây nhiều lần kích hoạt nhầm. Hãy giảm xuống nếu bản ghi tự bắt đầu."
+      }
     }
   },
   "footer": {

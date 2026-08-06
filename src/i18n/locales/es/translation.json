@@ -599,6 +599,16 @@
         "label": "Mostrar novedades",
         "description": "Mostrar notas de la versión después de las actualizaciones de Handy"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Palabra de activación",
+        "description": "Empieza a grabar cuando dices \"hey Claude\", sin pulsar el atajo. Requiere el micrófono siempre activo, que se enciende automáticamente."
+      },
+      "sensitivity": {
+        "title": "Sensibilidad de la palabra de activación",
+        "description": "Un valor más alto detecta la frase más a menudo, pero provoca más activaciones falsas. Bájalo si la grabación empieza sola."
+      }
     }
   },
   "footer": {

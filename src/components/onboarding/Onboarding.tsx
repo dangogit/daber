@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
@@ -7,6 +13,7 @@ import type { ModelCardStatus } from "./ModelCard";
 import ModelCard, { isLegacySource } from "./ModelCard";
 import HandyTextLogo from "../icons/HandyTextLogo";
 import { useModelStore } from "../../stores/modelStore";
+import { HEBREW_MODEL_ID } from "@/lib/constants/models";
 
 interface OnboardingProps {
   onModelSelected: () => void;
@@ -28,6 +35,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const hasStartedSelection = useRef(false);
+  const hasAutoStarted = useRef(false);
 
   const isBusy = selectedModelId !== null;
 
@@ -101,16 +109,37 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     t,
   ]);
 
-  const handleDownloadModel = async (modelId: string) => {
-    setSelectedModelId(modelId);
+  // Stable identity so the auto-download effect below doesn't re-run on every
+  // render, and so the memoized model cards don't re-render needlessly.
+  const handleDownloadModel = useCallback(
+    async (modelId: string) => {
+      setSelectedModelId(modelId);
 
-    // Error toast is handled centrally by the model-download-failed event listener
-    // in modelStore — no toast here to avoid duplicates.
-    const success = await downloadModel(modelId);
-    if (!success) {
-      setSelectedModelId(null);
-    }
-  };
+      // Error toast is handled centrally by the model-download-failed event listener
+      // in modelStore — no toast here to avoid duplicates.
+      const success = await downloadModel(modelId);
+      if (!success) {
+        setSelectedModelId(null);
+      }
+    },
+    [downloadModel],
+  );
+
+  // Hebrew-first fork: first run downloads the Hebrew model without asking.
+  // Skipped when the user already has a model on disk (nothing to set up) or
+  // has started something themselves. Cancelling falls back to the normal
+  // picker below — the ref keeps this from re-triggering.
+  useEffect(() => {
+    if (hasAutoStarted.current || selectedModelId !== null) return;
+    if (models.length === 0) return;
+    if (models.some((m: ModelInfo) => m.is_downloaded)) return;
+
+    const hebrewModel = models.find((m: ModelInfo) => m.id === HEBREW_MODEL_ID);
+    if (!hebrewModel || hebrewModel.is_downloading) return;
+
+    hasAutoStarted.current = true;
+    void handleDownloadModel(HEBREW_MODEL_ID);
+  }, [models, selectedModelId, handleDownloadModel]);
 
   const handleCancelDownload = async (modelId: string) => {
     const success = await cancelDownload(modelId);

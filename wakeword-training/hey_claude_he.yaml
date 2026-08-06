@@ -1,0 +1,112 @@
+# =============================================================================
+# "היי קלוד" wake word — Hebrew rendering, VoxCPM2 backbone
+# =============================================================================
+#
+# The companion to hey_claude_en.yaml. Piper is English-only, so a Hebrew phrase
+# has to go through VoxCPM2, which synthesizes sequentially rather than in
+# batches — an order of magnitude slower per clip. The sample counts here are
+# correspondingly smaller; this model is the second voter, not the primary one.
+#
+# LiveKit document that their multilingual models underperform the English ones
+# (English-biased speech embeddings, less diverse synthetic speech). Treat this
+# model's scores as a supplement to hey_claude_en, which is why the runtime
+# takes the max across both rather than trusting either alone.
+# =============================================================================
+
+model_name: hey_claude_he
+
+target_phrases:
+  - "היי קלוד"
+  - "הי קלוד"
+
+tts_backend: voxcpm
+
+# An order of magnitude below the English config: VoxCPM synthesizes one clip at
+# a time, so 25k clips would take days on this hardware.
+n_samples: 2000
+n_samples_val: 400
+n_background_samples: 800
+n_background_samples_val: 200
+# Ignored by the VoxCPM backend, which synthesizes one clip at a time. Kept in
+# sync with the English config only so the two read the same way.
+tts_batch_size: 16
+
+# Automatic adversarial negatives are generated from CMUdict and are therefore
+# English-biased and useless for Hebrew — these hand-written ones carry the
+# load. The bare product name matters most: it comes up constantly in Hebrew
+# speech about this very tool.
+custom_negative_phrases:
+  - "קלוד"
+  - "קלאוד"
+  - "היי"
+  - "היי גוגל"
+  - "היי סירי"
+  - "קלוד קוד"
+  - "תשאל את קלוד"
+  - "היי קול"
+  - "היי קלוב"
+  - "היי כלום"
+  - "היי קרוב"
+  - "הכל טוב"
+
+noise_scales: [0.98]
+noise_scale_ws: [0.98]
+length_scales: [0.75, 1.0, 1.25]
+slerp_weights: [0.2, 0.35, 0.5, 0.65, 0.8]
+
+piper_tts:
+  checkpoint_relpath: piper/en-us-libritts-high.pt
+
+voxcpm_tts:
+  model_id: openbmb/VoxCPM2
+  model_cache_relpath: voxcpm/VoxCPM2
+  local_model_path: null
+  load_denoiser: false
+  cfg_values: [1.5, 2.0, 2.5]
+  inference_timesteps_list: [8, 10]
+  # Personas written in Hebrew so VoxCPM conditions on Israeli-accented speech
+  # rather than an English speaker reading Hebrew text.
+  voice_design_prompts:
+    - "דוברת ישראלית צעירה, קול בהיר, קצב דיבור רגיל, טון רגוע"
+    - "דובר ישראלי צעיר, קול בריטון חם, קצב יציב, ידידותי"
+    - "דוברת ישראלית בשנות השלושים, קול נמוך מעט, קצב מדוד, בטוחה"
+    - "דובר ישראלי בשנות הארבעים, קול עמוק, דיבור איטי ושקול"
+    - "דוברת ישראלית מבוגרת, קול רך, קצב איטי, טון נעים"
+    - "דובר ישראלי מבוגר, קול צרוד, קצב רגיל, ענייני"
+    - "דוברת ישראלית, טון נמרץ ואנרגטי, קצב מהיר מעט"
+    - "דובר ישראלי, טנור קליל, קצב שיחה מהיר"
+    - "דובר ישראלי, טון פורמלי, הגייה מדויקת, מעט רגש"
+    - "דוברת ישראלית, טון של שירות לקוחות, קצב בינוני"
+    - "דובר ישראלי צעיר מאוד, דיבור קליל ולא רשמי"
+    - "דוברת ישראלית, קול שקט וקרוב למיקרופון, דיבור ברור ואיטי"
+    - "דובר ישראלי, קול עייף, אנרגיה נמוכה, קצב יציב"
+    - "דוברת ישראלית, טון של מגישת חדשות, מקצב אחיד"
+    - "דובר ישראלי עם מבטא מזרחי קל, קצב רגיל"
+    - "דוברת ישראלית עם מבטא רוסי קל, הגייה ברורה"
+
+data_dir: ./data
+output_dir: ./output
+
+augmentation:
+  clip_duration: 2.0
+  batch_size: 16
+  rounds: 3
+  background_paths: [./data/backgrounds]
+  rir_paths: [./data/rirs]
+
+model:
+  model_type: conv_attention
+  model_size: small
+
+steps: 20000
+learning_rate: 0.0001
+weight_decay: 0.01
+label_smoothing: 0.05
+max_negative_weight: 3000
+target_fp_per_hour: 0.1
+
+batch_n_per_class:
+  positive: 50
+  adversarial_negative: 50
+  ACAV100M_sample: 1024
+  background_noise: 50

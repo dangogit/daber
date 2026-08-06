@@ -200,6 +200,26 @@ Access debug features: `Cmd+Shift+D` (macOS) or `Ctrl+Shift+D` (Windows/Linux)
 - **Windows**: Vulkan acceleration, code signing
 - **Linux**: OpenBLAS + Vulkan, limited Wayland support, overlay uses GTK layer shell (disable with `HANDY_NO_GTK_LAYER_SHELL=1`)
 
+## Wake word training
+
+Configs and the full retraining procedure live in [`wakeword-training/README.md`](wakeword-training/README.md).
+
+**Never launch `livekit-wakeword run` on a Mac without capping MPS memory first.** PyTorch's
+MPS allocator defaults to `PYTORCH_MPS_HIGH_WATERMARK_RATIO=1.7`, so it will allocate up to
+1.7x the Metal recommended working set (about 32 GB on a 24 GB machine), and unified memory
+means those GPU buffers come straight out of system RAM. The Piper TTS stage caches
+allocations across all 8000 synthesis calls and never frees them, so the process climbs to a
+28 GB footprint, fills swap, and takes the whole machine down. Export
+`PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.5` before the run so the allocator raises a clean OOM
+instead of swapping the Mac to death.
+
+Two more traps in the same job:
+
+- **Do not run it from a session scratchpad.** `/private/tmp/claude-501/.../scratchpad/` is
+  session-scoped and gets cleaned. A multi-hour run belongs in a real checkout.
+- **There is no resume.** The TTS stage does not skip clips that already exist on disk, so a
+  kill costs the entire generation pass. Budget for one uninterrupted run.
+
 ## Troubleshooting
 
 See the [Troubleshooting](README.md#troubleshooting) section in README.md.

@@ -599,6 +599,16 @@
           "details": "Handy's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
         }
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Activatiewoord",
+        "description": "Start de opname wanneer je \"hey Claude\" zegt, zonder de sneltoets in te drukken. Vereist de altijd-aan microfoon, die automatisch wordt ingeschakeld."
+      },
+      "sensitivity": {
+        "title": "Gevoeligheid van het activatiewoord",
+        "description": "Hoger herkent de zin vaker, maar veroorzaakt meer valse starts. Verlaag het als de opname vanzelf begint."
+      }
     }
   },
   "footer": {

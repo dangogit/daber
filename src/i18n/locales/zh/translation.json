@@ -599,6 +599,16 @@
         "label": "显示新功能",
         "description": "Handy 更新后显示发行说明"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "唤醒词",
+        "description": "说“hey Claude”即可开始录音，无需按快捷键。需要麦克风常开，该选项会自动开启。"
+      },
+      "sensitivity": {
+        "title": "唤醒词灵敏度",
+        "description": "调高会更常识别到该短语，但误触发也会增多。如果录音自行开始，请调低。"
+      }
     }
   },
   "footer": {

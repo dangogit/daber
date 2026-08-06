@@ -599,6 +599,16 @@
         "label": "Neuerungen anzeigen",
         "description": "Versionshinweise nach Handy-Updates anzeigen"
       }
+    },
+    "wakeword": {
+      "enabled": {
+        "label": "Aktivierungswort",
+        "description": "Startet die Aufnahme, wenn du „hey Claude“ sagst, ohne das Tastenkürzel zu drücken. Erfordert das dauerhaft aktive Mikrofon, das automatisch eingeschaltet wird."
+      },
+      "sensitivity": {
+        "title": "Empfindlichkeit des Aktivierungsworts",
+        "description": "Höhere Werte erkennen die Phrase häufiger, lösen aber mehr Fehlstarts aus. Senke den Wert, wenn die Aufnahme von selbst beginnt."
+      }
     }
   },
   "footer": {
