@@ -113,6 +113,7 @@
       "grant": "Concedi Permesso",
       "granted": "Concesso",
       "waiting": "In attesa...",
+      "retry": "Non è successo nulla? Riprova",
       "allGranted": "Tutto pronto!",
       "errors": {
         "checkFailed": "Impossibile verificare i permessi. Riprova.",

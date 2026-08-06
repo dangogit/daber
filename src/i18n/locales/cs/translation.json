@@ -113,6 +113,7 @@
       "grant": "Udělit oprávnění",
       "granted": "Uděleno",
       "waiting": "Čekání...",
+      "retry": "Nic se nestalo? Zkuste to znovu",
       "allGranted": "Vše připraveno!",
       "errors": {
         "checkFailed": "Nepodařilo se zkontrolovat oprávnění. Zkuste to prosím znovu.",

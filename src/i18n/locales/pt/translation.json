@@ -113,6 +113,7 @@
       "grant": "Conceder Permissão",
       "granted": "Concedido",
       "waiting": "Aguardando...",
+      "retry": "Nada aconteceu? Tente novamente",
       "allGranted": "Tudo pronto!",
       "errors": {
         "checkFailed": "Erro ao verificar permissões. Por favor, tente novamente.",

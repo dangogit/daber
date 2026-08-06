@@ -113,6 +113,7 @@
       "grant": "Giv tilladelse",
       "granted": "Givet",
       "waiting": "Venter...",
+      "retry": "Skete der ikke noget? Prøv igen",
       "allGranted": "Alt er klar!",
       "errors": {
         "checkFailed": "Kunne ikke tjekke tilladelser. Prøv igen.",

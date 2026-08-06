@@ -113,6 +113,7 @@
       "grant": "Accorder l'autorisation",
       "granted": "Accordé",
       "waiting": "En attente...",
+      "retry": "Rien ne s'est passé ? Réessayer",
       "allGranted": "Tout est prêt !",
       "errors": {
         "checkFailed": "Échec de la vérification des autorisations. Veuillez réessayer.",

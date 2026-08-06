@@ -41,6 +41,16 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
     accessibility: "checking",
     microphone: "checking",
   });
+  /// Permissions that have sat in "waiting" long enough that the request has
+  /// probably been lost — the System Settings dialog was dismissed, or macOS
+  /// silently declined to show it because the app had already asked. Polling
+  /// carries on regardless; this only decides whether a retry is offered.
+  const [stalled, setStalled] = useState<Set<keyof PermissionsState>>(
+    new Set(),
+  );
+  const stallTimersRef = useRef<
+    Partial<Record<keyof PermissionsState, ReturnType<typeof setTimeout>>>
+  >({});
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const errorCountRef = useRef<number>(0);
@@ -244,13 +254,34 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      Object.values(stallTimersRef.current).forEach(clearTimeout);
     };
+  }, []);
+
+  /// How long a permission may sit in "waiting" before a retry appears. Long
+  /// enough not to interrupt someone actually working through the System
+  /// Settings pane, short enough not to feel abandoned.
+  const STALL_AFTER_MS = 10_000;
+
+  const beginWaiting = useCallback((key: keyof PermissionsState) => {
+    setPermissions((prev) => ({ ...prev, [key]: "waiting" }));
+    setStalled((prev) => {
+      if (!prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+
+    clearTimeout(stallTimersRef.current[key]);
+    stallTimersRef.current[key] = setTimeout(() => {
+      setStalled((prev) => new Set(prev).add(key));
+    }, STALL_AFTER_MS);
   }, []);
 
   const handleGrantAccessibility = async () => {
     try {
       await requestAccessibilityPermission();
-      setPermissions((prev) => ({ ...prev, accessibility: "waiting" }));
+      beginWaiting("accessibility");
       startPolling();
     } catch (error) {
       console.error("Failed to request accessibility permission:", error);
@@ -266,7 +297,7 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
         await requestMicrophonePermission();
       }
 
-      setPermissions((prev) => ({ ...prev, microphone: "waiting" }));
+      beginWaiting("microphone");
       startPolling();
     } catch (error) {
       console.error("Failed to request microphone permission:", error);
@@ -341,9 +372,19 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
                     {t("onboarding.permissions.granted")}
                   </div>
                 ) : permissions.microphone === "waiting" ? (
-                  <div className="flex items-center gap-2 text-text/50 text-sm">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {t("onboarding.permissions.waiting")}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-text/50 text-sm">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t("onboarding.permissions.waiting")}
+                    </div>
+                    {stalled.has("microphone") && (
+                      <button
+                        onClick={handleGrantMicrophone}
+                        className="self-start text-sm font-medium text-logo-primary hover:underline"
+                      >
+                        {t("onboarding.permissions.retry")}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <button
@@ -380,9 +421,19 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
                     {t("onboarding.permissions.granted")}
                   </div>
                 ) : permissions.accessibility === "waiting" ? (
-                  <div className="flex items-center gap-2 text-text/50 text-sm">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {t("onboarding.permissions.waiting")}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-text/50 text-sm">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t("onboarding.permissions.waiting")}
+                    </div>
+                    {stalled.has("accessibility") && (
+                      <button
+                        onClick={handleGrantAccessibility}
+                        className="self-start text-sm font-medium text-logo-primary hover:underline"
+                      >
+                        {t("onboarding.permissions.retry")}
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <button

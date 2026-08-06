@@ -113,6 +113,7 @@
       "grant": "İzin Ver",
       "granted": "Verildi",
       "waiting": "Bekleniyor...",
+      "retry": "Bir şey olmadı mı? Tekrar deneyin",
       "allGranted": "Her şey hazır!",
       "errors": {
         "checkFailed": "İzinler kontrol edilemedi. Lütfen tekrar deneyin.",

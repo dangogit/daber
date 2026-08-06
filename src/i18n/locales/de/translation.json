@@ -113,6 +113,7 @@
       "grant": "Berechtigung erteilen",
       "granted": "Erteilt",
       "waiting": "Warten...",
+      "retry": "Nichts passiert? Erneut versuchen",
       "allGranted": "Alles bereit!",
       "errors": {
         "checkFailed": "Berechtigungsprüfung fehlgeschlagen. Bitte erneut versuchen.",

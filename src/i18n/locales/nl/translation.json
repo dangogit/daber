@@ -113,6 +113,7 @@
       "grant": "Machtiging verlenen",
       "granted": "Verleend",
       "waiting": "Wachten...",
+      "retry": "Er gebeurde niets? Probeer opnieuw",
       "allGranted": "Alles ingesteld!",
       "errors": {
         "checkFailed": "Machtigingen controleren mislukt. Probeer het opnieuw.",

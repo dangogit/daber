@@ -113,6 +113,7 @@
       "grant": "Bevilja behörighet",
       "granted": "Beviljad",
       "waiting": "Väntar...",
+      "retry": "Hände inget? Försök igen",
       "allGranted": "Allt klart!",
       "errors": {
         "checkFailed": "Misslyckades med att kontrollera behörigheter. Försök igen.",

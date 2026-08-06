@@ -113,6 +113,7 @@
       "grant": "Cấp quyền",
       "granted": "Đã cấp",
       "waiting": "Đang chờ...",
+      "retry": "Không có gì xảy ra? Thử lại",
       "allGranted": "Hoàn tất!",
       "errors": {
         "checkFailed": "Không thể kiểm tra quyền. Vui lòng thử lại.",
