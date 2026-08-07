@@ -37,7 +37,11 @@ jobs:
       platform: ${{ matrix.platform }}
       target: ${{ matrix.target }}
       build-args: ${{ matrix.args }}
-      sign-binaries: true
+      # A build test proves the code compiles on each platform. Signing needs
+      # Apple and Azure credentials this repo does not carry, and asking for it
+      # here meant every platform failed at the signing step having already
+      # built successfully — which made the check useless.
+      sign-binaries: false
       asset-prefix: "handy-test"
       upload-artifacts: true
       is-debug-build: ${{ contains(matrix.args, '--debug') }}
