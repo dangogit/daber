@@ -5,7 +5,7 @@
 #   ./scripts/install-developer-id.sh ~/Downloads/developerID_application.cer
 #
 # The private key was generated when the signing request was made and lives in
-# the Keychain under `daber-developerid-key`. A certificate on its own cannot
+# the Keychain under `dibur-developerid-key`. A certificate on its own cannot
 # sign anything — codesign needs both halves, which is what this pairs up.
 set -euo pipefail
 
@@ -32,7 +32,7 @@ WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 chmod 700 "$WORK"
 
-keychain daber-developerid-key > "$WORK/key.pem"
+keychain dibur-developerid-key > "$WORK/key.pem"
 openssl x509 -inform DER -in "$CER" -out "$WORK/cert.pem"
 
 echo "Certificate: $(openssl x509 -in "$WORK/cert.pem" -noout -subject)"
@@ -41,7 +41,7 @@ echo "Expires:     $(openssl x509 -in "$WORK/cert.pem" -noout -enddate | cut -d=
 # Refuse early rather than importing a mismatched pair that fails at sign time.
 if [ "$(openssl x509 -in "$WORK/cert.pem" -noout -pubkey)" != "$(openssl rsa -in "$WORK/key.pem" -pubout 2>/dev/null)" ]; then
   echo "This certificate was not issued for the stored private key." >&2
-  echo "It has to come from the request in 'daber-developerid-csr'." >&2
+  echo "It has to come from the request in 'dibur-developerid-csr'." >&2
   exit 1
 fi
 

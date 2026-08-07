@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "Berechtigungen erforderlich",
-      "description": "Daber benötigt einige Berechtigungen, um richtig zu funktionieren.",
+      "description": "Dibur benötigt einige Berechtigungen, um richtig zu funktionieren.",
       "microphone": {
         "title": "Mikrofonzugriff",
         "description": "Erforderlich, um deine Stimme für die Transkription zu hören."
@@ -105,7 +105,7 @@
     "general": {
       "title": "Allgemein",
       "shortcut": {
-        "title": "Daber-Tastenkürzel",
+        "title": "Dibur-Tastenkürzel",
         "description": "Tastenkürzel für die Sprachaufnahme konfigurieren",
         "loading": "Tastenkürzel werden geladen...",
         "none": "Keine Tastenkürzel konfiguriert",
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Beim Start ausführen",
-        "description": "Daber automatisch beim Anmelden starten."
+        "description": "Dibur automatisch beim Anmelden starten."
       },
       "showTrayIcon": {
         "label": "Taskleistensymbol anzeigen",
-        "description": "Das Daber-Symbol in der Taskleiste anzeigen."
+        "description": "Das Dibur-Symbol in der Taskleiste anzeigen."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Nach Updates suchen",
-        "description": "Automatisch nach neuen Versionen von Daber suchen"
+        "description": "Automatisch nach neuen Versionen von Dibur suchen"
       },
       "soundTheme": {
         "label": "Sound-Thema",
@@ -468,7 +468,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Tastatur-Diagnose",
-        "description": "Prüft, ob Tastaturereignisse Daber erreichen. Es wird nur die Anzahl der Ereignisse erfasst — niemals, welche Tasten du drückst.",
+        "description": "Prüft, ob Tastaturereignisse Dibur erreichen. Es wird nur die Anzahl der Ereignisse erfasst — niemals, welche Tasten du drückst.",
         "run": "10-Sekunden-Diagnose starten",
         "running": "Lauscht… drücke dein Tastenkürzel ein paar Mal (z. B. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -482,7 +482,7 @@
         "mouse": "Maus",
         "verdictBlocked": "Secure Input blockiert Tastenereignisse — Tastenkürzel mit einer normalen Taste können erst wieder funktionieren, wenn das behoben ist.",
         "verdictSuspicious": "Es kamen Modifikator-Ereignisse an, aber keine Tastenereignisse — irgendetwas unterdrückt Tasten, obwohl Secure Input als deaktiviert gemeldet wird. Bitte melde das auf GitHub.",
-        "verdictOk": "Tastenereignisse erreichen Daber normal.",
+        "verdictOk": "Tastenereignisse erreichen Dibur normal.",
         "verdictNoEvents": "Keine Ereignisse erfasst — hast du während des Tests Tasten gedrückt?",
         "failed": "Diagnose fehlgeschlagen: {{error}}"
       },
@@ -498,23 +498,23 @@
       "title": "Info",
       "version": {
         "title": "Version",
-        "description": "Aktuelle Version von Daber"
+        "description": "Aktuelle Version von Dibur"
       },
       "appDataDirectory": {
         "title": "App-Datenverzeichnis",
-        "description": "Speicherort der Daber-Daten"
+        "description": "Speicherort der Dibur-Daten"
       },
       "acknowledgments": {
         "title": "Danksagungen",
         "ggml": {
           "title": "ggml",
           "description": "Hochleistungs-Inferenz des Whisper-Spracherkennungsmodells von OpenAI",
-          "details": "Daber verwendet ggml für schnelle, lokale Sprach-zu-Text-Verarbeitung. Dank an Georgi Gerganov und die Mitwirkenden für ihre großartige Arbeit."
+          "details": "Dibur verwendet ggml für schnelle, lokale Sprach-zu-Text-Verarbeitung. Dank an Georgi Gerganov und die Mitwirkenden für ihre großartige Arbeit."
         }
       },
       "whatsNewUpdates": {
         "label": "Neuerungen anzeigen",
-        "description": "Versionshinweise nach Daber-Updates anzeigen"
+        "description": "Versionshinweise nach Dibur-Updates anzeigen"
       }
     },
     "engine": {
@@ -556,7 +556,7 @@
     "noOptionsFound": "Keine Optionen gefunden"
   },
   "accessibility": {
-    "permissionsDescription": "Daber benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
+    "permissionsDescription": "Dibur benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
     "openSettings": "Systemeinstellungen öffnen"
   },
   "errors": {
@@ -579,11 +579,11 @@
   },
   "appLanguage": {
     "title": "Anwendungssprache",
-    "description": "Sprache der Daber-Oberfläche ändern"
+    "description": "Sprache der Dibur-Oberfläche ändern"
   },
   "theme": {
     "title": "Anwendungsdesign",
-    "description": "Wählen Sie, ob Daber dem Systemthema folgt oder hell bzw. dunkel bleibt",
+    "description": "Wählen Sie, ob Dibur dem Systemthema folgt oder hell bzw. dunkel bleibt",
     "options": {
       "system": "System",
       "light": "Hell",
@@ -595,7 +595,7 @@
     "processing": "Verarbeite..."
   },
   "whatsNew": {
-    "title": "Neu in Daber v{{version}}"
+    "title": "Neu in Dibur v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} blockiert möglicherweise 1 Tastenkürzel",

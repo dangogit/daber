@@ -1,6 +1,6 @@
-# Daber 1.0: an app for people who just want to talk
+# Dibur 1.0: an app for people who just want to talk
 
-Handy is a power tool for people who choose models. Daber is for an Israeli who
+Handy is a power tool for people who choose models. Dibur is for an Israeli who
 wants their speech to become Hebrew text. Everything below follows from that one
 difference.
 

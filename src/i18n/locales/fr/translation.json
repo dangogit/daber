@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "Autorisations requises",
-      "description": "Daber a besoin de quelques autorisations pour fonctionner correctement.",
+      "description": "Dibur a besoin de quelques autorisations pour fonctionner correctement.",
       "microphone": {
         "title": "Accès au microphone",
         "description": "Nécessaire pour entendre votre voix pour la transcription."
@@ -105,7 +105,7 @@
     "general": {
       "title": "Général",
       "shortcut": {
-        "title": "Raccourcis Daber",
+        "title": "Raccourcis Dibur",
         "description": "Configurer les raccourcis clavier pour déclencher l'enregistrement de la reconnaissance vocale",
         "loading": "Chargement des raccourcis...",
         "none": "Aucun raccourci configuré",
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Lancer au démarrage",
-        "description": "Démarrer automatiquement Daber lorsque vous vous connectez à votre ordinateur."
+        "description": "Démarrer automatiquement Dibur lorsque vous vous connectez à votre ordinateur."
       },
       "showTrayIcon": {
         "label": "Afficher l'icône de la barre",
-        "description": "Afficher l'icône de Daber dans la barre système."
+        "description": "Afficher l'icône de Dibur dans la barre système."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Vérifier les mises à jour",
-        "description": "Vérifier automatiquement les nouvelles versions de Daber"
+        "description": "Vérifier automatiquement les nouvelles versions de Dibur"
       },
       "soundTheme": {
         "label": "Thème sonore",
@@ -468,7 +468,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Diagnostic du clavier",
-        "description": "Vérifie si les événements clavier atteignent Daber. Seul le nombre d'événements est enregistré, jamais les touches sur lesquelles vous appuyez.",
+        "description": "Vérifie si les événements clavier atteignent Dibur. Seul le nombre d'événements est enregistré, jamais les touches sur lesquelles vous appuyez.",
         "run": "Lancer un diagnostic de 10 s",
         "running": "Écoute en cours… appuyez plusieurs fois sur votre raccourci (par ex. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -482,7 +482,7 @@
         "mouse": "Souris",
         "verdictBlocked": "Secure Input bloque les événements clavier : les raccourcis contenant une touche normale ne peuvent pas fonctionner tant que ce n'est pas résolu.",
         "verdictSuspicious": "Des événements de modificateurs sont arrivés, mais aucun événement de touche : quelque chose supprime les touches alors que Secure Input est signalé comme désactivé. Merci de le signaler sur GitHub.",
-        "verdictOk": "Les événements clavier atteignent Daber normalement.",
+        "verdictOk": "Les événements clavier atteignent Dibur normalement.",
         "verdictNoEvents": "Aucun événement capturé : avez-vous appuyé sur des touches pendant le test ?",
         "failed": "Échec du diagnostic : {{error}}"
       },
@@ -498,23 +498,23 @@
       "title": "À propos",
       "version": {
         "title": "Version",
-        "description": "Version actuelle de Daber"
+        "description": "Version actuelle de Dibur"
       },
       "appDataDirectory": {
         "title": "Emplacement des données de l'application",
-        "description": "Emplacement où Daber stocke ses données"
+        "description": "Emplacement où Dibur stocke ses données"
       },
       "acknowledgments": {
         "title": "Remerciements",
         "ggml": {
           "title": "ggml",
           "description": "Inférence haute performance du modèle de reconnaissance vocale automatique Whisper d'OpenAI",
-          "details": "Daber utilise ggml pour un traitement rapide et local de la parole en texte. Merci au travail incroyable de Georgi Gerganov et des contributeurs."
+          "details": "Dibur utilise ggml pour un traitement rapide et local de la parole en texte. Merci au travail incroyable de Georgi Gerganov et des contributeurs."
         }
       },
       "whatsNewUpdates": {
         "label": "Afficher les nouveautés",
-        "description": "Afficher les notes de version après les mises à jour de Daber"
+        "description": "Afficher les notes de version après les mises à jour de Dibur"
       }
     },
     "engine": {
@@ -556,7 +556,7 @@
     "noOptionsFound": "Aucune option trouvée"
   },
   "accessibility": {
-    "permissionsDescription": "Daber a besoin des autorisations d'accessibilité pour taper le texte transcrit.",
+    "permissionsDescription": "Dibur a besoin des autorisations d'accessibilité pour taper le texte transcrit.",
     "openSettings": "Ouvrir les Préférences Système"
   },
   "errors": {
@@ -579,11 +579,11 @@
   },
   "appLanguage": {
     "title": "Langue de l'application",
-    "description": "Changer la langue de l'interface de Daber"
+    "description": "Changer la langue de l'interface de Dibur"
   },
   "theme": {
     "title": "Thème de l'application",
-    "description": "Choisissez si Daber suit le thème du système ou reste clair ou sombre",
+    "description": "Choisissez si Dibur suit le thème du système ou reste clair ou sombre",
     "options": {
       "system": "Système",
       "light": "Clair",
@@ -595,7 +595,7 @@
     "processing": "Traitement..."
   },
   "whatsNew": {
-    "title": "Nouveautés de Daber v{{version}}"
+    "title": "Nouveautés de Dibur v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} bloque peut-être 1 raccourci",

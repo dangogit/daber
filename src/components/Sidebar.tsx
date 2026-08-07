@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Cog, FlaskConical, History, Info, Sparkles } from "lucide-react";
-import DaberTextLogo from "./icons/DaberTextLogo";
-import DaberWave from "./icons/DaberWave";
+import DiburTextLogo from "./icons/DiburTextLogo";
+import DiburWave from "./icons/DiburWave";
 import { useSettings } from "../hooks/useSettings";
 import {
   GeneralSettings,
@@ -33,7 +33,7 @@ interface SectionConfig {
 export const SECTIONS_CONFIG = {
   general: {
     labelKey: "sidebar.general",
-    icon: DaberWave,
+    icon: DiburWave,
     component: GeneralSettings,
     enabled: () => true,
   },
@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="glass-sidebar flex flex-col w-40 h-full border-e border-mid-gray/20 items-center px-2">
-      <DaberTextLogo width={120} className="m-4" />
+      <DiburTextLogo width={120} className="m-4" />
       <div className="flex flex-col w-full items-center gap-1 pt-2 border-t border-mid-gray/20">
         {availableSections.map((section) => {
           const Icon = section.icon;

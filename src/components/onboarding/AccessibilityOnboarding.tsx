@@ -10,7 +10,7 @@ import {
 import { toast } from "sonner";
 import { commands } from "@/bindings";
 import { useSettingsStore } from "@/stores/settingsStore";
-import DaberTextLogo from "../icons/DaberTextLogo";
+import DiburTextLogo from "../icons/DiburTextLogo";
 import { Keyboard, Mic, Check, Loader2 } from "lucide-react";
 
 interface AccessibilityOnboardingProps {
@@ -339,7 +339,7 @@ const AccessibilityOnboarding: React.FC<AccessibilityOnboardingProps> = ({
   return (
     <div className="h-full w-full flex flex-col p-6 gap-6 items-center justify-center">
       <div className="flex flex-col items-center gap-2">
-        <DaberTextLogo width={200} />
+        <DiburTextLogo width={200} />
       </div>
 
       <div className="max-w-md w-full flex flex-col items-center gap-4">

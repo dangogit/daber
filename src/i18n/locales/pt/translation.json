@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "Permissões Necessárias",
-      "description": "O Daber precisa de algumas permissões para funcionar corretamente.",
+      "description": "O Dibur precisa de algumas permissões para funcionar corretamente.",
       "microphone": {
         "title": "Acesso ao Microfone",
         "description": "Necessário para ouvir sua voz para transcrição."
@@ -105,7 +105,7 @@
     "general": {
       "title": "Geral",
       "shortcut": {
-        "title": "Atalhos do Daber",
+        "title": "Atalhos do Dibur",
         "description": "Configure atalhos de teclado para iniciar a gravação de voz para texto",
         "loading": "Carregando atalhos...",
         "none": "Nenhum atalho configurado",
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Iniciar na Inicialização",
-        "description": "Iniciar automaticamente o Daber quando você fizer login no seu computador."
+        "description": "Iniciar automaticamente o Dibur quando você fizer login no seu computador."
       },
       "showTrayIcon": {
         "label": "Mostrar ícone na bandeja",
-        "description": "Exibir o ícone do Daber na bandeja do sistema."
+        "description": "Exibir o ícone do Dibur na bandeja do sistema."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Verificar Atualizações",
-        "description": "Verificar automaticamente novas versões do Daber"
+        "description": "Verificar automaticamente novas versões do Dibur"
       },
       "soundTheme": {
         "label": "Tema de Som",
@@ -468,7 +468,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Diagnóstico do teclado",
-        "description": "Verifica se os eventos de teclado chegam ao Daber. Apenas a contagem de eventos é registrada — nunca quais teclas você pressiona.",
+        "description": "Verifica se os eventos de teclado chegam ao Dibur. Apenas a contagem de eventos é registrada — nunca quais teclas você pressiona.",
         "run": "Executar diagnóstico de 10 s",
         "running": "Ouvindo… pressione seu atalho algumas vezes (ex.: Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -482,7 +482,7 @@
         "mouse": "Mouse",
         "verdictBlocked": "O Secure Input está bloqueando os eventos de tecla — atalhos que incluem uma tecla normal não funcionam até que isso seja resolvido.",
         "verdictSuspicious": "Chegaram eventos de modificadores, mas nenhum evento de tecla — algo está suprimindo as teclas mesmo com o Secure Input indicando desativado. Por favor, relate isso no GitHub.",
-        "verdictOk": "Os eventos de tecla estão chegando normalmente ao Daber.",
+        "verdictOk": "Os eventos de tecla estão chegando normalmente ao Dibur.",
         "verdictNoEvents": "Nenhum evento capturado — você pressionou alguma tecla durante o teste?",
         "failed": "Falha no diagnóstico: {{error}}"
       },
@@ -498,23 +498,23 @@
       "title": "Sobre",
       "version": {
         "title": "Versão",
-        "description": "Versão atual do Daber"
+        "description": "Versão atual do Dibur"
       },
       "appDataDirectory": {
         "title": "Diretório de Dados do App",
-        "description": "Local onde o Daber armazena seus dados"
+        "description": "Local onde o Dibur armazena seus dados"
       },
       "acknowledgments": {
         "title": "Agradecimentos",
         "ggml": {
           "title": "ggml",
           "description": "Inferência de alto desempenho do modelo de reconhecimento automático de fala Whisper da OpenAI",
-          "details": "O Daber usa ggml para processamento rápido e local de fala para texto. Agradecemos ao incrível trabalho de Georgi Gerganov e colaboradores."
+          "details": "O Dibur usa ggml para processamento rápido e local de fala para texto. Agradecemos ao incrível trabalho de Georgi Gerganov e colaboradores."
         }
       },
       "whatsNewUpdates": {
         "label": "Mostrar novidades",
-        "description": "Mostrar notas de versão após atualizações do Daber"
+        "description": "Mostrar notas de versão após atualizações do Dibur"
       }
     },
     "engine": {
@@ -556,7 +556,7 @@
     "noOptionsFound": "Nenhuma opção encontrada"
   },
   "accessibility": {
-    "permissionsDescription": "O Daber precisa de permissões de acessibilidade para digitar o texto transcrito.",
+    "permissionsDescription": "O Dibur precisa de permissões de acessibilidade para digitar o texto transcrito.",
     "openSettings": "Abrir Configurações do Sistema"
   },
   "errors": {
@@ -579,11 +579,11 @@
   },
   "appLanguage": {
     "title": "Idioma da Aplicação",
-    "description": "Alterar o idioma da interface do Daber"
+    "description": "Alterar o idioma da interface do Dibur"
   },
   "theme": {
     "title": "Tema do aplicativo",
-    "description": "Escolha se o Daber segue o tema do sistema ou permanece claro ou escuro",
+    "description": "Escolha se o Dibur segue o tema do sistema ou permanece claro ou escuro",
     "options": {
       "system": "Sistema",
       "light": "Claro",
@@ -595,7 +595,7 @@
     "processing": "Processando..."
   },
   "whatsNew": {
-    "title": "Novidades no Daber v{{version}}"
+    "title": "Novidades no Dibur v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} pode estar bloqueando 1 atalho",

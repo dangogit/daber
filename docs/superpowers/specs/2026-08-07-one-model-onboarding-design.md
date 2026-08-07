@@ -7,7 +7,7 @@ showed a model list._
 
 ## The difference that drives everything
 
-Handy is a tool for people who choose models. Daber is for an Israeli who wants
+Handy is a tool for people who choose models. Dibur is for an Israeli who wants
 their speech to become Hebrew text. There is one engine, so every place the app
 asked about that had to go.
 

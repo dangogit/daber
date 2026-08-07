@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "Permissions Required",
-      "description": "Daber needs a couple of permissions to work properly.",
+      "description": "Dibur needs a couple of permissions to work properly.",
       "microphone": {
         "title": "Microphone Access",
         "description": "Required to hear your voice for transcription."
@@ -105,7 +105,7 @@
     "general": {
       "title": "General",
       "shortcut": {
-        "title": "Daber Shortcuts",
+        "title": "Dibur Shortcuts",
         "description": "Configure keyboard shortcuts to trigger speech-to-text recording",
         "loading": "Loading shortcuts...",
         "none": "No shortcuts configured",
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Launch on Startup",
-        "description": "Automatically start Daber when you log in to your computer."
+        "description": "Automatically start Dibur when you log in to your computer."
       },
       "showTrayIcon": {
         "label": "Show Tray Icon",
-        "description": "Display the Daber icon in the system tray."
+        "description": "Display the Dibur icon in the system tray."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Check for Updates",
-        "description": "Automatically check for new versions of Daber"
+        "description": "Automatically check for new versions of Dibur"
       },
       "whatsNewPreview": {
         "title": "Preview What's New",
@@ -475,7 +475,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Keyboard Diagnostic",
-        "description": "Checks whether keyboard events reach Daber. Only event counts are recorded — never which keys you press.",
+        "description": "Checks whether keyboard events reach Dibur. Only event counts are recorded — never which keys you press.",
         "run": "Run 10s diagnostic",
         "running": "Listening… press your shortcut a few times (e.g. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -489,7 +489,7 @@
         "mouse": "Mouse",
         "verdictBlocked": "Secure Input is blocking key events — keyed shortcuts cannot work until it is resolved.",
         "verdictSuspicious": "Modifier events arrived but no key events — something is suppressing keys even though Secure Input reports disabled. Please report this on GitHub.",
-        "verdictOk": "Key events are reaching Daber normally.",
+        "verdictOk": "Key events are reaching Dibur normally.",
         "verdictNoEvents": "No events captured — did you press any keys during the test?",
         "failed": "Diagnostic failed: {{error}}"
       }
@@ -498,22 +498,22 @@
       "title": "About",
       "version": {
         "title": "Version",
-        "description": "Current version of Daber"
+        "description": "Current version of Dibur"
       },
       "whatsNewUpdates": {
         "label": "Show What's New",
-        "description": "Show release notes after Daber updates"
+        "description": "Show release notes after Dibur updates"
       },
       "appDataDirectory": {
         "title": "App Data Directory",
-        "description": "Location where Daber stores its data"
+        "description": "Location where Dibur stores its data"
       },
       "acknowledgments": {
         "title": "Acknowledgments",
         "ggml": {
           "title": "ggml",
           "description": "High-performance tensor library for on-device machine learning inference",
-          "details": "Daber's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
+          "details": "Dibur's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
         }
       }
     },
@@ -547,7 +547,7 @@
     }
   },
   "whatsNew": {
-    "title": "New in Daber v{{version}}"
+    "title": "New in Dibur v{{version}}"
   },
   "common": {
     "loading": "Loading...",
@@ -559,7 +559,7 @@
     "noOptionsFound": "No options found"
   },
   "accessibility": {
-    "permissionsDescription": "Daber needs accessibility permissions to type transcribed text.",
+    "permissionsDescription": "Dibur needs accessibility permissions to type transcribed text.",
     "openSettings": "Open System Settings"
   },
   "errors": {
@@ -582,11 +582,11 @@
   },
   "appLanguage": {
     "title": "Application Language",
-    "description": "Change the language of the Daber interface"
+    "description": "Change the language of the Dibur interface"
   },
   "theme": {
     "title": "Application Theme",
-    "description": "Choose whether Daber follows your system theme or stays light or dark",
+    "description": "Choose whether Dibur follows your system theme or stays light or dark",
     "options": {
       "system": "System",
       "light": "Light",
