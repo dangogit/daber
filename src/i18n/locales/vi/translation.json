@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "Chung",
-    "models": "Mô hình",
     "advanced": "Nâng cao",
     "postProcessing": "Xử lý sau",
     "history": "Lịch sử",
@@ -19,83 +18,6 @@
     "about": "Giới thiệu"
   },
   "onboarding": {
-    "subtitle": "Để bắt đầu, hãy chọn một mô hình chuyển đổi giọng nói",
-    "existingModelsTitle": "Mô hình tương thích",
-    "downloadModelsTitle": "Có sẵn để tải xuống",
-    "showAllModels": "Hiển thị tất cả {{total}} mô hình",
-    "showFewerModels": "Hiển thị ít mô hình hơn",
-    "recommended": "Đề xuất",
-    "customModelDescription": "Không được hỗ trợ chính thức",
-    "modelCard": {
-      "accuracy": "độ chính xác",
-      "speed": "tốc độ"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "Nhanh và khá chính xác."
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "Độ chính xác tốt, tốc độ trung bình"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "Cân bằng giữa độ chính xác và tốc độ."
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "Độ chính xác tốt, nhưng chậm."
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "Chỉ tiếng Anh. Mô hình tốt nhất cho người nói tiếng Anh."
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "Nhanh và chính xác"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "Rất nhanh, chỉ tiếng Anh. Xử lý tốt các giọng nói."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "Cực nhanh, chỉ tiếng Anh"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "Nhanh, chỉ tiếng Anh. Cân bằng tốt giữa tốc độ và độ chính xác."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "Chỉ tiếng Anh. Chất lượng cao."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "Tối ưu hóa cho tiếng Quan Thoại Đài Loan. Hỗ trợ chuyển đổi ngôn ngữ."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "Rất nhanh. Tiếng Trung, tiếng Anh, tiếng Nhật, tiếng Hàn, tiếng Quảng Đông."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "Nhận dạng giọng nói tiếng Nga. Nhanh và chính xác."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "Rất nhanh. Tiếng Anh, tiếng Đức, tiếng Tây Ban Nha, tiếng Pháp. Hỗ trợ dịch thuật."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "Đa ngôn ngữ chính xác. 25 ngôn ngữ châu Âu. Hỗ trợ dịch thuật."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "Mô hình lớn, chậm hơn, nhưng rất chính xác và đa ngôn ngữ."
-      }
-    },
     "errors": {
       "selectModel": "Không thể chọn mô hình"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "Không thể kiểm tra quyền. Vui lòng thử lại.",
         "requestFailed": "Không thể yêu cầu quyền. Vui lòng thử lại."
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "Tùy chỉnh",
@@ -156,27 +102,6 @@
     "legacy": "Cũ"
   },
   "settings": {
-    "modelSettings": {
-      "title": "Cài đặt {{model}}"
-    },
-    "models": {
-      "title": "Mô hình chuyển đổi",
-      "description": "Chọn mô hình chuyển đổi hoặc tải thêm mô hình. Các mô hình khác nhau có mức độ chính xác và tốc độ khác nhau.",
-      "deleteConfirm": "Bạn có chắc chắn muốn xóa {{modelName}}? Bạn sẽ cần tải lại để sử dụng.",
-      "deleteActiveConfirm": "{{modelName}} là mô hình đang hoạt động của bạn. Xóa nó sẽ dừng phiên âm cho đến khi bạn chọn một mô hình mới. Bạn có chắc không?",
-      "deleteTitle": "Xóa mô hình",
-      "filters": {
-        "allLanguages": "Tất cả ngôn ngữ"
-      },
-      "noModelsMatch": "Không có mô hình nào khớp với bộ lọc này.",
-      "yourModels": "Mô hình đã tải",
-      "availableModels": "Có sẵn để tải xuống",
-      "searchPlaceholder": "Tìm mô hình theo tên…",
-      "rescan": {
-        "label": "Quét lại",
-        "tooltip": "Quét lại các mô hình được thêm vào thư mục mô hình hoặc bộ nhớ đệm Hugging Face bên ngoài Daber"
-      }
-    },
     "general": {
       "title": "Chung",
       "shortcut": {
@@ -253,7 +178,8 @@
         "output": "Đầu ra",
         "transcription": "Chuyển đổi",
         "history": "Lịch sử",
-        "experimental": "Thử nghiệm"
+        "experimental": "Thử nghiệm",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "Tính năng thử nghiệm",
@@ -590,6 +516,14 @@
         "label": "Hiển thị điểm mới",
         "description": "Hiển thị ghi chú phát hành sau khi Daber cập nhật"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "Bản cài đặt di động không thể cập nhật tự động. Hãy tải trình cài đặt phù hợp với hệ thống của bạn bên dưới, chạy nó và cài vào cùng thư mục — thư mục Data/ (cài đặt, mô hình, bản ghi) của bạn được giữ nguyên.",
     "portableUpdateButton": "Tải trình cài đặt",
     "portableUpdateBrowseMessage": "Bản cài đặt di động không thể cập nhật tự động. Hãy tải phiên bản mới nhất phù hợp với hệ thống của bạn từ GitHub Releases và cài vào cùng thư mục — thư mục Data/ (cài đặt, mô hình, bản ghi) của bạn được giữ nguyên.",
-    "portableUpdateBrowseButton": "Mở GitHub Releases"
+    "portableUpdateBrowseButton": "Mở GitHub Releases",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "Đang tải...",

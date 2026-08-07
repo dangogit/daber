@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "כללי",
-    "models": "מודלים",
     "advanced": "מתקדם",
     "postProcessing": "עיבוד משלים",
     "history": "היסטוריה",
@@ -19,83 +18,6 @@
     "about": "אודות"
   },
   "onboarding": {
-    "subtitle": "כדי להתחיל, בחר מודל תמלול",
-    "existingModelsTitle": "מודלים תואמים",
-    "downloadModelsTitle": "זמינים להורדה",
-    "showAllModels": "הצג את כל {{total}} המודלים",
-    "showFewerModels": "הצג פחות מודלים",
-    "recommended": "מומלץ",
-    "customModelDescription": "לא נתמך באופן רשמי",
-    "modelCard": {
-      "accuracy": "דיוק",
-      "speed": "מהירות"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "מהיר ודי מדויק."
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "דיוק טוב, מהירות בינונית"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "איזון טוב בין דיוק למהירות."
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "דיוק טוב, אבל איטי."
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "אנגלית בלבד. המודל הטוב ביותר לדוברי אנגלית."
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "מהיר ומדויק"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "מהיר מאוד, אנגלית בלבד. מתמודד היטב עם מבטאים."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "מהיר במיוחד, אנגלית בלבד"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "מהיר, אנגלית בלבד. איזון טוב בין מהירות לדיוק."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "אנגלית בלבד. איכות גבוהה."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "מותאם למנדרינית טאיוואנית. תמיכה במעבר בין שפות."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "מהיר מאוד. סינית, אנגלית, יפנית, קוריאנית וקנטונזית."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "זיהוי דיבור ברוסית. מהיר ומדויק."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "מהיר מאוד. אנגלית, גרמנית, ספרדית וצרפתית. תומך בתרגום."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "רב-לשוני ומדויק. 25 שפות אירופיות. תומך בתרגום."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "מודל גדול, איטי יותר, אך מדויק מאוד ורב-לשוני."
-      }
-    },
     "errors": {
       "selectModel": "בחירת המודל נכשלה"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "בדיקת ההרשאות נכשלה. נסה שוב.",
         "requestFailed": "בקשת ההרשאה נכשלה. נסה שוב."
       }
-    }
+    },
+    "continue": "ממשיכים",
+    "stepCount": "שלב {{current}} מתוך {{total}}",
+    "hotkey": {
+      "title": "בחר את הקיצור שלך",
+      "description": "לחיצה עליו מכל מקום מתחילה הכתבה. אפשר לשנות מתי שרוצים."
+    },
+    "try": {
+      "title": "בוא ננסה",
+      "press": "לחץ על",
+      "andSpeak": "ותגיד משהו.",
+      "placeholder": "מה שתגיד יופיע כאן",
+      "worked": "זהו, זה עובד",
+      "workedDescription": "בדיוק ככה זה יעבוד בכל אפליקציה: מייל, וואטסאפ, כל מקום שאפשר להקליד בו.",
+      "stillPreparing": "מכינים את מנוע העברית. רגע.",
+      "downloading": "מוריד את מנוע העברית",
+      "verifying": "בודק את ההורדה",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "ההורדה לא הסתיימה.",
+      "retryDownload": "נסה שוב",
+      "finish": "סיימנו",
+      "skip": "אחר כך",
+      "preparing": "מכין את המנוע"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "מותאם אישית",
@@ -156,9 +102,6 @@
     "legacy": "מדור קודם"
   },
   "settings": {
-    "modelSettings": {
-      "title": "הגדרות עבור {{model}}"
-    },
     "general": {
       "title": "כללי",
       "shortcut": {
@@ -200,24 +143,6 @@
         "description": "החזק כדי להקליט, שחרר כדי לעצור"
       }
     },
-    "models": {
-      "title": "מודלי תמלול",
-      "description": "בחר מודל תמלול או הורד מודלים נוספים. מודלים שונים מציעים רמות שונות של דיוק ומהירות.",
-      "yourModels": "מודלים שהורדו",
-      "availableModels": "זמינים להורדה",
-      "deleteConfirm": "האם למחוק את {{modelName}}? יהיה צורך להוריד אותו שוב כדי להשתמש בו.",
-      "deleteActiveConfirm": "{{modelName}} הוא המודל הפעיל שלך כרגע. מחיקה שלו תעצור את התמלול עד שתבחר מודל חדש. להמשיך?",
-      "deleteTitle": "מחיקת מודל",
-      "filters": {
-        "allLanguages": "כל השפות"
-      },
-      "noModelsMatch": "אין מודלים שמתאימים לסינון הזה.",
-      "searchPlaceholder": "חיפוש מודלים לפי שם…",
-      "rescan": {
-        "label": "סריקה מחדש",
-        "tooltip": "סריקה מחדש לאיתור מודלים שנוספו לתיקיית המודלים או למטמון של Hugging Face מחוץ ל-דבר"
-      }
-    },
     "sound": {
       "title": "שמע",
       "microphone": {
@@ -253,7 +178,8 @@
         "output": "פלט",
         "transcription": "תמלול",
         "history": "היסטוריה",
-        "experimental": "ניסיוני"
+        "experimental": "ניסיוני",
+        "sound": "צליל"
       },
       "experimentalToggle": {
         "label": "תכונות ניסיוניות",
@@ -590,6 +516,14 @@
         "label": "הצג מה חדש",
         "description": "הצג הערות גרסה לאחר עדכוני דבר"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "מנוע התמלול",
+        "description": "הורדה מחדש של מנוע העברית. שימושי אם התמלול הפסיק לעבוד אחרי הורדה שנקטעה.",
+        "action": "הורד מחדש",
+        "started": "מוריד את המנוע מחדש"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "התקנות ניידות אינן מתעדכנות אוטומטית. הורד למטה את המתקין המתאים למערכת שלך, הפעל אותו והתקן לאותה תיקייה — תיקיית Data/ (הגדרות, מודלים, הקלטות) נשמרת במקומה.",
     "portableUpdateButton": "הורדת המתקין",
     "portableUpdateBrowseMessage": "התקנות ניידות אינן מתעדכנות אוטומטית. הורד את הגרסה האחרונה המתאימה למערכת שלך מ-GitHub Releases והתקן אותה לאותה תיקייה — תיקיית Data/ (הגדרות, מודלים, הקלטות) נשמרת במקומה.",
-    "portableUpdateBrowseButton": "פתח את GitHub Releases"
+    "portableUpdateBrowseButton": "פתח את GitHub Releases",
+    "engine": {
+      "ready": "מנוע עברית מוכן",
+      "missing": "מנוע עברית חסר",
+      "downloading": "מוריד מנוע {{percent}}%"
+    }
   },
   "common": {
     "loading": "טוען...",

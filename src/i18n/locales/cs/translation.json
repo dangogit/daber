@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "Obecné",
-    "models": "Modely",
     "advanced": "Pokročilé",
     "postProcessing": "Následné zpracování",
     "history": "Historie",
@@ -19,83 +18,6 @@
     "about": "O aplikaci"
   },
   "onboarding": {
-    "subtitle": "Pro začátek vyberte model pro přepis",
-    "existingModelsTitle": "Kompatibilní modely",
-    "downloadModelsTitle": "Dostupné ke stažení",
-    "showAllModels": "Zobrazit všech {{total}} modelů",
-    "showFewerModels": "Zobrazit méně modelů",
-    "recommended": "Doporučeno",
-    "customModelDescription": "Oficiálně nepodporováno",
-    "modelCard": {
-      "accuracy": "přesnost",
-      "speed": "rychlost"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "Rychlý a poměrně přesný."
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "Dobrá přesnost, střední rychlost"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "Vyvážená přesnost a rychlost."
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "Dobrá přesnost, ale pomalý."
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "Pouze angličtina. Nejlepší model pro anglicky mluvící."
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "Rychlý a přesný"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "Velmi rychlý, pouze angličtina. Dobře zvládá přízvuky."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "Ultrarychlý, pouze angličtina"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "Rychlý, pouze angličtina. Dobrý poměr rychlosti a přesnosti."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "Pouze angličtina. Vysoká kvalita."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "Optimalizováno pro tchajwanskou mandarínštinu. Podpora přepínání jazyků."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "Velmi rychlý. Čínština, angličtina, japonština, korejština, kantonština."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "Rozpoznávání ruské řeči. Rychlé a přesné."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "Velmi rychlý. Angličtina, němčina, španělština, francouzština. Podporuje překlad."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "Přesný vícejazyčný. 25 evropských jazyků. Podporuje překlad."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "Velký, pomalejší, ale velmi přesný vícejazyčný model."
-      }
-    },
     "errors": {
       "selectModel": "Nepodařilo se vybrat model"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "Nepodařilo se zkontrolovat oprávnění. Zkuste to prosím znovu.",
         "requestFailed": "Nepodařilo se požádat o oprávnění. Zkuste to prosím znovu."
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "Vlastní",
@@ -156,27 +102,6 @@
     "legacy": "Zastaralé"
   },
   "settings": {
-    "modelSettings": {
-      "title": "Nastavení {{model}}"
-    },
-    "models": {
-      "title": "Modely přepisu",
-      "description": "Vyberte model přepisu nebo stáhněte další modely. Různé modely nabízejí různé úrovně přesnosti a rychlosti.",
-      "deleteConfirm": "Opravdu chcete smazat {{modelName}}? Pro opětovné použití jej budete muset znovu stáhnout.",
-      "deleteActiveConfirm": "{{modelName}} je váš aktivní model. Jeho smazáním se zastaví přepisy, dokud nevyberete nový model. Opravdu chcete pokračovat?",
-      "deleteTitle": "Smazat model",
-      "filters": {
-        "allLanguages": "Všechny jazyky"
-      },
-      "noModelsMatch": "Tomuto filtru neodpovídají žádné modely.",
-      "yourModels": "Stažené modely",
-      "availableModels": "Dostupné ke stažení",
-      "searchPlaceholder": "Hledat modely podle názvu…",
-      "rescan": {
-        "label": "Znovu prohledat",
-        "tooltip": "Znovu prohledat modely přidané do složky modelů nebo mezipaměti Hugging Face mimo Daber"
-      }
-    },
     "general": {
       "title": "Obecné",
       "shortcut": {
@@ -253,7 +178,8 @@
         "output": "Výstup",
         "transcription": "Přepis",
         "history": "Historie",
-        "experimental": "Experimentální"
+        "experimental": "Experimentální",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "Experimentální funkce",
@@ -590,6 +516,14 @@
         "label": "Zobrazovat novinky",
         "description": "Zobrazovat poznámky k vydání po aktualizacích Daber"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "Přenosné instalace nelze aktualizovat automaticky. Níže stáhněte instalátor pro svůj systém, spusťte jej a nainstalujte do stejné složky — vaše složka Data/ (nastavení, modely, nahrávky) zůstane na místě.",
     "portableUpdateButton": "Stáhnout instalátor",
     "portableUpdateBrowseMessage": "Přenosné instalace nelze aktualizovat automaticky. Stáhněte nejnovější verzi pro svůj systém z GitHub Releases a nainstalujte ji do stejné složky — vaše složka Data/ (nastavení, modely, nahrávky) zůstane na místě.",
-    "portableUpdateBrowseButton": "Otevřít GitHub Releases"
+    "portableUpdateBrowseButton": "Otevřít GitHub Releases",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "Načítání...",

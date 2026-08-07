@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "General",
-    "models": "Modelos",
     "advanced": "Avanzado",
     "postProcessing": "Post proceso",
     "history": "Historial",
@@ -19,83 +18,6 @@
     "about": "Acerca de"
   },
   "onboarding": {
-    "subtitle": "Para comenzar, elige un modelo de transcripción",
-    "existingModelsTitle": "Modelos compatibles",
-    "downloadModelsTitle": "Disponibles para descargar",
-    "showAllModels": "Mostrar los {{total}} modelos",
-    "showFewerModels": "Mostrar menos modelos",
-    "recommended": "Recomendado",
-    "customModelDescription": "Sin soporte oficial",
-    "modelCard": {
-      "accuracy": "precisión",
-      "speed": "velocidad"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "Rápido y bastante preciso."
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "Buena precisión, velocidad media"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "Equilibrio entre precisión y velocidad."
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "Buena precisión, pero lento."
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "Solo inglés. El mejor modelo para hablantes de inglés."
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "Rápido y preciso"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "Muy rápido, solo inglés. Maneja bien los acentos."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "Ultrarrápido, solo inglés"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "Rápido, solo inglés. Buen equilibrio entre velocidad y precisión."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "Solo inglés. Alta calidad."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "Optimizado para mandarín taiwanés. Soporte para cambio de código."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "Muy rápido. Chino, inglés, japonés, coreano, cantonés."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "Reconocimiento de voz en ruso. Rápido y preciso."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "Muy rápido. Inglés, alemán, español, francés. Soporta traducción."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "Multilingüe preciso. 25 idiomas europeos. Soporta traducción."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "Un modelo grande, más lento, pero muy preciso y multilingüe."
-      }
-    },
     "errors": {
       "selectModel": "Error al seleccionar el modelo"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "Error al verificar permisos. Por favor, inténtalo de nuevo.",
         "requestFailed": "Error al solicitar permiso. Por favor, inténtalo de nuevo."
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "Personalizado",
@@ -156,27 +102,6 @@
     "legacy": "Heredado"
   },
   "settings": {
-    "modelSettings": {
-      "title": "Configuración de {{model}}"
-    },
-    "models": {
-      "title": "Modelos de transcripción",
-      "description": "Selecciona un modelo de transcripción o descarga modelos adicionales. Diferentes modelos ofrecen distintos niveles de precisión y velocidad.",
-      "deleteConfirm": "¿Estás seguro de que deseas eliminar {{modelName}}? Necesitarás descargarlo de nuevo para usarlo.",
-      "deleteActiveConfirm": "{{modelName}} es tu modelo activo. Eliminarlo detendrá las transcripciones hasta que selecciones un nuevo modelo. ¿Estás seguro?",
-      "deleteTitle": "Eliminar modelo",
-      "filters": {
-        "allLanguages": "Todos los idiomas"
-      },
-      "noModelsMatch": "Ningún modelo coincide con este filtro.",
-      "yourModels": "Modelos descargados",
-      "availableModels": "Disponibles para descargar",
-      "searchPlaceholder": "Buscar modelos por nombre…",
-      "rescan": {
-        "label": "Volver a escanear",
-        "tooltip": "Vuelve a escanear en busca de modelos añadidos a la carpeta de modelos o a la caché de Hugging Face fuera de Daber"
-      }
-    },
     "general": {
       "title": "General",
       "shortcut": {
@@ -253,7 +178,8 @@
         "output": "Salida",
         "transcription": "Transcripción",
         "history": "Historial",
-        "experimental": "Experimental"
+        "experimental": "Experimental",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "Funciones experimentales",
@@ -590,6 +516,14 @@
         "label": "Mostrar novedades",
         "description": "Mostrar notas de la versión después de las actualizaciones de Daber"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "Las instalaciones portátiles no se pueden actualizar automáticamente. Descarga abajo el instalador para tu sistema, ejecútalo e instálalo en la misma carpeta: tu carpeta Data/ (ajustes, modelos, grabaciones) se conserva.",
     "portableUpdateButton": "Descargar instalador",
     "portableUpdateBrowseMessage": "Las instalaciones portátiles no se pueden actualizar automáticamente. Descarga la versión más reciente para tu sistema desde GitHub Releases e instálala en la misma carpeta: tu carpeta Data/ (ajustes, modelos, grabaciones) se conserva.",
-    "portableUpdateBrowseButton": "Abrir GitHub Releases"
+    "portableUpdateBrowseButton": "Abrir GitHub Releases",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "Cargando...",

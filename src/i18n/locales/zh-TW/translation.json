@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "一般",
-    "models": "模型",
     "advanced": "進階",
     "postProcessing": "後處理",
     "history": "歷史紀錄",
@@ -19,83 +18,6 @@
     "about": "關於"
   },
   "onboarding": {
-    "subtitle": "首先，請選擇一種模型",
-    "existingModelsTitle": "相容的模型",
-    "downloadModelsTitle": "可供下載",
-    "showAllModels": "顯示全部 {{total}} 個模型",
-    "showFewerModels": "顯示較少模型",
-    "recommended": "推薦",
-    "customModelDescription": "官方不支援",
-    "modelCard": {
-      "accuracy": "準確度",
-      "speed": "速度"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "快速且相當準確"
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "準確度高，速度適中"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "準確度和速度均衡"
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "準確度高，但速度較慢"
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "僅支援英語，英語使用者的最佳模型"
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "快速且準確"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "速度極快，僅支援英語，擅長處理各種口音"
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "超快速，僅支援英語"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "快速，僅支援英語。速度與準確度的良好平衡。"
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "僅支援英語。高品質。"
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "針對臺灣華語最佳化。支援語碼轉換。"
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "速度極快。支援中文、英語、日語、韓語、粵語。"
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "俄語語音辨識。快速且準確。"
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "速度極快。支援英語、德語、西班牙語、法語。支援翻譯。"
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "準確的多語言模型。25種歐洲語言。支援翻譯。"
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "大型模型，速度較慢，但多語言辨識非常準確。"
-      }
-    },
     "errors": {
       "selectModel": "選擇模型失敗"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "檢查權限失敗，請重試",
         "requestFailed": "請求權限失敗，請重試"
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "自訂",
@@ -156,9 +102,6 @@
     "legacy": "舊版"
   },
   "settings": {
-    "modelSettings": {
-      "title": "{{model}} 設定"
-    },
     "general": {
       "title": "一般",
       "shortcut": {
@@ -200,24 +143,6 @@
         "description": "按住錄製，放開停止"
       }
     },
-    "models": {
-      "title": "轉錄模型",
-      "description": "選擇轉錄模型或下載其他模型。不同模型提供不同的準確度和速度",
-      "yourModels": "已下載的模型",
-      "availableModels": "可供下載",
-      "deleteConfirm": "確定要刪除 {{modelName}} 嗎？刪除後須重新下載才能使用",
-      "deleteActiveConfirm": "{{modelName}} 是您目前使用的模型。刪除後將停止轉錄，直到您選擇新的模型。確定要刪除嗎？",
-      "deleteTitle": "刪除模型",
-      "filters": {
-        "allLanguages": "所有語言"
-      },
-      "noModelsMatch": "沒有符合此篩選條件的模型",
-      "searchPlaceholder": "依名稱搜尋模型…",
-      "rescan": {
-        "label": "重新掃描",
-        "tooltip": "重新掃描在 Daber 之外新增到模型資料夾或 Hugging Face 快取中的模型"
-      }
-    },
     "sound": {
       "title": "聲音",
       "microphone": {
@@ -253,7 +178,8 @@
         "output": "輸出",
         "transcription": "轉錄",
         "history": "歷史",
-        "experimental": "實驗性"
+        "experimental": "實驗性",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "實驗性功能",
@@ -590,6 +516,14 @@
         "label": "顯示新功能",
         "description": "Daber 更新後顯示版本資訊"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "可攜式安裝無法自動更新。請透過下方按鈕下載適用於你的系統的安裝程式，執行後安裝到相同資料夾，你的 Data/ 資料夾（設定、模型、錄音）會保留在原處。",
     "portableUpdateButton": "下載安裝程式",
     "portableUpdateBrowseMessage": "可攜式安裝無法自動更新。請從 GitHub Releases 下載適用於你的系統的最新版本，並安裝到相同資料夾，你的 Data/ 資料夾（設定、模型、錄音）會保留在原處。",
-    "portableUpdateBrowseButton": "開啟 GitHub Releases"
+    "portableUpdateBrowseButton": "開啟 GitHub Releases",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "載入中...",

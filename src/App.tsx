@@ -16,11 +16,14 @@ import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
+import { useHebrewModel } from "./hooks/useHebrewModel";
 import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
-type OnboardingStep = "accessibility" | "model" | "done";
+/// "onboarding" is the full first run; "permissions" is the shortened path for
+/// someone who has already been through it and only lost a permission since.
+type OnboardingStep = "onboarding" | "permissions" | "done";
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -33,12 +36,13 @@ function App() {
   const [onboardingStep, setOnboardingStep] = useState<OnboardingStep | null>(
     null,
   );
-  // Track if this is a returning user who just needs to grant permissions
-  // (vs a new user who needs full onboarding including model selection)
-  const [isReturningUser, setIsReturningUser] = useState(false);
   const [currentSection, setCurrentSection] =
     useState<SidebarSection>("general");
   const { settings, updateSetting } = useSettings();
+  // Deliberately at the top of the tree, not inside onboarding: the download
+  // has to survive someone skipping the last step, or it finishes with nobody
+  // left to select it and the app sits on a model it never loads.
+  const hebrewModel = useHebrewModel();
   const direction = getLanguageDirection(i18n.language);
   const refreshAudioDevices = useSettingsStore(
     (state) => state.refreshAudioDevices,
@@ -190,8 +194,6 @@ function App() {
 
       if (hasCompletedOnboarding) {
         // Returning user - check if they need to grant permissions first
-        setIsReturningUser(true);
-
         if (currentPlatform === "macos") {
           try {
             const [hasAccessibility, hasMicrophone] = await Promise.all([
@@ -200,7 +202,7 @@ function App() {
             ]);
             if (!hasAccessibility || !hasMicrophone) {
               await revealMainWindowForPermissions();
-              setOnboardingStep("accessibility");
+              setOnboardingStep("permissions");
               return;
             }
           } catch (e) {
@@ -218,7 +220,7 @@ function App() {
               microphoneStatus.overall_access === "denied"
             ) {
               await revealMainWindowForPermissions();
-              setOnboardingStep("accessibility");
+              setOnboardingStep("permissions");
               return;
             }
           } catch (e) {
@@ -229,24 +231,19 @@ function App() {
 
         setOnboardingStep("done");
       } else {
-        // New user - start full onboarding
-        setIsReturningUser(false);
-        setOnboardingStep("accessibility");
+        setOnboardingStep("onboarding");
       }
     } catch (error) {
       console.error("Failed to check onboarding status:", error);
-      setOnboardingStep("accessibility");
+      setOnboardingStep("onboarding");
     }
   };
 
-  const handleAccessibilityComplete = () => {
-    // Returning users already have models, skip to main app
-    // New users need to select a model
-    setOnboardingStep(isReturningUser ? "done" : "model");
-  };
-
-  const handleModelSelected = () => {
-    // Transition to main app - user has started a download
+  const handleOnboardingComplete = () => {
+    // Selecting a model normally sets this, and the background download does
+    // select it — but someone can reach the end of onboarding before the
+    // download has finished, and they should not be walked through it twice.
+    updateSetting("onboarding_completed", true);
     setOnboardingStep("done");
   };
 
@@ -281,12 +278,17 @@ function App() {
   // stable wrapper around this node, so crossing between onboarding steps and
   // the main app never remounts it (which would drop any in-flight toast).
   let content: ReactNode;
-  if (onboardingStep === "accessibility") {
+  if (onboardingStep === "onboarding") {
     content = (
-      <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />
+      <Onboarding onComplete={handleOnboardingComplete} model={hebrewModel} />
     );
-  } else if (onboardingStep === "model") {
-    content = <Onboarding onModelSelected={handleModelSelected} />;
+  } else if (onboardingStep === "permissions") {
+    content = (
+      <div className="titlebar-inset h-screen w-screen">
+        <div className="titlebar-drag absolute inset-x-0 top-0 h-7" />
+        <AccessibilityOnboarding onComplete={() => setOnboardingStep("done")} />
+      </div>
+    );
   } else {
     content = (
       <div

@@ -12,7 +12,18 @@ what you get on first launch, with nothing to configure.
 The model is
 [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
 — Whisper Large v3 Turbo fine-tuned on Hebrew, and considerably better at it
-than the generic multilingual builds. It downloads itself on first run (1.6 GB).
+than the generic multilingual builds. Daber ships it quantized to q8_0: 874 MB
+rather than 1,625 MB, with output identical to full precision across eight
+Hebrew clips including real microphone recordings. Smaller quantizations exist
+and were tested; 4-bit lost word boundaries, and 5-bit costs several times more
+on a CPU without native fp16, which is the machine least able to afford it.
+
+It downloads in the background from the moment the app opens, so granting
+permissions and choosing a shortcut covers the wait. The download comes from a
+[GitHub release](https://github.com/dangogit/daber/releases/tag/models-v1)
+rather than the Hub and is pinned by SHA-256, because huggingface.co is blocked
+on a fair number of Israeli school and workplace networks and a blocked download
+looks exactly like a broken app.
 
 Design notes:
 [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
@@ -35,7 +46,10 @@ It installs alongside an existing Handy rather than replacing it — different
 bundle id, so separate settings, models, history and permissions. Both can be
 installed at once; only the shortcuts would collide, and those are configurable.
 
-First launch downloads the 1.6 GB Hebrew model. Nothing to choose.
+First launch fetches the 874 MB Hebrew engine while you work through the two
+setup screens, and ends by asking you to dictate one sentence. There is no model
+to choose — if the file is ever damaged, Advanced has a single row to fetch it
+again.
 
 ## Sharing it with other people
 
