@@ -62,7 +62,9 @@ path stays supported for an offline installer variant.
 
 - [x] Hebrew transcription still matches the reference on real recordings
 - [x] Fresh-profile first run on macOS: download, verify, transcribe
-- [x] Windows build green in CI (dispatched manually — the workflows trigger on push to main, not on PR branches)
+- [x] Windows, macOS and Linux all compile in CI (dispatched manually — these
+      workflows trigger on push to main, not on PR branches)
+- [x] Four inherited CI faults fixed, all of which hid that the code built fine
 
 ## Review
 
@@ -84,6 +86,21 @@ machine would have shipped that.
   It moved to `App`, where it outlives onboarding.
 - Selecting the model on every launch would have re-loaded 874 MB onto the GPU
   each time. Now guarded on `currentModel`.
+
+**CI had never run on this fork, and hid four faults.** Every platform compiled
+the app successfully; every failure was after the build, in signing:
+
+- The package audits still asserted a `handy` binary and `/usr/lib/Handy`. Mine,
+  left from the rebrand, and invisible because those audits are the only thing
+  that opens a built package.
+- `build-test` asked for signed binaries. A build test signs nothing.
+- `${{ cond && secrets.X || '' }}` sets the variable to an empty string rather
+  than leaving it unset, and an empty-but-present `APPLE_CERTIFICATE` is enough
+  for the Tauri bundler to attempt a keychain import.
+- The Windows `signCommand` pointed at cjpais's Azure Trusted Signing account
+  and labelled the binary Handy. It lives in the app config, so it ran on every
+  Windows build — twenty-five minutes of successful compilation thrown away at
+  the last step.
 
 **Left undone on purpose.** The 22 locales other than English and Hebrew carry
 the English text for the new strings — the same thing i18next would have shown
