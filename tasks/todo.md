@@ -62,7 +62,7 @@ path stays supported for an offline installer variant.
 
 - [x] Hebrew transcription still matches the reference on real recordings
 - [x] Fresh-profile first run on macOS: download, verify, transcribe
-- [ ] Windows build green in CI
+- [x] Windows build green in CI (dispatched manually — the workflows trigger on push to main, not on PR branches)
 
 ## Review
 
