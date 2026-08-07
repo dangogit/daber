@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "Загальні",
-    "models": "Моделі",
     "advanced": "Розширені",
     "postProcessing": "Постобробка",
     "history": "Історія",
@@ -19,83 +18,6 @@
     "about": "Інфо"
   },
   "onboarding": {
-    "subtitle": "Для початку оберіть модель транскрипції",
-    "existingModelsTitle": "Сумісні моделі",
-    "downloadModelsTitle": "Доступні для завантаження",
-    "showAllModels": "Показати всі моделі ({{total}})",
-    "showFewerModels": "Показати менше моделей",
-    "recommended": "Рекомендовано",
-    "customModelDescription": "Офіційно не підтримується",
-    "modelCard": {
-      "accuracy": "точність",
-      "speed": "швидкість"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "Швидка та досить точна"
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "Хороша точність, середня швидкість"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "Збалансована точність та швидкість"
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "Хороша точність, але повільна"
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "Лише англійська. Найкраща модель для англомовних"
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "Швидка та точна"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "Дуже швидкий, лише англійська. Добре справляється з акцентами."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "Надшвидкий, лише англійська"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "Швидкий, лише англійська. Добрий баланс швидкості та точності."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "Лише англійська. Висока якість."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "Оптимізовано для тайванської мандаринської. Підтримка перемикання мов."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "Дуже швидкий. Китайська, англійська, японська, корейська, кантонська."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "Розпізнавання російського мовлення. Швидко і точно."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "Дуже швидка. Англійська, німецька, іспанська, французька. Підтримує переклад."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "Точна багатомовна. 25 європейських мов. Підтримує переклад."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "Велика, повільніша, але дуже точна багатомовна модель."
-      }
-    },
     "errors": {
       "selectModel": "Не вдалося вибрати модель"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "Не вдалося перевірити дозволи. Будь ласка, спробуйте ще раз.",
         "requestFailed": "Не вдалося запросити дозвіл. Будь ласка, спробуйте ще раз."
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "Користувацька",
@@ -156,9 +102,6 @@
     "legacy": "Застаріле"
   },
   "settings": {
-    "modelSettings": {
-      "title": "Налаштування {{model}}"
-    },
     "general": {
       "title": "Загальні",
       "shortcut": {
@@ -200,24 +143,6 @@
         "description": "Утримуйте для запису, відпустіть для зупинки"
       }
     },
-    "models": {
-      "title": "Моделі транскрипції",
-      "description": "Виберіть модель транскрипції або завантажте додаткові моделі. Різні моделі пропонують різні рівні точності та швидкості.",
-      "deleteConfirm": "Ви впевнені, що хочете видалити {{modelName}}? Вам потрібно буде завантажити її знову, щоб використовувати.",
-      "deleteActiveConfirm": "{{modelName}} — ваша активна модель. Видалення зупинить транскрипцію, доки ви не оберете нову модель. Ви впевнені?",
-      "deleteTitle": "Видалити модель",
-      "filters": {
-        "allLanguages": "Усі мови"
-      },
-      "noModelsMatch": "Жодна модель не відповідає цьому фільтру.",
-      "yourModels": "Завантажені моделі",
-      "availableModels": "Доступні для завантаження",
-      "searchPlaceholder": "Пошук моделей за назвою…",
-      "rescan": {
-        "label": "Пересканувати",
-        "tooltip": "Пересканувати моделі, додані до папки моделей або кешу Hugging Face поза межами Daber"
-      }
-    },
     "sound": {
       "title": "Звук",
       "microphone": {
@@ -253,7 +178,8 @@
         "output": "Вивід",
         "transcription": "Транскрипція",
         "history": "Історія",
-        "experimental": "Експериментальне"
+        "experimental": "Експериментальне",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "Експериментальні функції",
@@ -590,6 +516,14 @@
         "label": "Показувати новини",
         "description": "Показувати примітки до випуску після оновлень Daber"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "Портативні встановлення не можна оновити автоматично. Завантажте нижче інсталятор для вашої системи, запустіть його та встановіть у ту саму теку — ваша тека Data/ (налаштування, моделі, записи) залишиться на місці.",
     "portableUpdateButton": "Завантажити інсталятор",
     "portableUpdateBrowseMessage": "Портативні встановлення не можна оновити автоматично. Завантажте найновішу версію для вашої системи зі сторінки GitHub Releases та встановіть її в ту саму теку — ваша тека Data/ (налаштування, моделі, записи) залишиться на місці.",
-    "portableUpdateBrowseButton": "Відкрити GitHub Releases"
+    "portableUpdateBrowseButton": "Відкрити GitHub Releases",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "Завантаження...",

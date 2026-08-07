@@ -518,16 +518,12 @@ pub struct ModelManager {
 }
 
 impl ModelManager {
-    pub fn new(app_handle: &AppHandle) -> Result<Self> {
-        // Create models directory in app data
-        let models_dir = crate::portable::app_data_dir(app_handle)
-            .map_err(|e| anyhow::anyhow!("Failed to get app data dir: {}", e))?
-            .join("models");
-
-        if !models_dir.exists() {
-            fs::create_dir_all(&models_dir)?;
-        }
-
+    /// The models this build knows about before anything on disk is scanned.
+    ///
+    /// Split out of `new` so it can be asserted against without an AppHandle:
+    /// the Hebrew entry is the whole product, and a typo in its URL or hash is
+    /// invisible until someone else's first run.
+    fn build_available_models() -> HashMap<String, ModelInfo> {
         let mut available_models = HashMap::new();
 
         // Whisper supported languages (99 languages from tokenizer)
@@ -552,33 +548,43 @@ impl ModelManager {
         // to Hebrew explicitly — hence `supported_languages: ["he"]` and no
         // detection/translation support.
         available_models.insert(
-            IVRIT_MODEL_ID.to_string(),
-            ModelInfo {
-                id: IVRIT_MODEL_ID.to_string(),
-                name: "ivrit.ai Hebrew Turbo".to_string(),
-                description: "Whisper Large v3 Turbo fine-tuned for Hebrew. Most accurate for Hebrew; not for other languages.".to_string(),
-                filename: "ggml-model.bin".to_string(),
-                source: ModelSource::HuggingFace {
-                    repo_id: "ivrit-ai/whisper-large-v3-turbo-ggml".to_string(),
-                    revision: "2130c78e4a9cb4914cc4df91a1c3031407789705".to_string(),
-                },
-                size_mb: 1625,
-                is_downloaded: false,
-                is_downloading: false,
-                partial_size: 0,
-                is_directory: false,
-                engine_type: EngineType::TranscribeCpp,
-                accuracy_score: 0.90,
-                speed_score: 0.40,
-                supports_translation: false,
-                is_recommended: true,
-                supported_languages: vec!["he".to_string()],
-                supports_language_selection: false,
-                is_custom: false,
-                supports_streaming: false,
-                supports_language_detection: false,
+        IVRIT_MODEL_ID.to_string(),
+        ModelInfo {
+            id: IVRIT_MODEL_ID.to_string(),
+            name: "ivrit.ai Hebrew Turbo".to_string(),
+            description: "Whisper Large v3 Turbo fine-tuned for Hebrew. Most accurate for Hebrew; not for other languages.".to_string(),
+            filename: "ivrit-turbo-q8_0.bin".to_string(),
+            // Quantized to q8_0 and hosted here rather than pulled from the
+            // Hub at full precision. 874 MB instead of 1,625 MB, with output
+            // identical to the original across eight Hebrew clips (three of
+            // them real microphone recordings). Self-hosted because
+            // huggingface.co is blocked on a good number of Israeli school
+            // and workplace networks, and a blocked download looks to the
+            // user like an app that simply does not work.
+            source: ModelSource::Url {
+                url: "https://github.com/dangogit/daber/releases/download/models-v1/ivrit-turbo-q8_0-v1.bin".to_string(),
+                sha256: Some(
+                    "123a936e686b06d45b52dc1790251a1418841352ca94079ae643d57893ffc9a6"
+                        .to_string(),
+                ),
             },
-        );
+            size_mb: 874,
+            is_downloaded: false,
+            is_downloading: false,
+            partial_size: 0,
+            is_directory: false,
+            engine_type: EngineType::TranscribeCpp,
+            accuracy_score: 0.90,
+            speed_score: 0.40,
+            supports_translation: false,
+            is_recommended: true,
+            supported_languages: vec!["he".to_string()],
+            supports_language_selection: false,
+            is_custom: false,
+            supports_streaming: false,
+            supports_language_detection: false,
+        },
+    );
 
         available_models.insert(
             "small".to_string(),
@@ -1145,10 +1151,20 @@ impl ModelManager {
                 supports_language_detection: true,
             },
         );
+        available_models
+    }
 
-        // Seed the bundled offline catalog before the on-disk scans, so a model
-        // already in the HF cache dedups onto its richer catalog entry (the scans
-        // only insert ids not already present) instead of showing as a bare cache
+    pub fn new(app_handle: &AppHandle) -> Result<Self> {
+        // Create models directory in app data
+        let models_dir = crate::portable::app_data_dir(app_handle)
+            .map_err(|e| anyhow::anyhow!("Failed to get app data dir: {}", e))?
+            .join("models");
+
+        if !models_dir.exists() {
+            fs::create_dir_all(&models_dir)?;
+        }
+
+        let mut available_models = Self::build_available_models();
         // find. Additive — see `seed_catalog_models`.
         Self::seed_catalog_models(&mut available_models);
 
@@ -2652,6 +2668,37 @@ mod tests {
         // An id in neither the catalog nor the override still sorts last
         // rather than wrapping to the front.
         assert_eq!(ModelManager::sort_rank("not-a-real-model"), u32::MAX);
+    }
+
+    /// The only model the app ships, pinned by hash. A wrong URL or a hash that
+    /// drifts from the published asset does not fail here at build time — it
+    /// fails on a stranger's first run, as an app that downloads half a
+    /// gigabyte and then refuses to work.
+    #[test]
+    fn hebrew_model_is_pinned_to_the_published_quantization() {
+        let models = ModelManager::build_available_models();
+        let hebrew = models
+            .get(IVRIT_MODEL_ID)
+            .expect("the Hebrew model must be in the catalog");
+
+        match &hebrew.source {
+            ModelSource::Url { url, sha256 } => {
+                assert!(
+                    url.starts_with("https://github.com/dangogit/daber/releases/download/"),
+                    "self-hosted so a blocked huggingface.co cannot break setup, got {url}"
+                );
+                assert_eq!(
+                    sha256.as_deref(),
+                    Some("123a936e686b06d45b52dc1790251a1418841352ca94079ae643d57893ffc9a6"),
+                );
+            }
+            other => panic!("expected a pinned URL download, got {other:?}"),
+        }
+
+        // Sized for the q8_0 quantization, not the 1,625 MB original — the
+        // progress bar and the disk-space check both read this.
+        assert_eq!(hebrew.size_mb, 874);
+        assert_eq!(hebrew.supported_languages, vec!["he".to_string()]);
     }
 
     #[test]

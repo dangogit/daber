@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "一般",
-    "models": "モデル",
     "advanced": "詳細設定",
     "postProcessing": "後処理",
     "history": "履歴",
@@ -19,83 +18,6 @@
     "about": "概要"
   },
   "onboarding": {
-    "subtitle": "開始するには、文字起こしのモデルを選択してください",
-    "existingModelsTitle": "互換性のあるモデル",
-    "downloadModelsTitle": "ダウンロード可能",
-    "showAllModels": "すべての{{total}}個のモデルを表示",
-    "showFewerModels": "表示を減らす",
-    "recommended": "おすすめ",
-    "customModelDescription": "公式サポート対象外",
-    "modelCard": {
-      "accuracy": "精度",
-      "speed": "速度"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "高速でそこそこ正確。"
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "良好な精度、中程度の速度"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "精度と速度のバランスが良い。"
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "良好な精度、ただし低速。"
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "英語のみ。英語話者に最適なモデル。"
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "高速で正確"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "非常に高速、英語のみ。アクセントにも対応。"
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "超高速、英語のみ"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "高速、英語のみ。速度と精度のバランスが良い。"
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "英語のみ。高品質。"
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "台湾華語に最適化。コードスイッチングに対応。"
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "非常に高速。中国語、英語、日本語、韓国語、広東語。"
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "ロシア語音声認識。高速かつ高精度。"
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "非常に高速。英語、ドイツ語、スペイン語、フランス語。翻訳対応。"
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "高精度な多言語対応。25のヨーロッパ言語。翻訳対応。"
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "大型で低速ですが、非常に高精度な多言語モデル。"
-      }
-    },
     "errors": {
       "selectModel": "モデルの選択に失敗しました"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "権限の確認に失敗しました。もう一度お試しください。",
         "requestFailed": "権限のリクエストに失敗しました。もう一度お試しください。"
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "カスタム",
@@ -156,27 +102,6 @@
     "legacy": "旧式"
   },
   "settings": {
-    "modelSettings": {
-      "title": "{{model}} の設定"
-    },
-    "models": {
-      "title": "文字起こしのモデル",
-      "description": "文字起こしのモデルを選択するか、追加のモデルをダウンロードします。異なるモデルは精度と速度のレベルが異なります。",
-      "deleteConfirm": "{{modelName}}を削除してもよろしいですか? 再度使用するにはダウンロードが必要です。",
-      "deleteActiveConfirm": "{{modelName}}は現在使用中のモデルです。削除すると、新しいモデルを選択するまで文字起こしが停止します。本当に削除しますか?",
-      "deleteTitle": "モデルを削除",
-      "filters": {
-        "allLanguages": "すべての言語"
-      },
-      "noModelsMatch": "このフィルターに一致するモデルがありません。",
-      "yourModels": "ダウンロード済みモデル",
-      "availableModels": "ダウンロード可能",
-      "searchPlaceholder": "モデルを名前で検索…",
-      "rescan": {
-        "label": "再スキャン",
-        "tooltip": "Daber を使わずに models フォルダーまたは Hugging Face キャッシュに追加されたモデルを再スキャンします"
-      }
-    },
     "general": {
       "title": "一般",
       "shortcut": {
@@ -253,7 +178,8 @@
         "output": "出力",
         "transcription": "文字起こし",
         "history": "履歴",
-        "experimental": "実験的"
+        "experimental": "実験的",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "実験的な機能",
@@ -590,6 +516,14 @@
         "label": "新機能を表示",
         "description": "Daber のアップデート後にリリースノートを表示"
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "ポータブル版は自動的に更新できません。下のボタンからお使いのシステム向けのインストーラーをダウンロードし、実行して同じフォルダーにインストールしてください。Data フォルダー(設定、モデル、録音)はそのまま残ります。",
     "portableUpdateButton": "インストーラーをダウンロード",
     "portableUpdateBrowseMessage": "ポータブル版は自動的に更新できません。GitHub Releases からお使いのシステム向けの最新版をダウンロードし、同じフォルダーにインストールしてください。Data フォルダー(設定、モデル、録音)はそのまま残ります。",
-    "portableUpdateBrowseButton": "GitHub Releases を開く"
+    "portableUpdateBrowseButton": "GitHub Releases を開く",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "common": {
     "loading": "読み込み中…",

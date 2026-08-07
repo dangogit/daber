@@ -21,10 +21,15 @@ import { KeyboardImplementationSelector } from "../debug/KeyboardImplementationS
 import { VoiceActivityDetection } from "../VoiceActivityDetection";
 import { AccelerationSelector } from "../AccelerationSelector";
 import { LazyStreamClose } from "../LazyStreamClose";
+import { EngineRepair } from "../EngineRepair";
+import { ChannelSelector } from "../ChannelSelector";
+import { MuteWhileRecording } from "../MuteWhileRecording";
+import { OutputDeviceSelector } from "../OutputDeviceSelector";
+import { VolumeSlider } from "../VolumeSlider";
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();
-  const { getSetting } = useSettings();
+  const { getSetting, audioFeedbackEnabled } = useSettings();
   const experimentalEnabled = getSetting("experimental_enabled") || false;
 
   return (
@@ -49,6 +54,18 @@ export const AdvancedSettings: React.FC = () => {
         <VoiceActivityDetection descriptionMode="tooltip" grouped={true} />
         <CustomWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
+        <EngineRepair descriptionMode="tooltip" grouped={true} />
+      </SettingsGroup>
+
+      <SettingsGroup title={t("settings.advanced.groups.sound")}>
+        <ChannelSelector descriptionMode="tooltip" grouped={true} />
+        <MuteWhileRecording descriptionMode="tooltip" grouped={true} />
+        <OutputDeviceSelector
+          descriptionMode="tooltip"
+          grouped={true}
+          disabled={!audioFeedbackEnabled}
+        />
+        <VolumeSlider disabled={!audioFeedbackEnabled} />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.history")}>

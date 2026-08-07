@@ -11,7 +11,6 @@
   },
   "sidebar": {
     "general": "सामान्य",
-    "models": "मॉडल",
     "advanced": "ऐडवांस",
     "postProcessing": "पोस्ट प्रोसेस",
     "history": "इतिहास",
@@ -19,83 +18,6 @@
     "about": "के बारे में"
   },
   "onboarding": {
-    "subtitle": "शुरू करने के लिए, एक ट्रांसक्रिप्शन मॉडल चुनें",
-    "existingModelsTitle": "संगत मॉडल",
-    "downloadModelsTitle": "डाउनलोड के लिए उपलब्ध",
-    "showAllModels": "सभी {{total}} मॉडल दिखाएं",
-    "showFewerModels": "कम मॉडल दिखाएं",
-    "recommended": "सुझाया गया",
-    "customModelDescription": "आधिकारिक रूप से समर्थित नहीं",
-    "modelCard": {
-      "accuracy": "सटीकता",
-      "speed": "स्पीड"
-    },
-    "models": {
-      "small": {
-        "name": "Whisper Small",
-        "description": "तेज़ और काफ़ी सटीक."
-      },
-      "medium": {
-        "name": "Whisper Medium",
-        "description": "अच्छी सटीकता, मध्यम स्पीड"
-      },
-      "turbo": {
-        "name": "Whisper Turbo",
-        "description": "सटीकता और स्पीड का संतुलन."
-      },
-      "large": {
-        "name": "Whisper Large",
-        "description": "अच्छी सटीकता, लेकिन धीमा."
-      },
-      "parakeet-tdt-0.6b-v2": {
-        "name": "Parakeet V2",
-        "description": "केवल अंग्रेज़ी. अंग्रेज़ी बोलने वालों के लिए सबसे अच्छा मॉडल."
-      },
-      "parakeet-tdt-0.6b-v3": {
-        "name": "Parakeet V3",
-        "description": "तेज़ और सटीक"
-      },
-      "moonshine-base": {
-        "name": "Moonshine Base",
-        "description": "बहुत तेज़, केवल अंग्रेज़ी. अलग-अलग लहजों को अच्छी तरह समझता है."
-      },
-      "moonshine-tiny-streaming-en": {
-        "name": "Moonshine V2 Tiny",
-        "description": "बेहद तेज़, केवल अंग्रेज़ी"
-      },
-      "moonshine-small-streaming-en": {
-        "name": "Moonshine V2 Small",
-        "description": "तेज़, केवल अंग्रेज़ी. स्पीड और सटीकता का अच्छा संतुलन."
-      },
-      "moonshine-medium-streaming-en": {
-        "name": "Moonshine V2 Medium",
-        "description": "केवल अंग्रेज़ी. बेहतरीन क्वालिटी."
-      },
-      "breeze-asr": {
-        "name": "Breeze ASR",
-        "description": "ताइवानी मैंडरिन के लिए ऑप्टिमाइज़ किया गया. कोड-स्विचिंग की सुविधा."
-      },
-      "sense-voice-int8": {
-        "name": "SenseVoice",
-        "description": "बहुत तेज़. चीनी, अंग्रेज़ी, जापानी, कोरियाई, कैंटोनीज़."
-      },
-      "gigaam-v3-e2e-ctc": {
-        "name": "GigaAM v3",
-        "description": "रूसी बोली पहचानता है. तेज़ और सटीक."
-      },
-      "canary-180m-flash": {
-        "name": "Canary 180M Flash",
-        "description": "बहुत तेज़. अंग्रेज़ी, जर्मन, स्पेनिश, फ़्रेंच. अनुवाद भी कर सकता है."
-      },
-      "canary-1b-v2": {
-        "name": "Canary 1B v2",
-        "description": "सटीक बहुभाषी मॉडल. 25 यूरोपीय भाषाएं. अनुवाद भी कर सकता है."
-      },
-      "cohere-int8": {
-        "name": "Cohere",
-        "description": "बड़ा और थोड़ा धीमा, लेकिन बहुत सटीक बहुभाषी मॉडल."
-      }
-    },
     "errors": {
       "selectModel": "मॉडल चुना नहीं जा सका"
     },
@@ -119,7 +41,31 @@
         "checkFailed": "अनुमतियां जांची नहीं जा सकीं. कृपया फिर से कोशिश करें.",
         "requestFailed": "अनुमति मांगी नहीं जा सकी. कृपया फिर से कोशिश करें."
       }
-    }
+    },
+    "continue": "Continue",
+    "stepCount": "Step {{current}} of {{total}}",
+    "hotkey": {
+      "title": "Choose your shortcut",
+      "description": "Press this anywhere to start dictating. You can change it later."
+    },
+    "try": {
+      "title": "Try it now",
+      "press": "Press",
+      "andSpeak": "and say something in Hebrew.",
+      "placeholder": "Your words will appear here",
+      "worked": "That's it",
+      "workedDescription": "It works the same way in any app — mail, WhatsApp, anywhere you can type.",
+      "stillPreparing": "Getting the Hebrew engine ready. One moment.",
+      "downloading": "Downloading the Hebrew engine",
+      "verifying": "Checking the download",
+      "speed": "{{percent}}% · {{speed}} MB/s",
+      "failed": "The download did not finish.",
+      "retryDownload": "Try again",
+      "finish": "Done",
+      "skip": "Skip for now",
+      "preparing": "Getting it ready"
+    },
+    "percent": "{{percent}}%"
   },
   "modelSelector": {
     "custom": "कस्टम",
@@ -156,9 +102,6 @@
     }
   },
   "settings": {
-    "modelSettings": {
-      "title": "{{model}} सेटिंग"
-    },
     "general": {
       "title": "सामान्य",
       "shortcut": {
@@ -200,24 +143,6 @@
         "description": "रिकॉर्ड करने के लिए दबाकर रखें, रोकने के लिए छोड़ दें"
       }
     },
-    "models": {
-      "title": "ट्रांसक्रिप्शन मॉडल",
-      "description": "कोई ट्रांसक्रिप्शन मॉडल चुनें या दूसरे मॉडल डाउनलोड करें. अलग-अलग मॉडल की सटीकता और स्पीड अलग-अलग होती है.",
-      "searchPlaceholder": "नाम से मॉडल खोजें…",
-      "yourModels": "डाउनलोड किए गए मॉडल",
-      "availableModels": "डाउनलोड के लिए उपलब्ध",
-      "deleteConfirm": "क्या आप वाकई {{modelName}} को हटाना चाहते हैं? इसे फिर से इस्तेमाल करने के लिए आपको इसे दोबारा डाउनलोड करना होगा.",
-      "deleteActiveConfirm": "{{modelName}} अभी इस्तेमाल में है. इसे हटाने पर ट्रांसक्रिप्शन तब तक रुका रहेगा, जब तक आप कोई नया मॉडल नहीं चुन लेते. क्या आप वाकई हटाना चाहते हैं?",
-      "deleteTitle": "मॉडल हटाएं",
-      "filters": {
-        "allLanguages": "सभी भाषाएं"
-      },
-      "rescan": {
-        "label": "फिर से स्कैन करें",
-        "tooltip": "Daber के बाहर, मॉडल फ़ोल्डर या Hugging Face कैश में जोड़े गए मॉडल के लिए फिर से स्कैन करें"
-      },
-      "noModelsMatch": "इस फ़िल्टर से मेल खाने वाला कोई मॉडल नहीं है."
-    },
     "sound": {
       "title": "आवाज़",
       "microphone": {
@@ -253,7 +178,8 @@
         "output": "आउटपुट",
         "transcription": "ट्रांसक्रिप्शन",
         "history": "इतिहास",
-        "experimental": "प्रायोगिक"
+        "experimental": "प्रायोगिक",
+        "sound": "Sound"
       },
       "experimentalToggle": {
         "label": "प्रायोगिक सुविधाएं",
@@ -590,6 +516,14 @@
           "details": "Daber का लोकल स्पीच-टू-टेक्स्ट transcribe.cpp और ggml पर आधारित है. Georgi Gerganov और योगदान देने वालों के शानदार काम के लिए धन्यवाद."
         }
       }
+    },
+    "engine": {
+      "repair": {
+        "title": "Transcription engine",
+        "description": "Download the Hebrew engine again. Use this if transcription stopped working after an interrupted download.",
+        "action": "Download again",
+        "started": "Downloading the engine again"
+      }
     }
   },
   "footer": {
@@ -605,7 +539,12 @@
     "portableUpdateMessage": "पोर्टेबल इंस्टॉल अपने आप अपडेट नहीं हो सकते. नीचे से अपने सिस्टम के लिए इंस्टॉलर डाउनलोड करें, उसे चलाएँ और उसी फ़ोल्डर में इंस्टॉल करें — आपका Data/ फ़ोल्डर (सेटिंग, मॉडल, रिकॉर्डिंग) जहाँ है वहीं बना रहता है.",
     "portableUpdateButton": "इंस्टॉलर डाउनलोड करें",
     "portableUpdateBrowseMessage": "पोर्टेबल इंस्टॉल अपने आप अपडेट नहीं हो सकते. GitHub Releases से अपने सिस्टम के लिए नया वर्शन डाउनलोड करें और उसे उसी फ़ोल्डर में इंस्टॉल करें — आपका Data/ फ़ोल्डर (सेटिंग, मॉडल, रिकॉर्डिंग) जहाँ है वहीं बना रहता है.",
-    "portableUpdateBrowseButton": "GitHub Releases खोलें"
+    "portableUpdateBrowseButton": "GitHub Releases खोलें",
+    "engine": {
+      "ready": "Hebrew engine ready",
+      "missing": "Hebrew engine missing",
+      "downloading": "Downloading engine {{percent}}%"
+    }
   },
   "whatsNew": {
     "title": "Daber v{{version}} में नया क्या है"
