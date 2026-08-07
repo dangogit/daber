@@ -574,6 +574,25 @@ async openAppDataDir() : Promise<Result<null, string>> {
 }
 },
 /**
+ * Match the native window appearance to the user's chosen theme.
+ * 
+ * On macOS the window is transparent with an `NSVisualEffectView` behind it,
+ * and that view follows the *system* appearance rather than anything the CSS
+ * says. Without this, forcing the light theme while the Mac is in dark mode
+ * paints light surfaces over a dark vibrancy layer — washed out and low
+ * contrast, which is not what "light" is supposed to look like.
+ * 
+ * `System` clears the override so the window follows the OS again.
+ */
+async setWindowTheme(theme: Theme) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_window_theme", { theme }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Check if Apple Intelligence is available on this device.
  * Called by the frontend when the user selects Apple Intelligence provider.
  */
