@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, Loader2, Mic, RotateCcw } from "lucide-react";
-import DaberTextLogo from "../icons/DaberTextLogo";
+import DiburTextLogo from "../icons/DiburTextLogo";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
@@ -43,7 +43,7 @@ const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-6 p-6">
-      <DaberTextLogo width={200} />
+      <DiburTextLogo width={200} />
 
       <div className="max-w-md w-full flex flex-col gap-4">
         <div className="text-center">

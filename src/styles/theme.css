@@ -1,4 +1,4 @@
-/* Daber Colors */
+/* Dibur Colors */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
@@ -14,10 +14,14 @@
   --light-color-logo-primary: #0e7490;
   --light-color-logo-stroke: #083344;
 
-  --dark-color-text: #e8f4f8;
-  --dark-color-background: #0d1b24;
+  /* Near-black with a cool cast rather than a saturated teal. A tinted
+     background competes with the accent and reads as a filter over the
+     wallpaper; a neutral one lets the turquoise be the only colour in the
+     room. */
+  --dark-color-text: #e7e9ee;
+  --dark-color-background: #0f1115;
   --dark-color-logo-primary: #2dd4bf;
-  --dark-color-logo-stroke: #99f6e4;
+  --dark-color-logo-stroke: #5eead4;
 
   /* Semantic status colors. First used by SecureInputWarning; intended to
      replace the ad-hoc yellow-500/red-500 usages (e.g. ui/Alert.tsx) over
@@ -37,10 +41,12 @@
   --light-glass-hairline: rgba(11, 31, 42, 0.1);
   --light-glass-shadow: rgba(11, 31, 42, 0.08);
 
-  --dark-glass-fill: rgba(232, 244, 248, 0.06);
-  --dark-glass-edge: rgba(232, 244, 248, 0.14);
-  --dark-glass-hairline: rgba(232, 244, 248, 0.1);
-  --dark-glass-shadow: rgba(0, 0, 0, 0.32);
+  /* Elevation, not transparency. At 6% these cards were invisible and the
+     desktop showed through them; a surface has to read as a surface. */
+  --dark-glass-fill: rgba(255, 255, 255, 0.048);
+  --dark-glass-edge: rgba(255, 255, 255, 0.07);
+  --dark-glass-hairline: rgba(255, 255, 255, 0.09);
+  --dark-glass-shadow: rgba(0, 0, 0, 0.5);
 
   --color-glass-fill: var(--light-glass-fill);
   --color-glass-edge: var(--light-glass-edge);
@@ -50,7 +56,12 @@
   /* Tokens that do not change between light and dark */
   --color-background-ui: #0e7490;
   --color-text-stroke: #f6f6f6;
-  --color-mid-gray: #808080;
+
+  /* Secondary text and hairlines. A single flat grey cannot serve both
+     themes: it muddies on near-black and washes out on white. */
+  --light-mid-gray: #64748b;
+  --dark-mid-gray: #8b93a1;
+  --color-mid-gray: var(--light-mid-gray);
 
   /* Active palette — defaults to light, follows the OS via the media query
      below, or is forced by `data-theme` (see App.css). */
@@ -74,5 +85,6 @@
     --color-glass-edge: var(--dark-glass-edge);
     --color-glass-hairline: var(--dark-glass-hairline);
     --color-glass-shadow: var(--dark-glass-shadow);
+    --color-mid-gray: var(--dark-mid-gray);
   }
 }

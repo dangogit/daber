@@ -186,3 +186,32 @@ pub fn initialize_shortcuts(app: AppHandle) -> Result<(), String> {
     log::info!("Shortcuts initialized successfully");
     Ok(())
 }
+
+/// Match the native window appearance to the user's chosen theme.
+///
+/// On macOS the window is transparent with an `NSVisualEffectView` behind it,
+/// and that view follows the *system* appearance rather than anything the CSS
+/// says. Without this, forcing the light theme while the Mac is in dark mode
+/// paints light surfaces over a dark vibrancy layer — washed out and low
+/// contrast, which is not what "light" is supposed to look like.
+///
+/// `System` clears the override so the window follows the OS again.
+#[specta::specta]
+#[tauri::command]
+pub fn set_window_theme(app: AppHandle, theme: crate::settings::Theme) -> Result<(), String> {
+    let native = match theme {
+        crate::settings::Theme::System => None,
+        crate::settings::Theme::Light => Some(tauri::Theme::Light),
+        crate::settings::Theme::Dark => Some(tauri::Theme::Dark),
+    };
+
+    for label in ["main", "overlay"] {
+        if let Some(window) = app.get_webview_window(label) {
+            if let Err(e) = window.set_theme(native) {
+                log::warn!("Could not set {label} window theme: {e}");
+            }
+        }
+    }
+
+    Ok(())
+}

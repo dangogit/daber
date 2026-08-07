@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build Daber signed with a Developer ID, notarized by Apple, and stapled.
+# Build Dibur signed with a Developer ID, notarized by Apple, and stapled.
 #
 # Credentials come from the macOS Keychain, never from a file or the shell
 # history. See "Signing and notarizing it properly" in README.md for how to put
@@ -13,7 +13,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-APP="src-tauri/target/release/bundle/macos/Daber.app"
+APP="src-tauri/target/release/bundle/macos/Dibur.app"
 ACCT="$USER"
 
 # `security` hex-encodes any password containing a newline, which the PEM key does.
@@ -53,9 +53,9 @@ echo "Signing as: $IDENTITY"
 KEYFILE=$(mktemp -t asc-key)
 trap 'rm -P "$KEYFILE" 2>/dev/null || rm -f "$KEYFILE"' EXIT
 chmod 600 "$KEYFILE"
-keychain daber-asc-api-key > "$KEYFILE"
-KEY_ID=$(keychain daber-asc-key-id)
-ISSUER_ID=$(keychain daber-asc-issuer-id)
+keychain dibur-asc-api-key > "$KEYFILE"
+KEY_ID=$(keychain dibur-asc-key-id)
+ISSUER_ID=$(keychain dibur-asc-issuer-id)
 
 notarize() {
   xcrun notarytool submit "$1" \
@@ -72,7 +72,7 @@ bun run tauri build "$@"
 # bundle; the ticket it issues is stapled to the bundle itself afterwards.
 echo
 echo "==> Notarizing the app"
-ZIP=$(mktemp -t daber-app -u).zip
+ZIP=$(mktemp -t dibur-app -u).zip
 ditto -c -k --keepParent "$APP" "$ZIP"
 notarize "$ZIP"
 rm -f "$ZIP"

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import DaberTextLogo from "../icons/DaberTextLogo";
+import DiburTextLogo from "../icons/DiburTextLogo";
 import { ShortcutInput } from "../settings/ShortcutInput";
 import { PushToTalk } from "../settings/PushToTalk";
 import { getLanguageDirection } from "@/lib/utils/rtl";
@@ -24,7 +24,7 @@ const HotkeyStep: React.FC<HotkeyStepProps> = ({ onContinue }) => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center gap-6 p-6">
-      <DaberTextLogo width={200} />
+      <DiburTextLogo width={200} />
 
       <div className="max-w-md w-full flex flex-col gap-4">
         <div className="text-center">

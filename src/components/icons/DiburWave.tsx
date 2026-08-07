@@ -1,14 +1,14 @@
 import React from "react";
 
 /**
- * The Daber mark: a voice rendered as five rounded bars.
+ * The Dibur mark: a voice rendered as five rounded bars.
  *
  * The heights are deliberately uneven and peak off-centre — an evenly stepped
  * arc reads as a generic equaliser, while this reads as a moment of speech.
  * Drawn in `currentColor` so it inherits whatever it sits in (sidebar, tray,
  * onboarding) rather than carrying its own palette.
  */
-const DaberWave = ({
+const DiburWave = ({
   width,
   height,
   className,
@@ -35,4 +35,4 @@ const DaberWave = ({
   </svg>
 );
 
-export default DaberWave;
+export default DiburWave;

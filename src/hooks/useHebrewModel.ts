@@ -22,7 +22,7 @@ export interface HebrewModelState {
 /**
  * Owns the one model this app has.
  *
- * Daber ships a single Hebrew engine, so there is nothing to choose and no
+ * Dibur ships a single Hebrew engine, so there is nothing to choose and no
  * reason to make anyone wait at a picker. This starts the download the moment
  * the app opens and reports on it, which lets the rest of onboarding — granting
  * permissions, choosing a shortcut — happen over the top of it. By the time

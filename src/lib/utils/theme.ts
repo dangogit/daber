@@ -11,6 +11,11 @@ import { commands, type Theme } from "@/bindings";
  *  - `light` / `dark` set `data-theme` on the document root, whose
  *    higher-specificity CSS selectors win over the media query.
  *
+ * The native window appearance is set alongside the CSS. On macOS the window is
+ * transparent with an `NSVisualEffectView` behind it, and that view follows the
+ * system appearance — so setting only the CSS puts light surfaces over a dark
+ * vibrancy layer whenever the two disagree.
+ *
  * The choice is persisted in `AppSettings` (source of truth) and mirrored to
  * localStorage so it can be applied synchronously on boot, before React mounts,
  * avoiding a flash of the wrong palette.
@@ -31,6 +36,12 @@ export const applyTheme = (theme: Theme): void => {
   } else {
     root.dataset.theme = theme;
   }
+  // Fire-and-forget: the CSS half has already applied, and a window that
+  // briefly disagrees with it beats blocking the click on an IPC round trip.
+  commands.setWindowTheme(theme).catch((e) => {
+    console.warn("Failed to set native window theme:", e);
+  });
+
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {

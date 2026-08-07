@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "İzinler Gerekli",
-      "description": "Daber'nin düzgün çalışabilmesi için birkaç izne ihtiyacı var.",
+      "description": "Dibur'nin düzgün çalışabilmesi için birkaç izne ihtiyacı var.",
       "microphone": {
         "title": "Mikrofon Erişimi",
         "description": "Sesinizi transkripsiyon için alabilmek için gereklidir."
@@ -105,7 +105,7 @@
     "general": {
       "title": "Genel",
       "shortcut": {
-        "title": "Daber Kısayolları",
+        "title": "Dibur Kısayolları",
         "description": "Sesle yazma kaydını başlatmak için klavye kısayollarını yapılandırın",
         "loading": "Kısayollar yükleniyor...",
         "none": "Kısayol yapılandırılmadı",
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Başlangıçta Çalıştır",
-        "description": "Bilgisayara giriş yaptığınızda Daber otomatik olarak başlatılır."
+        "description": "Bilgisayara giriş yaptığınızda Dibur otomatik olarak başlatılır."
       },
       "showTrayIcon": {
         "label": "Tepsi simgesini göster",
-        "description": "Daber simgesini sistem tepsisinde göster."
+        "description": "Dibur simgesini sistem tepsisinde göster."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Güncellemeleri Kontrol Et",
-        "description": "Daber için yeni sürümleri otomatik olarak kontrol eder"
+        "description": "Dibur için yeni sürümleri otomatik olarak kontrol eder"
       },
       "soundTheme": {
         "label": "Ses Teması",
@@ -468,7 +468,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Klavye Tanılaması",
-        "description": "Klavye olaylarının Daber'ye ulaşıp ulaşmadığını denetler. Yalnızca olay sayıları kaydedilir — hangi tuşlara bastığınız asla kaydedilmez.",
+        "description": "Klavye olaylarının Dibur'ye ulaşıp ulaşmadığını denetler. Yalnızca olay sayıları kaydedilir — hangi tuşlara bastığınız asla kaydedilmez.",
         "run": "10 sn'lik tanılamayı çalıştır",
         "running": "Dinleniyor… kısayolunuza birkaç kez basın (ör. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -482,7 +482,7 @@
         "mouse": "Fare",
         "verdictBlocked": "Secure Input tuş olaylarını engelliyor — normal tuş içeren kısayollar bu sorun çözülene kadar çalışamaz.",
         "verdictSuspicious": "Değiştirici olayları geldi ancak hiç tuş olayı gelmedi — Secure Input devre dışı görünmesine rağmen bir şey tuşları bastırıyor. Lütfen bunu GitHub'da bildirin.",
-        "verdictOk": "Tuş olayları Daber'ye normal şekilde ulaşıyor.",
+        "verdictOk": "Tuş olayları Dibur'ye normal şekilde ulaşıyor.",
         "verdictNoEvents": "Hiç olay yakalanmadı — test sırasında herhangi bir tuşa bastınız mı?",
         "failed": "Tanılama başarısız: {{error}}"
       },
@@ -498,23 +498,23 @@
       "title": "Hakkında",
       "version": {
         "title": "Sürüm",
-        "description": "Daber'nin mevcut sürümü"
+        "description": "Dibur'nin mevcut sürümü"
       },
       "appDataDirectory": {
         "title": "Uygulama Veri Dizini",
-        "description": "Daber'nin verilerini sakladığı konum"
+        "description": "Dibur'nin verilerini sakladığı konum"
       },
       "acknowledgments": {
         "title": "Teşekkürler",
         "ggml": {
           "title": "ggml",
           "description": "OpenAI'nin Whisper otomatik konuşma tanıma modelinin yüksek performanslı çıkarımı",
-          "details": "Daber, hızlı ve yerel konuşmadan metne dönüştürme için ggml kullanır. Georgi Gerganov ve katkıda bulunanların harika çalışmaları için teşekkür ederiz."
+          "details": "Dibur, hızlı ve yerel konuşmadan metne dönüştürme için ggml kullanır. Georgi Gerganov ve katkıda bulunanların harika çalışmaları için teşekkür ederiz."
         }
       },
       "whatsNewUpdates": {
         "label": "Yenilikleri Göster",
-        "description": "Daber güncellemelerinden sonra sürüm notlarını göster"
+        "description": "Dibur güncellemelerinden sonra sürüm notlarını göster"
       }
     },
     "engine": {
@@ -556,7 +556,7 @@
     "noOptionsFound": "Seçenek bulunamadı"
   },
   "accessibility": {
-    "permissionsDescription": "Daber, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
+    "permissionsDescription": "Dibur, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
     "openSettings": "Sistem Ayarlarını Aç"
   },
   "errors": {
@@ -579,11 +579,11 @@
   },
   "appLanguage": {
     "title": "Uygulama Dili",
-    "description": "Daber arayüzünün dilini değiştirin"
+    "description": "Dibur arayüzünün dilini değiştirin"
   },
   "theme": {
     "title": "Uygulama teması",
-    "description": "Daber'nin sistem temasını izlemesini ya da açık veya koyu kalmasını seçin",
+    "description": "Dibur'nin sistem temasını izlemesini ya da açık veya koyu kalmasını seçin",
     "options": {
       "system": "Sistem",
       "light": "Açık",
@@ -595,7 +595,7 @@
     "processing": "İşleniyor..."
   },
   "whatsNew": {
-    "title": "Daber v{{version}} yenilikleri"
+    "title": "Dibur v{{version}} yenilikleri"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} 1 kısayolu engelliyor olabilir",

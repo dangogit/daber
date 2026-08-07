@@ -15,7 +15,7 @@
     "postProcessing": "Naverwerking",
     "history": "Geschiedenis",
     "debug": "Probleemoplossing",
-    "about": "Over Daber"
+    "about": "Over Dibur"
   },
   "onboarding": {
     "errors": {
@@ -23,7 +23,7 @@
     },
     "permissions": {
       "title": "Machtigingen vereist",
-      "description": "Daber heeft een aantal machtigingen nodig om goed te kunnen werken.",
+      "description": "Dibur heeft een aantal machtigingen nodig om goed te kunnen werken.",
       "microphone": {
         "title": "Microfoontoegang",
         "description": "Vereist om je stem op te nemen voor transcriptie."
@@ -208,11 +208,11 @@
       },
       "autostart": {
         "label": "Starten bij opstarten",
-        "description": "Daber automatisch starten zodra je inlogt op je computer."
+        "description": "Dibur automatisch starten zodra je inlogt op je computer."
       },
       "showTrayIcon": {
         "label": "Pictogram in systeemvak tonen",
-        "description": "Toon het Daber-pictogram in het systeemvak."
+        "description": "Toon het Dibur-pictogram in het systeemvak."
       },
       "overlay": {
         "style": {
@@ -395,7 +395,7 @@
       },
       "updateChecks": {
         "label": "Controleren op updates",
-        "description": "Automatisch controleren op nieuwe versies van Daber"
+        "description": "Automatisch controleren op nieuwe versies van Dibur"
       },
       "whatsNewPreview": {
         "title": "Voorbeeld van release-notes",
@@ -475,7 +475,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Toetsenborddiagnose",
-        "description": "Controleert of toetsenbordgebeurtenissen Daber bereiken. Alleen het aantal gebeurtenissen wordt vastgelegd — nooit welke toetsen je indrukt.",
+        "description": "Controleert of toetsenbordgebeurtenissen Dibur bereiken. Alleen het aantal gebeurtenissen wordt vastgelegd — nooit welke toetsen je indrukt.",
         "run": "Diagnose van 10 s uitvoeren",
         "running": "Luisteren… druk je sneltoets een paar keer in (bijv. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -489,31 +489,31 @@
         "mouse": "Muis",
         "verdictBlocked": "Secure Input blokkeert toetsgebeurtenissen — sneltoetsen met een gewone toets kunnen pas weer werken als dit is opgelost.",
         "verdictSuspicious": "Er kwamen wel modificatiegebeurtenissen binnen, maar geen toetsgebeurtenissen — iets onderdrukt toetsen terwijl Secure Input als uitgeschakeld wordt gemeld. Meld dit op GitHub.",
-        "verdictOk": "Toetsgebeurtenissen bereiken Daber normaal.",
+        "verdictOk": "Toetsgebeurtenissen bereiken Dibur normaal.",
         "verdictNoEvents": "Geen gebeurtenissen vastgelegd — heb je tijdens de test toetsen ingedrukt?",
         "failed": "Diagnose mislukt: {{error}}"
       }
     },
     "about": {
-      "title": "Over Daber",
+      "title": "Over Dibur",
       "version": {
         "title": "Versie",
-        "description": "Huidige versie van Daber"
+        "description": "Huidige versie van Dibur"
       },
       "whatsNewUpdates": {
         "label": "Toon 'Wat is er nieuw'",
-        "description": "Release-notes tonen nadat Daber is bijgewerkt"
+        "description": "Release-notes tonen nadat Dibur is bijgewerkt"
       },
       "appDataDirectory": {
         "title": "App-datamap",
-        "description": "Locatie waar Daber de gegevens opslaat"
+        "description": "Locatie waar Dibur de gegevens opslaat"
       },
       "acknowledgments": {
         "title": "Dankbetuigingen",
         "ggml": {
           "title": "ggml",
           "description": "Krachtige tensorbibliotheek voor lokale AI-verwerking",
-          "details": "Daber's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
+          "details": "Dibur's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
         }
       }
     },
@@ -547,7 +547,7 @@
     }
   },
   "whatsNew": {
-    "title": "Nieuw in Daber v{{version}}"
+    "title": "Nieuw in Dibur v{{version}}"
   },
   "common": {
     "loading": "Laden...",
@@ -559,7 +559,7 @@
     "noOptionsFound": "Geen opties gevonden"
   },
   "accessibility": {
-    "permissionsDescription": "Daber heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
+    "permissionsDescription": "Dibur heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
     "openSettings": "Systeeminstellingen openen"
   },
   "errors": {
@@ -582,11 +582,11 @@
   },
   "appLanguage": {
     "title": "Interfacetaal",
-    "description": "Wijzig de taal van de Daber-interface"
+    "description": "Wijzig de taal van de Dibur-interface"
   },
   "theme": {
     "title": "App-thema",
-    "description": "Kies of Daber het systeemthema volgt of licht of donker blijft",
+    "description": "Kies of Dibur het systeemthema volgt of licht of donker blijft",
     "options": {
       "system": "Systeem",
       "light": "Licht",

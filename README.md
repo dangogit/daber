@@ -1,18 +1,18 @@
-# דבר (Daber)
+# דיבור (Dibur)
 
 **Hebrew dictation for the Mac.** Press a shortcut, speak Hebrew, and the text
 lands wherever your cursor is. Nothing leaves the machine.
 
 Built on [cjpais/handy](https://github.com/cjpais/handy), which does the hard
 parts — audio capture, voice activity detection, local Whisper inference,
-pasting into whatever app is in front. Daber changes what it opens as: the
+pasting into whatever app is in front. Dibur changes what it opens as: the
 Hebrew model, the Hebrew interface, and the Hebrew transcription language are
 what you get on first launch, with nothing to configure.
 
 The model is
 [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
 — Whisper Large v3 Turbo fine-tuned on Hebrew, and considerably better at it
-than the generic multilingual builds. Daber ships it quantized to q8_0: 874 MB
+than the generic multilingual builds. Dibur ships it quantized to q8_0: 874 MB
 rather than 1,625 MB, with output identical to full precision across eight
 Hebrew clips including real microphone recordings. Smaller quantizations exist
 and were tested; 4-bit lost word boundaries, and 5-bit costs several times more
@@ -31,7 +31,7 @@ Everything below the divider is upstream's README and still applies.
 
 ## Installing it
 
-Grab `Daber_<version>_aarch64.dmg` from
+Grab `Dibur_<version>_aarch64.dmg` from
 [Releases](https://github.com/dangogit/daber/releases), or build it yourself:
 
 ```bash
@@ -53,7 +53,7 @@ again.
 
 ## Sharing it with other people
 
-As built, Daber is **ad-hoc signed and not notarized**, so macOS refuses the
+As built, Dibur is **ad-hoc signed and not notarized**, so macOS refuses the
 first double-click: _"Apple could not verify this app is free of malware."_ The
 person you send it to has to right-click once and choose **Open**. After that it
 launches normally, from a Release, AirDrop or a link alike.
@@ -86,15 +86,15 @@ request leaves it. Both halves belong in the Keychain rather than in a file:
 
 ```bash
 openssl req -new -newkey rsa:2048 -nodes -keyout developerID.key -out developerID.csr -subj "/emailAddress=<your-email>/CN=<your name>/C=IL"
-security add-generic-password -U -a danielgoldman -s daber-developerid-key -w "$(< developerID.key)"
-security add-generic-password -U -a danielgoldman -s daber-developerid-csr -w "$(< developerID.csr)"
+security add-generic-password -U -a danielgoldman -s dibur-developerid-key -w "$(< developerID.key)"
+security add-generic-password -U -a danielgoldman -s dibur-developerid-csr -w "$(< developerID.csr)"
 rm -P developerID.key
 ```
 
 This is already done on this Mac — recover the request to upload with:
 
 ```bash
-security find-generic-password -a danielgoldman -s daber-developerid-csr -w | xxd -r -p > developerID.csr
+security find-generic-password -a danielgoldman -s dibur-developerid-csr -w | xxd -r -p > developerID.csr
 ```
 
 **2. Trade it for a certificate.** Signed in as the Account Holder, go to
@@ -119,19 +119,19 @@ generate a Team key with **Admin** access — an Admin may do this — and note 
 Issuer ID above the table. The `.p8` downloads exactly once.
 
 ```bash
-security add-generic-password -U -a danielgoldman -s daber-asc-key-id -w '<KEY ID>'
-security add-generic-password -U -a danielgoldman -s daber-asc-issuer-id -w '<ISSUER ID>'
-security add-generic-password -U -a danielgoldman -s daber-asc-api-key -w "$(< ~/Downloads/AuthKey_<KEY ID>.p8)"
+security add-generic-password -U -a danielgoldman -s dibur-asc-key-id -w '<KEY ID>'
+security add-generic-password -U -a danielgoldman -s dibur-asc-issuer-id -w '<ISSUER ID>'
+security add-generic-password -U -a danielgoldman -s dibur-asc-api-key -w "$(< ~/Downloads/AuthKey_<KEY ID>.p8)"
 rm -P ~/Downloads/AuthKey_<KEY ID>.p8
 ```
 
 An API key is used rather than an Apple ID and app-specific password because it
 is scoped to one team, belongs to no individual, and can be revoked without
 touching anything else. This is already done on this Mac, under the key named
-_Daber Notarization_; confirm Apple still accepts it with:
+_Dibur Notarization_; confirm Apple still accepts it with:
 
 ```bash
-security find-generic-password -a danielgoldman -s daber-asc-key-id -w
+security find-generic-password -a danielgoldman -s dibur-asc-key-id -w
 ```
 
 So steps 1 and 4 are behind us. Step 2 is the only one that needs a person, and
