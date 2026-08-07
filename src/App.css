@@ -79,6 +79,7 @@
   --color-glass-edge: var(--light-glass-edge);
   --color-glass-hairline: var(--light-glass-hairline);
   --color-glass-shadow: var(--light-glass-shadow);
+  --color-mid-gray: var(--light-mid-gray);
 }
 
 :root[data-theme="dark"] {
@@ -92,6 +93,7 @@
   --color-glass-edge: var(--dark-glass-edge);
   --color-glass-hairline: var(--dark-glass-hairline);
   --color-glass-shadow: var(--dark-glass-shadow);
+  --color-mid-gray: var(--dark-mid-gray);
 }
 
 /* macOS - tint native overlay scrollbar thumb */
@@ -107,9 +109,23 @@
  * native material actually exists. Everywhere else the solid colour stands.
  */
 :root[data-platform="macos"],
-:root[data-platform="macos"] body,
-:root[data-platform="macos"] #root {
+:root[data-platform="macos"] body {
   background-color: transparent;
+}
+
+/*
+ * A scrim over the vibrancy. Fully transparent let the desktop set the app's
+ * colour — a bright wallpaper turned the whole window into a tinted filter,
+ * and no palette can survive that. At this opacity the blurred backdrop still
+ * reads at the edges and behind the sidebar, but the surface underneath is
+ * unmistakably the app's own.
+ */
+:root[data-platform="macos"] #root {
+  background-color: color-mix(
+    in srgb,
+    var(--color-background) 92%,
+    transparent
+  );
 }
 
 /*
@@ -133,8 +149,8 @@
 .glass {
   background-color: var(--color-glass-fill);
   border: 1px solid var(--color-glass-hairline);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow:
     inset 0 1px 0 0 var(--color-glass-edge),
     0 1px 3px 0 var(--color-glass-shadow);
@@ -150,8 +166,8 @@
     var(--color-glass-fill),
     transparent 40%
   );
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
 }
 
 /* Custom Scrollbar - only on Windows/Linux; macOS uses native overlay scrollbars */
