@@ -140,6 +140,56 @@ pasted text starting with one would invoke them.
 Verified on the real recording: `כל מיני סקילים` now transcribes as
 `כל מיני skills`. The other eight clips are unchanged.
 
+## Follow-up: breadth, and the bug that breadth exposed
+
+Daniel asked for the rest of it: WordPress, Rav Messer, "the language people
+speak with Claude Code, all the tools, everything people work with in Israel."
+
+The list was built from evidence rather than recall. Dependency manifests
+across this workspace name the real stack (Radix, TipTap, TanStack, Remotion,
+Capacitor, Zustand, Upstash). A grep for Israeli services ranked them by how
+often they actually appear: CardCom 2861, Priority 1018, Wix 591, Rav Messer 83.
+The MCP servers on this machine named the rest. That took the table to 160
+Hebrew keys.
+
+**The breadth is what broke it.** End-to-end on real audio, `value` came out as
+`Vaul`, three times. A four-letter UI library in the phonetic pass had eaten
+one of the most common words in his vocabulary. Reading the table did not catch
+it. The existing tests did not catch it. Only running the app did.
+
+So the check became mechanical: push a list of common English words through the
+Latin pass and fail on any that change. That found eleven more of exactly the
+same shape.
+
+| word           | was becoming     |
+| -------------- | ---------------- |
+| `out`          | OAuth            |
+| `call`, `cell` | CLI              |
+| `done`, `dino` | Deno             |
+| `rest`         | Rust, then React |
+| `been`         | Bun              |
+| `none`         | Neon             |
+| `course`       | CORS             |
+| `vote`         | Vite             |
+| `sore`, `soar` | Sora             |
+| `strict`       | struct           |
+| `sleek`        | Slack            |
+| `pillar`       | Polar            |
+| `mourning`     | Morning          |
+
+Thirteen names were dropped from the Latin pass outright; Slack, Morning and
+React kept their Hebrew spellings and lost their phonetic entry. `cloud` ->
+`Claude` is now the single deliberate exception, and has its own test saying so.
+
+The lesson is narrower than "no ordinary English words", which was already the
+rule. It is: **no short brand name that sounds like an ordinary English word**,
+and no way to know which those are except to test them.
+
+Also added a corpus test built from Daniel's real dictation history: ten
+sentences that must pass through untouched, six that must be corrected. All
+forty sentences in the extracted corpus were checked by hand first, and every
+change the table made to them was correct.
+
 **Deliberately left alone.** `cargo clippy -D warnings` fails on this repo, but
 every finding predates this branch (`portable.rs` `write_with_newline`,
 `items_after_test_module` in `transcription.rs`, and an unused assignment at

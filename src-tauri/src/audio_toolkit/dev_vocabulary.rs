@@ -42,6 +42,22 @@
 //! the whole term: `קלודקוד` and `סופרבייס` are safe, `קוד` and `סופר` never
 //! are.
 //!
+//! There is a second, sharper rule for the Latin list that the first one does
+//! not cover: **no short brand name that sounds like an ordinary English
+//! word.** `Vaul`, `Deno`, `CLI` and `OAuth` are not ordinary English, and all
+//! four still had to be removed, because they quietly rewrote `value`, `done`,
+//! `call` and `out`. Nothing catches this by reading; the table is checked
+//! against a list of common English words by
+//! `common_english_survives_the_latin_pass`, and anything that fails belongs
+//! in `hebrew_only` or nowhere.
+//!
+//! The Israeli entries deserve their own note. CardCom, Rav Messer, Green
+//! Invoice, Isracard, Tranzila and Priority are the payment and invoicing
+//! services these projects actually integrate with (CardCom alone appears
+//! thousands of times across this workspace), and no general-purpose
+//! vocabulary anywhere will ever contain them. That is the whole argument for
+//! a Hebrew-first dictation app shipping its own dictionary.
+//!
 //! Nothing here ever emits a leading slash. `/goal` and `/compact` are real
 //! commands, and text pasted into a prompt starting with one would invoke
 //! them, so the words go in bare and the slash stays the typist's decision.
@@ -156,14 +172,102 @@ pub const DEV_VOCABULARY: &[Term] = &[
     hebrew_only("build", &["בילד"]),
     hebrew_only("lint", &["לינט"]),
     hebrew_only("plan", &["פלאן"]),
+    hebrew_only("staging", &["סטייג'ינג"]),
+    hebrew_only("production", &["פרודקשן"]),
+    hebrew_only("database", &["דאטהבייס"]),
+    hebrew_only("schema", &["סכמה"]),
+    hebrew_only("query", &["קווארי"]),
+    hebrew_only("component", &["קומפוננטה"]),
+    hebrew_only("state", &["סטייט"]),
+    hebrew_only("props", &["פרופס"]),
+    hebrew_only("server", &["סרבר"]),
+    hebrew_only("client", &["קלייאנט"]),
+    hebrew_only("backend", &["בקאנד"]),
+    hebrew_only("frontend", &["פרונטאנד"]),
+    hebrew_only("rollback", &["רולבק"]),
+    hebrew_only("tests", &["טסטים"]),
+    hebrew_only("issue", &["אישיו"]),
+    hebrew_only("code review", &["קוד רוויו"]),
+    hebrew_only("landing page", &["לנדינג פייג'"]),
+    // AI tools. Daniel names these to Claude Code constantly, and every one of
+    // them is a brand the model has no reason to spell right.
+    term("ChatGPT", &["צ'אט ג'יפיטי"]),
+    term("OpenAI", &["אופן איי איי"]),
+    term("Gemini", &["ג'מיני"]),
+    term("Midjourney", &["מידג'רני"]),
+    term("ElevenLabs", &["אילבן לאבס"]),
+    term("Perplexity", &["פרפלקסיטי"]),
+    term("Ollama", &["אולמה"]),
+    term("LangChain", &["לאנגצ'יין"]),
+    term("Zapier", &["זאפייר"]),
+    latin_only("Runway"),
+    // The stack these projects are actually built on, taken from the
+    // dependencies in this workspace rather than from a list of popular
+    // libraries.
+    term("Radix UI", &["רדיקס"]),
+    term("TipTap", &["טיפטאפ"]),
+    term("TanStack", &["טאנסטאק"]),
+    hebrew_only("React", &["ריאקט"]),
+    term("Angular", &["אנגולר"]),
+    term("Svelte", &["סבלט"]),
+    term("Zustand", &["זוסטנד"]),
+    term("Framer Motion", &["פריימר מושן"]),
+    term("Remotion", &["רמושן"]),
+    term("Recharts", &["ריצ'ארטס"]),
+    term("Capacitor", &["קפסיטור"]),
+    term("Storybook", &["סטוריבוק"]),
+    term("Upstash", &["אפסטאש"]),
+    term("Shiki", &["שיקי"]),
+    term("Sonner", &["סונר"]),
+    term("Lucide", &["לוסייד"]),
+    latin_only("Radix"),
+    latin_only("Embla"),
+    latin_only("FullCalendar"),
+    latin_only("Streamdown"),
+    latin_only("Solana"),
+    // Israeli services. These are the ones that turn up across this workspace,
+    // by a wide margin: CardCom alone appears thousands of times. No general
+    // vocabulary would ever contain them, which is exactly why they belong in
+    // a Hebrew-first dictation app.
+    term("CardCom", &["קארדקום", "קרדקום"]),
+    term("Green Invoice", &["גרין אינבויס"]),
+    hebrew_only("Morning", &["מורנינג"]),
+    term("Rav Messer", &["רב מסר"]),
+    term("Priority", &["פריוריטי"]),
+    term("Isracard", &["ישראכרט"]),
+    term("Tranzila", &["טרנזילה"]),
+    term("PayPlus", &["פייפלוס"]),
+    term("PayBox", &["פייבוקס"]),
+    term("Wix", &["ויקס"]),
+    hebrew_only("Monday", &["מאנדיי"]),
+    // Platforms and services people name out loud.
+    term("WordPress", &["וורדפרס"]),
+    term("WooCommerce", &["ווקומרס"]),
+    term("Elementor", &["אלמנטור"]),
+    term("Shopify", &["שופיפיי"]),
+    term("HubSpot", &["האבספוט"]),
+    term("Mailchimp", &["מיילצ'ימפ"]),
+    term("Airtable", &["אירטייבל"]),
+    term("Notion", &["נושן"]),
+    hebrew_only("Slack", &["סלאק"]),
+    term("Discord", &["דיסקורד"]),
+    term("Telegram", &["טלגרם"]),
+    term("WhatsApp", &["וואטסאפ"]),
+    term("Instagram", &["אינסטגרם"]),
+    term("TikTok", &["טיקטוק"]),
+    term("YouTube", &["יוטיוב"]),
+    term("LinkedIn", &["לינקדאין"]),
+    term("Facebook", &["פייסבוק"]),
+    term("Google", &["גוגל"]),
+    term("Railway", &["רילוויי"]),
+    term("Heroku", &["הרוקו"]),
+    term("DigitalOcean", &["דיגיטל אושן"]),
+    latin_only("LemonSqueezy"),
     // Languages and runtimes. Only the ones that get mangled. "Python" and
     // "JavaScript" are spelled correctly by the model and are left out.
     term("TypeScript", &["טייפסקריפט"]),
     latin_only("SwiftUI"),
-    latin_only("Rust"),
     latin_only("Node.js"),
-    latin_only("Deno"),
-    latin_only("Bun"),
     latin_only("npm"),
     latin_only("npx"),
     latin_only("pnpm"),
@@ -172,7 +276,6 @@ pub const DEV_VOCABULARY: &[Term] = &[
     // Normalization drops the space, so the joined spelling is the same key.
     term("Next.js", &["נקסט ג'יאס"]),
     term("Tauri", &["טאורי", "טאוארי"]),
-    latin_only("Vite"),
     latin_only("Turbopack"),
     term("Tailwind", &["טיילווינד"]),
     term("shadcn", &["שדסיאן"]),
@@ -198,12 +301,10 @@ pub const DEV_VOCABULARY: &[Term] = &[
     term("Postgres", &["פוסטגרס"]),
     latin_only("PostgreSQL"),
     latin_only("pgvector"),
-    latin_only("Neon"),
     term("Redis", &["רדיס"]),
     term("SQLite", &["אסקיולייט"]),
     term("Firebase", &["פיירבייס"]),
     term("Stripe", &["סטרייפ"]),
-    latin_only("Polar"),
     term("RevenueCat", &["רבניוקט", "רוונקט"]),
     term("PostHog", &["פוסטהוג"]),
     term("Sentry", &["סנטרי"]),
@@ -213,11 +314,9 @@ pub const DEV_VOCABULARY: &[Term] = &[
     term("Docker", &["דוקר"]),
     term("Figma", &["פיגמה"]),
     latin_only("Linear"),
-    latin_only("Notion"),
     term("Xcode", &["אקסקוד"]),
     term("TestFlight", &["טסטפלייט"]),
     latin_only("Homebrew"),
-    latin_only("CardCom"),
     latin_only("Bunny Stream"),
     term("Whisper", &["ויספר"]),
     // Jargon that is not an ordinary English word. Anything that reads as
@@ -232,22 +331,18 @@ pub const DEV_VOCABULARY: &[Term] = &[
     latin_only("pgAdmin"),
     latin_only("localhost"),
     latin_only("favicon"),
-    latin_only("OAuth"),
     latin_only("JWT"),
-    latin_only("CORS"),
     latin_only("GraphQL"),
     latin_only("WebSocket"),
     latin_only("JSON"),
     latin_only("YAML"),
     latin_only("SDK"),
-    latin_only("CLI"),
     latin_only("API"),
     latin_only("UUID"),
     latin_only("CRUD"),
     latin_only("regex"),
     latin_only("async"),
     latin_only("enum"),
-    latin_only("struct"),
 ];
 
 /// Prefixes Hebrew glues onto the front of a noun, including a foreign one.
@@ -649,6 +744,50 @@ mod tests {
         assert_eq!(correct("הם מקילים על התנאים"), "הם מקילים על התנאים");
     }
 
+    /// Every name in the Latin list is a magnet for whatever sounds like it,
+    /// which is the point and also the danger. Short brand names are the worst
+    /// offenders: `Vaul` swallowed `value`, `Deno` swallowed `done`, `CLI`
+    /// swallowed `call`, `OAuth` swallowed `out`. All four survived a reading
+    /// of the table and every other test here, and were caught only by running
+    /// real audio through the app.
+    ///
+    /// So the list is checked against ordinary English mechanically. A name
+    /// that fails this belongs in `hebrew_only`, or nowhere.
+    #[test]
+    fn common_english_survives_the_latin_pass() {
+        const COMMON_ENGLISH: &str = "\
+the be to of and a in that have it for not on with he as you do at this but his by from they we
+say her she or an will my one all would there their what so up out if about who get which go me
+when make can like time no just him know take people into year your good some could them see
+other than then now look only come its over think also back after use two how our work first
+well way even new want because any these give day most us value done rest been none strict vote
+sore soar sleek learner pillar mourning weeks dino stark start stop store sort short shirt
+search server serve save size site style state stage scale skill still call cell sell fell full
+fill file five love live leave list last least less lost cost case cause close clear clean click
+clock course source force fourth forth north word world worse model module modal medal metal
+mental mode more moon month main mean men man many money";
+
+        for word in COMMON_ENGLISH.split_whitespace() {
+            let corrected = apply_custom_words(word, &latin_words(), THRESHOLD);
+            assert_eq!(
+                corrected, word,
+                "{word:?} was rewritten to {corrected:?}; that name belongs in hebrew_only, or nowhere"
+            );
+        }
+    }
+
+    /// The one deliberate exception to the test above. A Hebrew speaker says
+    /// `ענן` for the sky, so Latin-script `cloud` in a Hebrew transcription
+    /// means they said "Claude", and correcting it is the most valuable single
+    /// thing the Latin pass does.
+    #[test]
+    fn cloud_is_the_one_english_word_deliberately_swallowed() {
+        assert_eq!(
+            apply_custom_words("cloud", &latin_words(), THRESHOLD),
+            "Claude"
+        );
+    }
+
     /// Joining words makes a long candidate, and on a long candidate one
     /// forgiven letter is enough to reach into the next word. Caught by
     /// `subagents` eating the `עם` that followed `סאב אייג'נט`.
@@ -658,6 +797,62 @@ mod tests {
             correct("תריץ סאב אייג'נט עם הוקים"),
             "תריץ subagent עם hooks"
         );
+    }
+
+    /// The table is large enough that eyeballing it proves nothing. These are
+    /// real sentences Daniel dictated, taken verbatim from session history and
+    /// picked because they contain no term at all. A key that starts matching
+    /// ordinary Hebrew shows up here first.
+    #[test]
+    fn ordinary_dictation_passes_through_untouched() {
+        for sentence in [
+            "אוקיי, אז מה נשאר כדי לעלות עם זה לאוויר, כדי שאני אוכל לתת לאנשים להתקין את זה",
+            "אז אולי באמת להתרכז רגע בפרופיל של, לא יודע, אני חושב איתך ביחד",
+            "אני רוצה לשנות את השם של האפליקציה מדבר ל דיבור",
+            "אני שקלתי גם ליצור לזה איזה עמוד אינטרנט, משהו מגניב, שהם יוכלו להיכנס ולראות",
+            "אתה חייב לשפר את זה שזה ייראה קטלני, שזה ייראה פרימיום, שזה ייראה טוב",
+            "בנוסף, הייתי רוצה לארוז את זה בצבעים אחרים, עם שם אחר, לוגו אחר, והכל",
+            "הרי אני הולך לתת את זה בחינם בהתחלה, ואולי אחר כך לגבות על זה כסף",
+            "צריך רגע להבין מבחינת שעות, מבחינת פרקטיקה, כמה ימים לעשות את זה",
+            "תעשה סדר ביומן ותבדוק שהשעות של הסטודנטים נכונות",
+            "הם רוצים לעבוד כצוות, כקבוצה, וזה נראה לי יותר חשוב",
+        ] {
+            assert_eq!(correct(sentence), sentence, "corrupted: {sentence}");
+        }
+    }
+
+    /// The other half of the same corpus: sentences that do contain a term,
+    /// with the correction each one is supposed to get.
+    #[test]
+    fn real_dictation_gets_the_corrections_it_should() {
+        for (spoken, expected) in [
+            (
+                "עדיין יש עוד מושגים שלא הכנסת, כמו רב מסר",
+                "עדיין יש עוד מושגים שלא הכנסת, כמו Rav Messer",
+            ),
+            (
+                "תקרא את המסמכים הרשמיים של קלוד קוד החדשים",
+                "תקרא את המסמכים הרשמיים של Claude Code החדשים",
+            ),
+            (
+                "המודל שמתאים לעברית זה הוויספר מידיום",
+                "המודל שמתאים לעברית זה ה-Whisper מידיום",
+            ),
+            (
+                "ונגיד שאני אולי עובד בוואטסאפ",
+                "ונגיד שאני אולי עובד ב-WhatsApp",
+            ),
+            (
+                "שתעבוד על כל המילים שהן רלוונטיות לקלוד קוד",
+                "שתעבוד על כל המילים שהן רלוונטיות ל-Claude Code",
+            ),
+            (
+                "תבנה את האתר בוורדפרס ותחבר את קארדקום",
+                "תבנה את האתר ב-WordPress ותחבר את CardCom",
+            ),
+        ] {
+            assert_eq!(correct(spoken), expected);
+        }
     }
 
     /// A Hebrew spelling short enough to collide with an ordinary word is
