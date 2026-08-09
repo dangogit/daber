@@ -1,4 +1,6 @@
-use crate::audio_toolkit::{apply_custom_words, filter_transcription_output, DEV_VOCABULARY};
+use crate::audio_toolkit::{
+    apply_custom_words, apply_hebrew_terms, filter_transcription_output, DEV_VOCABULARY,
+};
 use crate::managers::audio::AudioRecordingManager;
 use crate::managers::model::{EngineType, ModelManager};
 use crate::settings::{
@@ -1623,8 +1625,9 @@ fn effective_custom_words(settings: &AppSettings) -> Vec<String> {
         words.extend(
             DEV_VOCABULARY
                 .iter()
-                .filter(|term| !already_present.contains(&term.to_lowercase()))
-                .map(|term| term.to_string()),
+                .map(|term| term.canonical)
+                .filter(|name| !already_present.contains(&name.to_lowercase()))
+                .map(|name| name.to_string()),
         );
     }
     words
@@ -1632,6 +1635,16 @@ fn effective_custom_words(settings: &AppSettings) -> Vec<String> {
 
 fn post_process_transcription_text(raw: String, settings: &AppSettings) -> String {
     fail_open_text_transform(raw, |raw| {
+        // Hebrew first. A product name spoken with a Hebrew accent arrives as
+        // Hebrew letters (`קלוד קוד`), which the fuzzy matcher below cannot
+        // see at all, and recovering it here means the fuzzy pass then meets
+        // an exact match and leaves it alone.
+        let raw = if settings.dev_vocabulary {
+            apply_hebrew_terms(&raw, DEV_VOCABULARY)
+        } else {
+            raw
+        };
+
         let custom_words = effective_custom_words(settings);
         let corrected = if custom_words.is_empty() {
             raw

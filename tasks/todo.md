@@ -76,6 +76,36 @@ these same recordings, "Modes" came out as `מוז`, and nothing in this change
 touches that. Fixing it needs a Hebrew-to-English term map, which is a separate
 piece of work.
 
+## Follow-up: the Hebrew half, which turned out to be the larger half
+
+Daniel tried the shipped build and reported the real shape of the problem: he
+says "קלוד קוד", "ורסל", "גיטאב", "סופר בייס", and they come out in Hebrew
+letters, where the pass above cannot see them. His own history shows how
+arbitrary the model is about it: one recording contains `GitHub` and `workflow`
+in Latin script next to `סקילים` and `Cloud Code`, in one breath.
+
+So `apply_hebrew_terms` was added, running before the Latin pass. It is a
+lookup rather than a phonetic matcher, because Soundex means nothing across
+scripts:
+
+- `normalize_hebrew` folds away what carries no meaning: final letter forms,
+  doubled vav and yod, niqqud, gershayim, and the space inside a two-word name.
+  One table entry then covers `וורסל`, `ורסל` and `ורסל,` alike. Five spellings
+  were removed from the table once a test proved normalization already covered
+  them.
+- Keys under 4 characters are rejected, and one wrong letter is tolerated only
+  at 6 characters or more. `קוד` and `סופר` are ordinary Hebrew, so only the
+  complete term is ever a key.
+- A glued prefix is peeled and put back with a maqaf, so `בוורסל` becomes
+  `ב-Vercel` rather than being missed.
+
+Verified end to end on the two clips where Daniel named the terms out loud:
+`זה נגיד אני אומר Claude Code` and `נגיד Vercel, GitHub, Supabase`. The other
+seven recordings are unchanged.
+
+Left in Hebrew on purpose: `סקיל` and `וורקפלו`. They read naturally in a
+Hebrew sentence, and this table is for product names.
+
 **Deliberately left alone.** `cargo clippy -D warnings` fails on this repo, but
 every finding predates this branch (`portable.rs` `write_with_newline`,
 `items_after_test_module` in `transcription.rs`, and an unused assignment at
