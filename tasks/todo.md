@@ -106,6 +106,40 @@ seven recordings are unchanged.
 Left in Hebrew on purpose: `סקיל` and `וורקפלו`. They read naturally in a
 Hebrew sentence, and this table is for product names.
 
+## Follow-up: Claude Code's own words
+
+That last decision was wrong, and Daniel said so: the point of the tool is
+working with Claude Code, so its vocabulary is the vocabulary that matters most.
+Asking for a `סקיל` is a guess; asking for a `skill` is a skill.
+
+Read the official glossary at code.claude.com and took the spellings from it:
+skill, subagent, hook, plugin, goal, plan mode, checkpoint, worktree, artifact,
+teleport, compact, context window, MCP, prompt, token. `/goal` is a real
+command, which settles the `גול` question.
+
+Three things fell out of doing this properly:
+
+**The two passes want different words.** The Latin pass matches phonetically, so
+every word it knows also swallows what merely sounds like it, and an ordinary
+English word there is pure risk. The Hebrew pass is a lookup against Hebrew
+letters, which no English word can collide with. So `קומיט` can safely become
+`commit` while `commit` itself stays out of the Latin list. `Term` grew a
+`latin_pass` flag and a `hebrew_only` constructor.
+
+**Six characters was too short a fuzzy floor.** `סקילים` (skills) and `מקילים`
+(they ease) differ by one letter. Raised to seven, with a test.
+
+**A joined span spends its edit on the next word.** `סאב אייג'נט עם` is one
+letter from the key for `subagents`, so a three-word span ate the preposition
+after it and produced "subagents hooks". Fuzzy matching is now single-word only;
+multi-word terms must match exactly. Caught by a test, not by reading.
+
+Nothing emits a leading slash. `/goal` and `/compact` are real commands, and
+pasted text starting with one would invoke them.
+
+Verified on the real recording: `כל מיני סקילים` now transcribes as
+`כל מיני skills`. The other eight clips are unchanged.
+
 **Deliberately left alone.** `cargo clippy -D warnings` fails on this repo, but
 every finding predates this branch (`portable.rs` `write_with_newline`,
 `items_after_test_module` in `transcription.rs`, and an unused assignment at
