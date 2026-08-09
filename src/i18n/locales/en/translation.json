@@ -298,6 +298,10 @@
         "remove": "Remove {{word}}",
         "duplicate": "\"{{word}}\" already exists"
       },
+      "devVocabulary": {
+        "label": "Developer vocabulary",
+        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

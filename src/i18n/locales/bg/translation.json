@@ -298,6 +298,10 @@
         "remove": "Премахване на {{word}}",
         "duplicate": "„{{word}}“ вече съществува"
       },
+      "devVocabulary": {
+        "label": "Developer vocabulary",
+        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+      },
       "voiceActivityDetection": {
         "title": "Откриване на гласова активност",
         "description": "Филтрира тишината от записите. Моделите с поддръжка на стрийминг използват по-дълга опашка на VAD; изключването на VAD записва необработен звук."

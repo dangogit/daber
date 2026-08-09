@@ -298,6 +298,10 @@
         "remove": "Odebrat {{word}}",
         "duplicate": "\"{{word}}\" již existuje"
       },
+      "devVocabulary": {
+        "label": "Developer vocabulary",
+        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+      },
       "voiceActivityDetection": {
         "title": "Detekce hlasové aktivity",
         "description": "Odfiltruje ticho z nahrávek. Modely podporující streaming používají delší doběh VAD; vypnutí VAD nahrává surový zvuk."

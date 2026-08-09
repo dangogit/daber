@@ -298,6 +298,10 @@
         "remove": "Fjern {{word}}",
         "duplicate": "\"{{word}}\" findes allerede"
       },
+      "devVocabulary": {
+        "label": "Developer vocabulary",
+        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+      },
       "voiceActivityDetection": {
         "title": "Stemmeaktivitetsdetektion",
         "description": "Filtrer stilhed fra optagelser. Streaming-modeller bruger en længere VAD-hale; deaktivering af VAD optager rå lyd."

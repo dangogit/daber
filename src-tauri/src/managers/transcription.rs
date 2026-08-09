@@ -1,4 +1,4 @@
-use crate::audio_toolkit::{apply_custom_words, filter_transcription_output};
+use crate::audio_toolkit::{apply_custom_words, filter_transcription_output, DEV_VOCABULARY};
 use crate::managers::audio::AudioRecordingManager;
 use crate::managers::model::{EngineType, ModelManager};
 use crate::settings::{
@@ -9,6 +9,7 @@ use anyhow::Result;
 use log::{debug, error, info, warn};
 use serde::{Deserialize, Serialize};
 use specta::Type;
+use std::collections::HashSet;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{mpsc, Arc, Condvar, Mutex, MutexGuard, OnceLock};
@@ -1076,9 +1077,7 @@ impl TranscriptionManager {
         };
 
         let settings = get_settings(&self.app_handle);
-        // Streaming models do not receive a decode prompt, so custom words
-        // always go through the shared fuzzy post-correction path.
-        let filtered = post_process_transcription_text(raw, &settings, false);
+        let filtered = post_process_transcription_text(raw, &settings);
 
         self.maybe_unload_immediately("streaming transcription");
         Ok(Some(filtered))
@@ -1172,9 +1171,9 @@ impl TranscriptionManager {
 
         // Whether the loaded transcribe-cpp model advertises
         // Feature::InitialPrompt. Informational (logged below); the whisper
-        // run extension and the fuzzy-correction skip are gated on
-        // `model_is_whisper` instead, since non-whisper archs can advertise
-        // the feature while rejecting the whisper-kind extension.
+        // run extension is gated on `model_is_whisper` instead, since
+        // non-whisper archs can advertise the feature while rejecting the
+        // whisper-kind extension.
         let mut model_takes_initial_prompt = false;
         // Whether the loaded model is actually whisper-family (arch string).
         // Non-whisper archs (e.g. Voxtral Small) can advertise
@@ -1393,12 +1392,18 @@ impl TranscriptionManager {
             }
         };
 
-        // Apply fuzzy word correction if custom words are configured — UNLESS the
-        // words were already handed to the model as an initial prompt (whisper
-        // family). We don't pass a prompt to non-whisper models (it requires the
-        // whisper-kind run extension), so they still get fuzzy correction here,
-        // same as the ONNX engines.
-        let filtered_result = post_process_transcription_text(result, &settings, model_is_whisper);
+        // Fuzzy correction runs on every model, including the whisper family
+        // that also received the words as a decode prompt. The prompt was once
+        // treated as proof the work was done; measuring it on the shipped
+        // Hebrew model showed otherwise. Priming the decoder with
+        // "Claude Code, Supabase, Tauri, ..." still produced "Cloud Code",
+        // because the ivrit fine-tune is biased far enough toward Hebrew that
+        // the prompt does not move it. Correction after the fact does move it:
+        // `cloud` and `claude` share a Soundex code.
+        //
+        // Running both is safe. A word the prompt already spelled correctly is
+        // an exact match, which the matcher leaves alone.
+        let filtered_result = post_process_transcription_text(result, &settings);
 
         let et = std::time::Instant::now();
         let translation_note = if settings.translate_to_english {
@@ -1605,20 +1610,33 @@ fn transcribe_cpp_run_plan(
     }
 }
 
-fn post_process_transcription_text(
-    raw: String,
-    settings: &AppSettings,
-    custom_words_already_prompted: bool,
-) -> String {
+/// The words fuzzy correction matches against: whatever the user typed, plus
+/// the built-in developer vocabulary when they have not turned it off.
+///
+/// The user's own words come first so that an exact duplicate resolves to their
+/// spelling rather than ours.
+fn effective_custom_words(settings: &AppSettings) -> Vec<String> {
+    let mut words = settings.custom_words.clone();
+    if settings.dev_vocabulary {
+        let already_present: HashSet<String> =
+            words.iter().map(|word| word.to_lowercase()).collect();
+        words.extend(
+            DEV_VOCABULARY
+                .iter()
+                .filter(|term| !already_present.contains(&term.to_lowercase()))
+                .map(|term| term.to_string()),
+        );
+    }
+    words
+}
+
+fn post_process_transcription_text(raw: String, settings: &AppSettings) -> String {
     fail_open_text_transform(raw, |raw| {
-        let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
-            apply_custom_words(
-                &raw,
-                &settings.custom_words,
-                settings.word_correction_threshold,
-            )
-        } else {
+        let custom_words = effective_custom_words(settings);
+        let corrected = if custom_words.is_empty() {
             raw
+        } else {
+            apply_custom_words(&raw, &custom_words, settings.word_correction_threshold)
         };
 
         filter_transcription_output(

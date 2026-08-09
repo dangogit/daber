@@ -397,6 +397,12 @@ pub struct AppSettings {
     pub log_level: LogLevel,
     #[serde(default)]
     pub custom_words: Vec<String>,
+    /// Merges a built-in list of product names and developer jargon into
+    /// custom-word correction. On by default: the model reliably misspells
+    /// "Claude" as "cloud", which is the first thing anyone dictating to a
+    /// coding agent will notice.
+    #[serde(default = "default_dev_vocabulary")]
+    pub dev_vocabulary: bool,
     #[serde(default)]
     pub model_unload_timeout: ModelUnloadTimeout,
     #[serde(default = "default_word_correction_threshold")]
@@ -552,6 +558,10 @@ fn default_log_level() -> LogLevel {
 
 fn default_word_correction_threshold() -> f64 {
     0.18
+}
+
+fn default_dev_vocabulary() -> bool {
+    true
 }
 
 fn default_paste_delay_ms() -> u64 {
@@ -872,6 +882,7 @@ pub fn get_default_settings() -> AppSettings {
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),
+        dev_vocabulary: default_dev_vocabulary(),
         model_unload_timeout: ModelUnloadTimeout::default(),
         word_correction_threshold: default_word_correction_threshold(),
         history_limit: default_history_limit(),

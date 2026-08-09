@@ -298,6 +298,10 @@
         "remove": "刪除 {{word}}",
         "duplicate": "「{{word}}」已存在"
       },
+      "devVocabulary": {
+        "label": "Developer vocabulary",
+        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+      },
       "voiceActivityDetection": {
         "title": "語音活動偵測",
         "description": "過濾錄音中的靜音。支援串流的模型會使用較長的 VAD 尾段；停用 VAD 則會錄製原始音訊"
