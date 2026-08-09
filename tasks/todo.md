@@ -1,109 +1,83 @@
-# Dibur 1.0: an app for people who just want to talk
+# Dibur: a built-in vocabulary for the words developers actually say
 
-Handy is a power tool for people who choose models. Dibur is for an Israeli who
-wants their speech to become Hebrew text. Everything below follows from that one
-difference.
+Dibur is being positioned as the dictation app for working with Claude Code in
+Hebrew. That claim fails on the first sentence if the app cannot spell "Claude".
 
-Cross-platform from the start: the release workflow inherited from upstream
-already builds macOS (Intel + ARM), Windows (x64 + ARM64) and Linux, so every
-decision here has to hold on a Windows laptop with no usable GPU, not only on an
-M4 with Metal.
+## The evidence
 
-## Decisions
+Daniel dictated a message about this feature. The model transcribed it as
+**"Cloud Code"**, twice, in the same message where he asked for the fix. He then
+dictated the confirmation, and it happened twice more.
 
-**The model ships inside the app, quantized.** The full-precision model is
-1,625 MB, which is too much to bundle and too much to download on first run.
-Quantization was measured rather than assumed — see `docs/` for the numbers.
-5-bit formats were ruled out despite their size: they pay a heavy unpacking cost
-on CPU, which is exactly the machine that can least afford it.
+Two things are true about the model's behaviour, both measured on that audio:
 
-**No model picker anywhere.** One model, chosen for Hebrew. The picker, the
-catalog UI and the "show all models" list all go. What stays is a single repair
-affordance in Advanced, for when the file on disk is damaged.
+1. **It already emits Latin script for English words.** `built-in` and `value`
+   came out correctly. So this is not a transliteration problem, it is a
+   spelling problem on proper nouns.
+2. **The whisper initial prompt does not fix it.** The same clip was run with
+   `--prompt "Claude Code, Supabase, Tauri, Vercel, ..."` and still produced
+   "Cloud Code", twice. The ivrit fine-tune is biased hard enough toward Hebrew
+   that decoder priming does not move it.
 
-**Onboarding ends with a successful dictation.** The current flow ends with a
-download bar, which teaches nothing. The new one ends with the user having said
-something and watched it become text. That is the moment the app makes sense,
-and it doubles as an end-to-end check of microphone, permissions, model and
-paste before they try it in a real app.
+## The bug
+
+Dibur has two mechanisms for custom words, and on our models exactly the wrong
+one is active.
+
+`post_process_transcription_text` is called with `custom_words_already_prompted:
+model_is_whisper` (`managers/transcription.rs:1401`). Every model Dibur ships is
+whisper, so the fuzzy post-correction is always skipped, on the assumption that
+the initial prompt already handled it. Finding 2 above shows it does not.
+
+The correction path is the one that works here: `cloud` and `claude` share the
+Soundex code C430, which drops the score to 0.1, under the 0.18 threshold.
 
 ## Plan
 
-### 1. Model delivery
+- [x] Always run `apply_custom_words`, on every model. Keep the initial prompt
+      for user words, but stop treating it as proof the work is done.
+- [x] Add a curated built-in vocabulary, merged with the user's own words.
+- [x] Setting `dev_vocabulary`, default on, so a non-developer can turn it off.
+- [x] UI toggle, English copy, Hebrew copy, seeded translations.
+- [x] Tests, including "Cloud Code" -> "Claude Code" on the real failure.
 
-- [x] Quantize the ivrit.ai model and publish it (Apache-2.0 permits this, with attribution)
-- [x] Host it where a blocked huggingface.co cannot break setup, pinned by SHA-256
-- [x] Download it in the background from app start rather than at a screen of its own
-- [x] Keep the download path alive purely as a repair route
+## What goes in the list, and what does not
 
-Bundling into the installer was the original plan and was dropped once the
-measurement came in: the quantization that keeps full accuracy is 874 MB, which
-makes for a ~890 MB installer that everyone pays before they know whether they
-want the app. Overlapping the download with permissions and shortcut setup costs
-the user nothing, because that setup takes about as long. The resource-bundling
-path stays supported for an offline installer variant.
+The matcher only ever looks at ASCII tokens, so Hebrew words are never touched.
+The risk is that an incidental English word gets pulled toward a listed term.
 
-### 2. Onboarding
+So the rule is: **product names, brand names and jargon that is not an ordinary
+English word.** Whisper already spells `commit`, `deploy` and `refactor`
+correctly, so listing them buys nothing and puts near-homophones at risk
+(`march` -> `merge`, `stayed` -> `state`). Listing `Supabase`, `pgvector`,
+`shadcn` and `Claude Code` buys everything, because those are exactly the words
+the model has never seen enough of.
 
-- [x] Turn the flow into a platform-aware step list rather than two hardcoded screens
-- [x] Permissions step: unchanged behaviour, skipped where the platform has none
-- [x] Hotkey step: pick the key, with the platform default pre-filled
-- [x] Try-it step: a box that fills with what the user says
-- [x] Model step appears only when the model is genuinely missing
-
-### 3. Strip what nobody needs
-
-- [x] Remove the Models section from the sidebar and delete the picker components
-- [x] Remove the model card from the main screen
-- [x] Move channel, mute-while-recording, output device and volume into Advanced
-- [x] Main screen keeps: hotkey, push-to-talk, microphone, audio feedback
-
-### 4. Prove it
-
-- [x] Hebrew transcription still matches the reference on real recordings
-- [x] Fresh-profile first run on macOS: download, verify, transcribe
-- [x] Windows, macOS and Linux all compile in CI (dispatched manually — these
-      workflows trigger on push to main, not on PR branches)
-- [x] Four inherited CI faults fixed, all of which hid that the code built fine
+`Claude` is listed on its own despite colliding with `cloud`. A Hebrew speaker
+says `ענן`, not `cloud`, so for a Latin-script `cloud` to appear at all the
+speaker almost certainly said "Claude".
 
 ## Review
 
-**The quantization is free.** q8_0 output is byte-identical to the 1,625 MB
-original on all three of Daniel's own microphone recordings, run through the app
-itself rather than a benchmark harness, on Metal at 1.1-2.5x real time. 874 MB
-instead of 1,625 MB for no measurable loss.
+**Proved end to end, not just in a unit test.** The debug binary was run with
+`--transcribe-file` over six of Daniel's own recordings. The two clips that
+previously produced "Cloud Code" now produce "Claude Code", four occurrences in
+total, and `built-in` and `value` came through untouched. The other four clips
+are byte-identical to what the old build produced, so the wider vocabulary
+introduced no collateral damage on real Hebrew speech.
 
-**5-bit formats were the trap.** On this M4 they looked best of all — fastest on
-Metal, output matching on seven of eight clips. They are also 3-5x slower on a
-CPU without native fp16, which is the Windows laptop this app has to be good on
-and the one machine that cannot absorb it. Measuring only on the development
-machine would have shipped that.
+**Cost.** Correction over the full ~120-term list takes 25 ms for a 240-word
+transcription, measured. Transcription itself is seconds, and correction runs
+once per utterance, so this does not register.
 
-**Two bugs the build did not catch,** both found by rereading the diff:
+**A limitation worth naming.** The matcher only ever inspects ASCII candidates,
+so it cannot help when the model writes a technical term in Hebrew letters. In
+these same recordings, "Modes" came out as `מוז`, and nothing in this change
+touches that. Fixing it needs a Hebrew-to-English term map, which is a separate
+piece of work.
 
-- The download was owned by the onboarding component, so someone who skipped the
-  last step mid-download ended up with the model on disk and never selected.
-  It moved to `App`, where it outlives onboarding.
-- Selecting the model on every launch would have re-loaded 874 MB onto the GPU
-  each time. Now guarded on `currentModel`.
-
-**CI had never run on this fork, and hid four faults.** Every platform compiled
-the app successfully; every failure was after the build, in signing:
-
-- The package audits still asserted a `handy` binary and `/usr/lib/Handy`. Mine,
-  left from the rebrand, and invisible because those audits are the only thing
-  that opens a built package.
-- `build-test` asked for signed binaries. A build test signs nothing.
-- `${{ cond && secrets.X || '' }}` sets the variable to an empty string rather
-  than leaving it unset, and an empty-but-present `APPLE_CERTIFICATE` is enough
-  for the Tauri bundler to attempt a keychain import.
-- The Windows `signCommand` pointed at cjpais's Azure Trusted Signing account
-  and labelled the binary Handy. It lives in the app config, so it ran on every
-  Windows build — twenty-five minutes of successful compilation thrown away at
-  the last step.
-
-**Left undone on purpose.** The 22 locales other than English and Hebrew carry
-the English text for the new strings — the same thing i18next would have shown
-through its fallback, and a translator's job rather than a guess. Windows and
-Linux are built by CI but were not run by hand; nothing in the change is
-platform-specific beyond the step list, which is derived from `platform()`.
+**Deliberately left alone.** `cargo clippy -D warnings` fails on this repo, but
+every finding predates this branch (`portable.rs` `write_with_newline`,
+`items_after_test_module` in `transcription.rs`, and an unused assignment at
+`transcription.rs:1177`). CI runs `bun run lint` and `cargo test`, not clippy,
+so none of it gates this work and none of it is mine to widen scope over.
