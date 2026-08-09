@@ -300,7 +300,7 @@
       },
       "devVocabulary": {
         "label": "Developer vocabulary",
-        "description": "Corrects product names and developer jargon that speech models routinely misspell, such as Claude Code, Supabase and Tauri. Turn it off if you do not dictate technical terms."
+        "description": "Corrects product names that speech models routinely mangle, both when they arrive misspelled in Latin script and when they arrive spelled out phonetically in Hebrew letters. Turn it off if you do not dictate technical terms."
       },
       "voiceActivityDetection": {
         "title": "Détection d'activité vocale (VAD)",
