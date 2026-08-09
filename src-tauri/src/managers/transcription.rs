@@ -1625,6 +1625,7 @@ fn effective_custom_words(settings: &AppSettings) -> Vec<String> {
         words.extend(
             DEV_VOCABULARY
                 .iter()
+                .filter(|term| term.latin_pass)
                 .map(|term| term.canonical)
                 .filter(|name| !already_present.contains(&name.to_lowercase()))
                 .map(|name| name.to_string()),
