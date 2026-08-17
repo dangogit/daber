@@ -589,6 +589,60 @@ jobs:
           assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
           args: ${{ inputs.build-args }}
 
+      # tauri-action notarizes and staples the .app, then wraps it in a disk
+      # image it does not notarize, and uploads that. The app is genuinely fine
+      # once it reaches /Applications, but the .dmg is what people actually
+      # download, and a downloaded one carries a quarantine flag:
+      #
+      #   $ spctl -a -t open --context context:primary-signature Dibur.dmg
+      #   rejected
+      #   source=Unnotarized Developer ID
+      #
+      # So the first thing anyone sees is the warning this whole certificate
+      # exists to remove. The image has to be notarized in its own right, and
+      # because the action builds and uploads in a single step, the corrected
+      # file replaces the asset it already pushed.
+      - name: Notarize the disk image and replace the uploaded one
+        if: contains(inputs.platform, 'macos') && inputs.sign-binaries && inputs.release-id != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ inputs.release-id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${APPLE_API_KEY_PATH:-}" ]; then
+            echo "No App Store Connect key; leaving the disk image un-notarized."
+            exit 0
+          fi
+
+          DMG=$(find src-tauri/target -name "*.dmg" -type f | head -1)
+          if [ -z "$DMG" ]; then
+            echo "::error::No .dmg was produced, so there is nothing to notarize."
+            exit 1
+          fi
+          echo "Notarizing $(basename "$DMG")"
+
+          xcrun notarytool submit "$DMG" \
+            --key "$APPLE_API_KEY_PATH" --key-id "$APPLE_API_KEY" --issuer "$APPLE_API_ISSUER" \
+            --wait
+          xcrun stapler staple "$DMG"
+
+          # Prove it before it goes anywhere. A stapled image that still fails
+          # here would ship the exact problem this step exists to prevent.
+          spctl -a -vvv -t open --context context:primary-signature "$DMG"
+
+          name=$(basename "$DMG")
+          old=$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" --paginate \
+            --jq ".[] | select(.name == \"${name}\") | .id" | head -1)
+          if [ -n "$old" ]; then
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/releases/assets/${old}"
+          fi
+          upload=$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" --jq .upload_url | sed 's/{.*}//')
+          gh api --method POST "${upload}?name=${name}" \
+            -H "Content-Type: application/x-apple-diskimage" \
+            --input "$DMG" >/dev/null
+          echo "Replaced ${name} with the notarized build."
+
       - name: Verify macOS dylib bundling
         if: inputs.target == 'x86_64-apple-darwin'
         shell: bash
