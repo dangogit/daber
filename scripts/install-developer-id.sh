@@ -45,12 +45,26 @@ if [ "$(openssl x509 -in "$WORK/cert.pem" -noout -pubkey)" != "$(openssl rsa -in
   exit 1
 fi
 
+# OpenSSL 3 defaults to AES-256-CBC with a SHA-256 MAC, which Apple's `security`
+# cannot verify. It reports the mismatch as "MAC verification failed during
+# PKCS12 import (wrong password?)", which sends you looking for a password
+# problem that does not exist. `-legacy -macalg sha1` produces the 3DES/SHA-1
+# combination the Keychain understands.
+#
+# The bundle also carries a real password rather than an empty one: OpenSSL and
+# the Security framework disagree about whether "" means an empty password or no
+# password at all. It lives only in this shell, for the length of one import.
+# Not `tr < /dev/urandom | head -c 32`: `head` closing the pipe hands `tr` a
+# SIGPIPE, which under `pipefail` fails the whole script with status 141 after
+# printing nothing about why.
+P12_PASS=$(openssl rand -hex 16)
+
 openssl pkcs12 -export -inkey "$WORK/key.pem" -in "$WORK/cert.pem" \
-  -out "$WORK/bundle.p12" -passout pass:
+  -out "$WORK/bundle.p12" -legacy -macalg sha1 -passout "pass:$P12_PASS"
 
 security import "$WORK/bundle.p12" \
   -k "$HOME/Library/Keychains/login.keychain-db" \
-  -P '' -T /usr/bin/codesign
+  -P "$P12_PASS" -T /usr/bin/codesign
 
 echo
 security find-identity -v -p codesigning

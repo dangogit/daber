@@ -63,6 +63,13 @@ notarize() {
     --wait
 }
 
+# The updater bundle is signed with its own minisign key, unrelated to the Apple
+# certificate above. Without it the bundler gets as far as producing the .tar.gz
+# and then fails the whole build with "a public key has been found, but no
+# private key", because tauri.conf.json names a pubkey it cannot match.
+export TAURI_SIGNING_PRIVATE_KEY="$(keychain dibur-updater-private-key)"
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(keychain dibur-updater-key-password)"
+
 # transcribe-cpp's CMake build needs this on current CMake releases.
 export CMAKE_POLICY_VERSION_MINIMUM=3.5
 
