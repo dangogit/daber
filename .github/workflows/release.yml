@@ -90,7 +90,11 @@ jobs:
   # "no update for my platform". So the manifest is checked before anyone ships.
   verify-updater-manifest:
     permissions:
-      contents: read
+      # `write`, not `read`: the release is still a draft at this point, and a
+      # draft's assets are invisible to a read-scoped token. It fails as
+      # `Resource not accessible by integration (HTTP 403)`, which reads like a
+      # missing secret rather than a scope that is one word too narrow.
+      contents: write
     needs: [create-release, publish-tauri]
     runs-on: ubuntu-latest
     steps:
