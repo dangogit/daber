@@ -245,3 +245,52 @@ Version moved 0.9.4 -> 1.0.0 across `tauri.conf.json`, `package.json` and
 to Natalie, has cjpais's public key compiled in. Those installs can never accept
 an update from us, by design. They need one manual reinstall of 1.0.0, and from
 that build onward updates flow on their own.
+
+## Release: v1.0.0, shipped 2026-08-17
+
+Published at https://github.com/dangogit/daber/releases/tag/v1.0.0, seven build
+targets, 27 assets, signed and notarized on macOS.
+
+### What the last two rebuilds were actually for
+
+CI went green on a release whose macOS disk images were **signed but not
+notarized**. `tauri-action` notarizes the `.app` and leaves the `.dmg` around it
+alone, and nothing in the pipeline looked at the file a person downloads. It was
+caught by fetching the real asset and setting `com.apple.quarantine` by hand:
+
+```
+spctl -a -t open --context context:primary-signature Dibur_1.0.0_aarch64.dmg
+rejected
+source=Unnotarized Developer ID
+```
+
+while the app inside reported `accepted / source=Notarized Developer ID`. A
+green pipeline was describing a build that Gatekeeper would have refused on a
+stranger's Mac.
+
+CI now notarizes and staples the image itself and runs `spctl` before upload, so
+this fails the release instead of reaching a user.
+
+### Verified on the published artifacts, not on the logs
+
+| | ARM | Intel |
+|---|---|---|
+| `spctl` on the quarantined DMG | accepted, Notarized Developer ID | accepted, Notarized Developer ID |
+| `stapler validate` | passes | passes |
+| app inside | accepted, Notarized | accepted, Notarized |
+| architecture | arm64 | x86_64 |
+
+The Intel bundle carried its own history: `libonnxruntime` used to be signed by
+another team, which made dyld refuse to load it. It now signs under `HK5L5QHW96`
+with no unsatisfied `@rpath` dependencies, and the binary ran for eight seconds
+under Rosetta with an empty stderr.
+
+All 18 platform entries in `latest.json` are signed with `77CE8BFE3263B401`, the
+key compiled into this build. Updates from 1.0.0 onward will be accepted.
+
+### Note on publishing
+
+`make_latest` does not take effect when it is sent in the same PATCH that clears
+`draft`. The release published correctly but `releases/latest` kept returning
+`models-v1` until `make_latest` was sent again on its own. Worth knowing before
+the next release: send it as a second call, then check.
