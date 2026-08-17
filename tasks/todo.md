@@ -195,3 +195,53 @@ every finding predates this branch (`portable.rs` `write_with_newline`,
 `items_after_test_module` in `transcription.rs`, and an unused assignment at
 `transcription.rs:1177`). CI runs `bun run lint` and `cargo test`, not clippy,
 so none of it gates this work and none of it is mine to widen scope over.
+
+## Follow-up: an update mechanism that was wired to fail
+
+Daniel has the Apple Developer membership, and asked before launch whether the
+app can ship updates to people who already installed it. It could not, and the
+way it could not was the dangerous kind.
+
+`tauri-plugin-updater` was registered, `update_checks_enabled` defaulted to
+**true**, and the app really did check for updates on launch. So every install
+believed it was covered. Four things underneath meant it never was:
+
+1. **The public key belonged to cjpais**, inherited with the fork
+   (`BAB72095206601F9`). Only updates signed with the matching private key are
+   accepted, and that key is not ours. Anything Daniel signed would be rejected.
+2. **The endpoint already pointed at `dangogit/daber`.** Worst of both: it looks
+   in our repo and trusts someone else's key, so neither side can ever ship.
+3. **`createUpdaterArtifacts` was `false`**, so no `.tar.gz` or `.sig` was ever
+   produced.
+4. **Nothing generated `latest.json`**, the file the endpoint asks for.
+
+Fixed: new minisign keypair, private half in the Keychain as
+`dibur-updater-private-key` / `dibur-updater-key-password` alongside the other
+Dibur secrets, public half in `tauri.conf.json`, artifacts enabled, and both
+halves uploaded to the repo's Actions secrets, which previously held none at all.
+
+`latest.json` turned out not to need writing: `tauri-action` generates it, and
+reading its source (`upload-version-json.ts`) shows it downloads the copy
+already attached to the release and merges its own platform in, so the seven-way
+matrix does compose rather than overwrite.
+
+That merge is still a read-modify-write from seven parallel jobs against one
+file, and its asset listing is capped at `per_page: 50`. Both failure modes end
+in a manifest that is merely _incomplete_, which an installed app cannot
+distinguish from "no update for my platform". It just goes quiet, so
+`verify-updater-manifest` now downloads the finished manifest and fails the
+release unless all six platform keys carry a url and a signature, and the
+version matches the tag.
+
+Also: `release.yml` still passed `asset-prefix: "handy"`, left from the rename.
+It happens to be inert, because the step that consumes it is gated on
+`asset-name-pattern` which the release never sets. Corrected anyway rather than
+left as a trap for whoever reads it next.
+
+Version moved 0.9.4 -> 1.0.0 across `tauri.conf.json`, `package.json` and
+`Cargo.toml`. The release workflow reads the first of those for the tag.
+
+**What this does not fix.** Every copy already installed, including the one sent
+to Natalie, has cjpais's public key compiled in. Those installs can never accept
+an update from us, by design. They need one manual reinstall of 1.0.0, and from
+that build onward updates flow on their own.

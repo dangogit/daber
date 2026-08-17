@@ -74,10 +74,57 @@ jobs:
       target: ${{ matrix.target }}
       build-args: ${{ matrix.args }}
       sign-binaries: true
-      asset-prefix: "handy"
+      asset-prefix: "dibur"
       upload-artifacts: false
       release-id: ${{ needs.create-release.outputs.release-id }}
       # Releases always build from scratch — never restore the Rust cache, so a
       # stale cached native lib can never be linked into a shipped artifact.
       no-cache: true
     secrets: inherit
+
+  # tauri-action writes latest.json once per matrix job, each time by reading the
+  # copy already on the release and merging its own platform into it. That works,
+  # but it is a read-modify-write from seven parallel jobs against one file, and
+  # the read is capped at 50 assets. Either way it fails by producing a manifest
+  # that is merely incomplete, which an app in the field cannot tell apart from
+  # "no update for my platform". So the manifest is checked before anyone ships.
+  verify-updater-manifest:
+    permissions:
+      contents: read
+    needs: [create-release, publish-tauri]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every platform is present in latest.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release-id }}
+          VERSION: ${{ needs.create-release.outputs.version }}
+        run: |
+          set -euo pipefail
+          asset_id=$(gh api "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" \
+            --paginate --jq '.[] | select(.name == "latest.json") | .id' | head -1)
+          if [ -z "$asset_id" ]; then
+            echo "::error::latest.json was never uploaded. The updater is configured but this release cannot serve it."
+            exit 1
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            -H "Accept: application/octet-stream" > latest.json
+          echo "--- latest.json ---"; cat latest.json; echo
+
+          missing=0
+          for key in darwin-aarch64 darwin-x86_64 windows-x86_64 windows-aarch64 \
+                     linux-x86_64 linux-aarch64; do
+            if ! jq -e --arg k "$key" '.platforms[$k].url and .platforms[$k].signature' latest.json >/dev/null; then
+              echo "::error::latest.json has no usable entry for $key"
+              missing=1
+            fi
+          done
+
+          manifest_version=$(jq -r .version latest.json)
+          if [ "$manifest_version" != "$VERSION" ]; then
+            echo "::error::latest.json says version $manifest_version but this release is $VERSION"
+            missing=1
+          fi
+
+          [ "$missing" -eq 0 ] || exit 1
+          echo "latest.json covers every platform at version $VERSION"
