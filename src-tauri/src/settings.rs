@@ -1422,9 +1422,17 @@ mod tests {
     }
 
     #[test]
-    fn default_overlay_style_is_live_when_overlay_defaults_on() {
+    fn default_overlay_style_matches_the_platform() {
+        // default_overlay_style() hides the overlay on Linux and shows the live
+        // one everywhere else. Asserting Live unconditionally passed on macOS
+        // and failed on the Linux CI runner.
         let settings = get_default_settings();
-        assert_eq!(settings.overlay_style, OverlayStyle::Live);
+        let expected = if cfg!(target_os = "linux") {
+            OverlayStyle::None
+        } else {
+            OverlayStyle::Live
+        };
+        assert_eq!(settings.overlay_style, expected);
     }
 
     #[test]
