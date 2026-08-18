@@ -273,12 +273,12 @@ this fails the release instead of reaching a user.
 
 ### Verified on the published artifacts, not on the logs
 
-| | ARM | Intel |
-|---|---|---|
+|                                | ARM                              | Intel                            |
+| ------------------------------ | -------------------------------- | -------------------------------- |
 | `spctl` on the quarantined DMG | accepted, Notarized Developer ID | accepted, Notarized Developer ID |
-| `stapler validate` | passes | passes |
-| app inside | accepted, Notarized | accepted, Notarized |
-| architecture | arm64 | x86_64 |
+| `stapler validate`             | passes                           | passes                           |
+| app inside                     | accepted, Notarized              | accepted, Notarized              |
+| architecture                   | arm64                            | x86_64                           |
 
 The Intel bundle carried its own history: `libonnxruntime` used to be signed by
 another team, which made dyld refuse to load it. It now signs under `HK5L5QHW96`
