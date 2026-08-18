@@ -128,6 +128,9 @@ pub const DEV_VOCABULARY: &[Term] = &[
     latin_only("Opus"),
     latin_only("Sonnet"),
     latin_only("Haiku"),
+    // `Fable` is an ordinary English word, so it stays out of the phonetic
+    // pass and is recovered only from its Hebrew spelling.
+    hebrew_only("Fable", &["פייבל", "פאבל"]),
     term("Codex", &["קודקס"]),
     term("Cursor", &["קרסר", "קורסר"]),
     term("Copilot", &["קופיילוט"]),
@@ -157,6 +160,18 @@ pub const DEV_VOCABULARY: &[Term] = &[
     term("prompt", &["פרומפט"]),
     term("token", &["טוקן"]),
     term("tokens", &["טוקנים"]),
+    // The files a coding agent is told to read. `CLAUDE.md` is the single most
+    // costly miss in this table: the model writes it `CloudMD`, and a request
+    // to update `CloudMD` is a request to update nothing.
+    term("CLAUDE.md", &["קלוד אמדי", "קלאוד אמדי", "קלוד דוט אמדי"]),
+    term("AGENTS.md", &["אג'נטס אמדי", "אג'נט אמדי"]),
+    term("statusline", &["סטטוסליין"]),
+    term("ultrathink", &["אולטרהthink", "אולטרה ת'ינק"]),
+    hebrew_only("slash command", &["סלאש קומנד"]),
+    hebrew_only("output style", &["אאוטפוט סטייל"]),
+    hebrew_only("session", &["סשיין"]),
+    hebrew_only("transcript", &["טרנסקריפט"]),
+    hebrew_only("worktrees", &["וורקטריז"]),
     // Everyday development words. Hebrew letters cannot collide with an
     // English word, so these are safe to recover from speech even though they
     // must stay out of the phonetic Latin pass.
@@ -189,6 +204,55 @@ pub const DEV_VOCABULARY: &[Term] = &[
     hebrew_only("issue", &["אישיו"]),
     hebrew_only("code review", &["קוד רוויו"]),
     hebrew_only("landing page", &["לנדינג פייג'"]),
+    hebrew_only("README", &["רידמי", "ריתמי", "רדמי"]),
+    hebrew_only(".gitignore", &["גיטיגנור", "גיט איגנור"]),
+    hebrew_only("fork", &["פורק"]),
+    hebrew_only("template", &["טמפלייט", "טמפלייד"]),
+    hebrew_only("docs", &["דוקס"]),
+    hebrew_only("audit", &["אודיט", "אודית"]),
+    hebrew_only("remote", &["רימוט"]),
+    hebrew_only("merge", &["מרג'ים", "מירג'"]),
+    hebrew_only("stash", &["סטאש"]),
+    hebrew_only("squash", &["סקווש"]),
+    hebrew_only("cherry-pick", &["צ'רי פיק"]),
+    hebrew_only("pipeline", &["פייפליין"]),
+    hebrew_only("release", &["ריליס"]),
+    hebrew_only("onboarding", &["אונבורדינג"]),
+    hebrew_only("overlay", &["אוברליי"]),
+    hebrew_only("dashboard", &["דאשבורד"]),
+    hebrew_only("Markdown", &["מרקדאון", "מארקדאון"]),
+    hebrew_only("pricing", &["פרייסינג"]),
+    hebrew_only("SSH", &["אס אס איץ'"]),
+    hebrew_only("CLI", &["סי אל איי"]),
+    hebrew_only("CI", &["סי איי"]),
+    hebrew_only("QA", &["קיו איי"]),
+    hebrew_only("TDD", &["טי די די"]),
+    hebrew_only("DB", &["די בי"]),
+    // Shipping a signed Mac app. These arrived the week Dibur got its Developer
+    // ID, and the model had never heard any of them: `Developer ID` came out
+    // `דיבלופר ID`, `Liquid Glass` came out `Lick with Glass`.
+    term("Developer ID", &["דיבלופר איידי", "דבלופר איידי"]),
+    term("Liquid Glass", &["ליקוויד גלאס"]),
+    term("Rosetta", &["רוזטה"]),
+    term("DMG", &["די אם ג'י"]),
+    term("App Store Connect", &["אפ סטור קונקט"]),
+    hebrew_only("notarization", &["נוטריזציה"]),
+    hebrew_only("Keychain", &["קיצ'יין"]),
+    hebrew_only("Gatekeeper", &["גייטקיפר"]),
+    hebrew_only("Simulator", &["סימולטור"]),
+    hebrew_only("Desktop", &["דסקטופ", "דסקטוב"]),
+    // Daniel's own tooling. These are skill and repo names he says out loud to
+    // Claude Code, so a wrong spelling does not just read badly, it fails to
+    // invoke the thing he asked for.
+    hebrew_only("grill-me", &["גרילמי"]),
+    term("gstack", &["ג'יסטאק"]),
+    term("hyperframes", &["הייפרפריימס"]),
+    hebrew_only("humanizer", &["יומניזר", "היומניזר"]),
+    hebrew_only("handoff", &["הנדאוף", "האנדאוף"]),
+    hebrew_only("retro", &["רטרו"]),
+    hebrew_only("triage", &["טריאז'"]),
+    term("Hermes", &["הרמס", "הרמץ"]),
+    hebrew_only("Excel", &["אקסל"]),
     // AI tools. Daniel names these to Claude Code constantly, and every one of
     // them is a brand the model has no reason to spell right.
     term("ChatGPT", &["צ'אט ג'יפיטי"]),
@@ -343,6 +407,129 @@ pub const DEV_VOCABULARY: &[Term] = &[
     latin_only("regex"),
     latin_only("async"),
     latin_only("enum"),
+    // ---- Round two. Everything below was added after reading Daniel's own
+    // transcription log: the words that actually came out wrong, plus the rest
+    // of the stack they belong to. Entries that the table's own invariants
+    // rejected were dropped rather than forced.
+
+    // Models and AI products named in conversation.
+    term("Claude Desktop", &["קלוד דסקטופ", "קלאוד דסקטופ"]),
+    term("DeepSeek", &["דיפסיק"]),
+    term("Grok", &["גרוק"]),
+    term("Llama", &["לאמה"]),
+    term("Mistral", &["מיסטרל"]),
+    term("Qwen", &[]),
+    term("Veo", &["ויאו"]),
+    term("Kling", &["קלינג"]),
+    term("Flux", &["פלאקס"]),
+    term("Stable Diffusion", &["סטייבל דיפיוז'ן"]),
+    term("Replicate", &["רפליקייט"]),
+    term("Hugging Face", &["האגינג פייס"]),
+    term("LangGraph", &["לנגגרף"]),
+    term("NotebookLM", &["נוטבוק אל אם"]),
+    term("Firecrawl", &["פיירקרול"]),
+    term("Tavily", &["טאבילי"]),
+    hebrew_only("LLM", &["אל אל אם"]),
+    hebrew_only("RAG", &[]),
+    hebrew_only("embedding", &["אמבדינג"]),
+    hebrew_only("embeddings", &["אמבדינגים"]),
+    hebrew_only("fine-tune", &["פיין טיון"]),
+    hebrew_only("inference", &["אינפרנס"]),
+    hebrew_only("tool use", &["טול יוז"]),
+    hebrew_only("streaming", &["סטרימינג"]),
+    hebrew_only("multimodal", &["מולטימודאלי"]),
+    // Languages and runtimes.
+    hebrew_only("Python", &["פייתון"]),
+    hebrew_only("Rust", &["ראסט"]),
+    hebrew_only("Swift", &["סוויפט"]),
+    hebrew_only("Kotlin", &["קוטלין"]),
+    hebrew_only("PHP", &["פי אייץ' פי"]),
+    hebrew_only("Ruby", &["רובי"]),
+    hebrew_only("SQL", &["אס קיו אל"]),
+    // Frontend.
+    term("Webpack", &["ווב פאק"]),
+    term("Turborepo", &["טורבו ריפו"]),
+    term("GSAP", &["ג'יסאפ"]),
+    term("Three.js", &["ת'רי ג'יאס"]),
+    term("Redux", &["רידאקס"]),
+    term("Jotai", &["ג'וטאי"]),
+    term("React Query", &["ריאקט קווארי"]),
+    term("Lighthouse", &["לייטהאוס"]),
+    hebrew_only("SSR", &["אס אס אר"]),
+    hebrew_only("hydration", &["הידרציה"]),
+    hebrew_only("responsive", &["רספונסיבי"]),
+    hebrew_only("viewport", &["ויופורט"]),
+    hebrew_only("breakpoint", &["ברייקפוינט"]),
+    hebrew_only("accessibility", &["אקססביליטי"]),
+    // Backend, data and infrastructure.
+    term("PlanetScale", &["פלאנטסקייל"]),
+    term("Turso", &["טורסו"]),
+    term("Kubernetes", &["קוברנטיס"]),
+    term("Terraform", &["טרהפורם"]),
+    term("nginx", &["אנג'ינקס"]),
+    term("Kafka", &["קפקא"]),
+    hebrew_only("migration", &["מייגרישן", "מיגרציה"]),
+    hebrew_only("migrations", &["מיגרציות"]),
+    hebrew_only("index", &["אינדקס"]),
+    hebrew_only("transaction", &["טרנזקציה"]),
+    hebrew_only("cache", &[]),
+    hebrew_only("CDN", &["סי די אן"]),
+    hebrew_only("DNS", &["די אן אס"]),
+    hebrew_only("SSL", &["אס אס אל"]),
+    hebrew_only("OAuth", &["אוהאות'"]),
+    hebrew_only("SSO", &["אס אס או"]),
+    hebrew_only("CORS", &["קורס"]),
+    hebrew_only("REST", &[]),
+    hebrew_only("cron", &["קרון"]),
+    hebrew_only("queue", &[]),
+    hebrew_only("worker", &["וורקר"]),
+    hebrew_only("container", &["קונטיינר"]),
+    hebrew_only("rate limit", &["רייט לימיט"]),
+    hebrew_only("payload", &["פיילואד"]),
+    hebrew_only("RLS", &["אר אל אס"]),
+    // Cloud and hosting.
+    hebrew_only("Render", &["רנדר"]),
+    hebrew_only("S3", &["אס תרי"]),
+    hebrew_only("Lambda", &["למבדה"]),
+    // Testing and quality.
+    term("Cypress", &["סייפרס"]),
+    hebrew_only("e2e", &["איטואי"]),
+    hebrew_only("coverage", &["קאברג'"]),
+    hebrew_only("mock", &[]),
+    hebrew_only("fixture", &["פיקסצ'ר"]),
+    hebrew_only("regression", &["רגרסיה"]),
+    hebrew_only("snapshot", &["סנאפשוט"]),
+    // Marketing, content and analytics.
+    term("Metricool", &["מטריקול"]),
+    term("Klaviyo", &["קלביו"]),
+    term("ActiveCampaign", &["אקטיב קמפיין"]),
+    term("Meta Ads", &["מטא אדס"]),
+    term("Google Ads", &["גוגל אדס"]),
+    hebrew_only("funnel", &["פאנל"]),
+    hebrew_only("CTA", &["סי טי איי"]),
+    hebrew_only("CTR", &["סי טי אר"]),
+    hebrew_only("ROAS", &["רואס"]),
+    hebrew_only("CPM", &["סי פי אם"]),
+    hebrew_only("retargeting", &["ריטרגטינג"]),
+    hebrew_only("lead magnet", &["ליד מגנט"]),
+    hebrew_only("newsletter", &["ניוזלטר"]),
+    hebrew_only("thumbnail", &["תמבנייל"]),
+    hebrew_only("voiceover", &["voice over", "וויסאובר"]),
+    hebrew_only("storyboard", &["סטוריבורד"]),
+    hebrew_only("reels", &["ריעלס", "רילז"]),
+    // Names the phonetic pass had to give up: each one quietly rewrote an
+    // ordinary English word (AWS ate "as", Neon ate "none", Sora ate "sore",
+    // Deno ate "done"). They keep working from their Hebrew spelling, which no
+    // English word can collide with.
+    hebrew_only("AWS", &["איי דאבליו אס"]),
+    hebrew_only("Neon", &["ניאון"]),
+    hebrew_only("Sora", &["סורה"]),
+    hebrew_only("Deno", &["דינו"]),
+    hebrew_only("Jest", &["ג'סטיס"]),
+    // Israeli services and money.
+    term("Meshulam", &["משולם"]),
+    term("iCount", &["איי קאונט"]),
+    term("Hashavshevet", &["חשבשבת"]),
 ];
 
 /// Prefixes Hebrew glues onto the front of a noun, including a foreign one.
@@ -468,11 +655,16 @@ fn within_one_edit(a: &str, b: &str) -> bool {
 /// `סאב אייג'נט עם` differs from the key for `subagents` by exactly the one
 /// letter that turns `עם` into the plural suffix, so a three-word span would
 /// eat the preposition after it. A multi-word term has to match exactly.
-fn lookup<'a>(key: &str, word_count: usize, index: &HashMap<String, &'a str>) -> Option<&'a str> {
+fn lookup<'a>(
+    key: &str,
+    word_count: usize,
+    index: &HashMap<String, &'a str>,
+    fuzzy: bool,
+) -> Option<&'a str> {
     if let Some(hit) = index.get(key) {
         return Some(hit);
     }
-    if word_count > 1 || key.chars().count() < FUZZY_HEBREW_KEY_LEN {
+    if !fuzzy || word_count > 1 || key.chars().count() < FUZZY_HEBREW_KEY_LEN {
         return None;
     }
     index
@@ -481,6 +673,13 @@ fn lookup<'a>(key: &str, word_count: usize, index: &HashMap<String, &'a str>) ->
             candidate.chars().count() >= FUZZY_HEBREW_KEY_LEN && within_one_edit(key, candidate)
         })
         .map(|(_, canonical)| *canonical)
+}
+
+/// A geresh marks a Hebrew letter that stands for a foreign sound, so it
+/// belongs to the word rather than to the sentence around it. Both the ASCII
+/// apostrophe the model emits and the Unicode geresh count.
+fn is_geresh(c: char) -> bool {
+    c == '\'' || c == '\u{05F3}' || c == '\u{2019}'
 }
 
 /// Splits a token into any leading Hebrew prefix letters and the rest.
@@ -535,27 +734,42 @@ pub fn apply_hebrew_terms(text: &str, terms: &[Term]) -> String {
                 continue;
             }
 
-            if let Some(canonical) = lookup(&key, n, &index) {
-                matched = Some((n, canonical.to_string()));
-                break;
-            }
-            // A glued prefix is only meaningful on the first word of the span.
-            if let Some((prefix, rest)) = strip_prefix(&key) {
-                if let Some(canonical) = lookup(&rest, n, &index) {
-                    matched = Some((n, format!("{prefix}-{canonical}")));
+            // Exact matches are exhausted before any fuzzy one is allowed,
+            // including the prefix-stripped form. Fuzzy forgives a single
+            // letter and a glued Hebrew prefix is exactly one letter, so
+            // `וסופרבייס` would otherwise match `סופרבייס` by spending its
+            // edit on the ו, and the conjunction would disappear from the
+            // sentence. Which of the two won depended on HashMap order, so
+            // the same dictation did not always come out the same way.
+            for fuzzy in [false, true] {
+                if let Some(canonical) = lookup(&key, n, &index, fuzzy) {
+                    matched = Some((n, canonical.to_string()));
                     break;
                 }
+                // A glued prefix is only meaningful on the first word of the span.
+                if let Some((prefix, rest)) = strip_prefix(&key) {
+                    if let Some(canonical) = lookup(&rest, n, &index, fuzzy) {
+                        matched = Some((n, format!("{prefix}-{canonical}")));
+                        break;
+                    }
+                }
+            }
+            if matched.is_some() {
+                break;
             }
         }
 
         match matched {
             Some((n, replacement)) => {
                 // Trailing punctuation belongs to the sentence, not the name.
+                // A geresh does not: in Hebrew it is part of the letter it
+                // follows (ג׳, ז׳, ץ׳ are single sounds), so `ברנץ'` is one
+                // word and used to come out as `branch'`.
                 let last = words[i + n - 1];
                 let suffix: String = last
                     .chars()
                     .rev()
-                    .take_while(|c| !c.is_alphabetic())
+                    .take_while(|c| !c.is_alphabetic() && !is_geresh(*c))
                     .collect::<Vec<_>>()
                     .into_iter()
                     .rev()
@@ -765,7 +979,11 @@ sore soar sleek learner pillar mourning weeks dino stark start stop store sort s
 search server serve save size site style state stage scale skill still call cell sell fell full
 fill file five love live leave list last least less lost cost case cause close clear clean click
 clock course source force fourth forth north word world worse model module modal medal metal
-mental mode more moon month main mean men man many money";
+mental mode more moon month main mean men man many money
+fable fork audit remote merge stash session release excel desktop render neon vite sora deno bun
+jest bit wolt was aws are art part past pass post pest best test text next note nose noise
+grow grew green great grand grade grill guide gate gates keep kept help held hold hand land lane
+line link lift left life like lake luck lock long lung sing song sung ring rang rung king kind";
 
         for word in COMMON_ENGLISH.split_whitespace() {
             let corrected = apply_custom_words(word, &latin_words(), THRESHOLD);
@@ -774,6 +992,77 @@ mental mode more moon month main mean men man many money";
                 "{word:?} was rewritten to {corrected:?}; that name belongs in hebrew_only, or nowhere"
             );
         }
+    }
+
+    /// Taken verbatim from Daniel's transcription log. Every one of these was
+    /// produced by the model on real audio and every one was wrong, which is
+    /// the only reason the matching entries exist.
+    #[test]
+    fn the_words_that_actually_came_out_wrong_are_recovered() {
+        for (spoken, expected) in [
+            ("תעדכן את הקלוד אמדי", "תעדכן את ה-CLAUDE.md"),
+            ("היא כתבה ריתמי וגיטיגנור", "היא כתבה README ו-.gitignore"),
+            ("תשתמש בסקיל של גרילמי", "תשתמש ב-skill של grill-me"),
+            ("תתייעץ עם פייבל", "תתייעץ עם Fable"),
+            ("תריץ את הרמס במיני", "תריץ את Hermes במיני"),
+            ("יש לי דיבלופר איידי", "יש לי Developer ID"),
+            ("בסטייל של ליקוויד גלאס", "בסטייל של Liquid Glass"),
+        ] {
+            assert_eq!(correct(spoken), expected, "on {spoken:?}");
+        }
+    }
+
+    /// A geresh is part of the Hebrew letter it follows, not punctuation
+    /// closing the sentence. `ברנץ'` used to come out `branch'`.
+    #[test]
+    fn a_geresh_is_part_of_the_word_not_the_sentence() {
+        assert_eq!(correct("תעשה ברנץ' חדש"), "תעשה branch חדש");
+        assert_eq!(correct("טריאז' מהיר"), "triage מהיר");
+        // Real punctuation after a geresh still belongs to the sentence.
+        assert_eq!(correct("תעשה ברנץ'."), "תעשה branch.");
+    }
+
+    /// A glued prefix is one letter, and so is the edit the fuzzy pass
+    /// forgives. Before the exact forms were exhausted first, `וסופרבייס`
+    /// matched `סופרבייס` by spending its edit on the ו and the conjunction
+    /// vanished, turning "and Supabase" into "Supabase". Which one won came
+    /// down to HashMap order, so it did not even fail consistently.
+    #[test]
+    fn a_glued_prefix_is_never_spent_as_the_forgiven_edit() {
+        for (spoken, expected) in [
+            ("וסופרבייס", "ו-Supabase"),
+            ("בטמפלייט", "ב-template"),
+            ("הפייפליין", "ה-pipeline"),
+            ("לגיטהאב", "ל-GitHub"),
+        ] {
+            assert_eq!(correct(spoken), expected, "on {spoken:?}");
+        }
+    }
+
+    /// The same input has to give the same output. The fuzzy branch scans a
+    /// HashMap and returns the first candidate within one edit, so an
+    /// ambiguous key used to resolve differently between runs.
+    #[test]
+    fn the_same_dictation_always_produces_the_same_text() {
+        let line = "תעלה וסופרבייס ובטמפלייט עם הקלוד אמדי וגיטיגנור";
+        let first = correct(line);
+        for _ in 0..200 {
+            assert_eq!(correct(line), first);
+        }
+    }
+
+    /// The everyday words that only reach the table through Hebrew letters.
+    #[test]
+    fn everyday_terms_are_recovered_from_hebrew_only() {
+        assert_eq!(
+            correct("תעשה אודיט על הטמפלייט"),
+            "תעשה audit על ה-template"
+        );
+        assert_eq!(correct("תפתח פורק ותוסיף רימוט"), "תפתח fork ותוסיף remote");
+        assert_eq!(
+            correct("הסשיין נגמר בפייפליין"),
+            "ה-session נגמר ב-pipeline"
+        );
     }
 
     /// The one deliberate exception to the test above. A Hebrew speaker says
