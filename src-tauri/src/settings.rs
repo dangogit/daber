@@ -507,8 +507,12 @@ fn default_start_hidden() -> bool {
     false
 }
 
+/// Dictation is only useful when it is already running, and a menu-bar app
+/// the user has to remember to launch is one they stop reaching for. The
+/// paired `start_hidden` preference stays off by default so first launch still
+/// lands on the window rather than only in the tray.
 fn default_autostart_enabled() -> bool {
-    false
+    true
 }
 
 fn default_update_checks_enabled() -> bool {
@@ -1384,6 +1388,39 @@ mod tests {
     }
 
     #[cfg(not(target_os = "linux"))]
+    #[test]
+    fn a_new_install_starts_at_login() {
+        let settings = get_default_settings();
+        assert!(
+            settings.autostart_enabled,
+            "dictation the user has to remember to launch is dictation they stop reaching for"
+        );
+    }
+
+    #[test]
+    fn starting_at_login_does_not_hide_the_first_launch() {
+        // These two defaults are load-bearing together. Autostart on with
+        // start_hidden also on would mean a first-run user never sees the
+        // onboarding window, because should_force_show_permissions_window()
+        // only fires on Windows. Whoever flips start_hidden must read this.
+        let settings = get_default_settings();
+        assert!(settings.autostart_enabled);
+        assert!(
+            !settings.start_hidden,
+            "first launch must land on the window, not only in the tray"
+        );
+    }
+
+    #[test]
+    fn a_stored_autostart_choice_survives_the_new_default() {
+        // The default only applies when the key is absent. Someone who turned
+        // autostart off keeps it off across the upgrade.
+        let raw = serde_json::json!({ "autostart_enabled": false });
+        let stored: AppSettings =
+            serde_json::from_value(raw).expect("a partial store should fill from defaults");
+        assert!(!stored.autostart_enabled);
+    }
+
     #[test]
     fn default_overlay_style_is_live_when_overlay_defaults_on() {
         let settings = get_default_settings();
