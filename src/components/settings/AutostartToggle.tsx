@@ -13,7 +13,10 @@ export const AutostartToggle: React.FC<AutostartToggleProps> = React.memo(
     const { t } = useTranslation();
     const { getSetting, updateSetting, isUpdating } = useSettings();
 
-    const autostartEnabled = getSetting("autostart_enabled") ?? false;
+    // Mirrors default_autostart_enabled() in settings.rs. A `?? false` here
+    // would render the toggle off while the app is in fact registered to start
+    // at login, for the render before settings arrive.
+    const autostartEnabled = getSetting("autostart_enabled") ?? true;
 
     return (
       <ToggleSwitch
