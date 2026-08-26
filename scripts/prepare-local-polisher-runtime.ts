@@ -175,11 +175,16 @@ try {
 }
 
 if (!archiveValid) {
-  const response = await fetch(`${RELEASE_BASE}/${runtime.archive}`);
-  if (!response.ok) {
-    throw new Error(`Runtime download failed with HTTP ${response.status}`);
+  const providedArchive = process.env.DIBUR_LOCAL_POLISHER_ARCHIVE;
+  if (providedArchive) {
+    await copyFile(providedArchive, archivePath);
+  } else {
+    const response = await fetch(`${RELEASE_BASE}/${runtime.archive}`);
+    if (!response.ok) {
+      throw new Error(`Runtime download failed with HTTP ${response.status}`);
+    }
+    await Bun.write(archivePath, response);
   }
-  await Bun.write(archivePath, response);
   const actualHash = await sha256(archivePath);
   if (actualHash !== runtime.sha256) {
     throw new Error(
@@ -214,13 +219,19 @@ if (process.platform !== "win32") {
   await chmod(join(outputDir, runtime.server), 0o755);
 }
 
-const qwenLicenseResponse = await fetch(QWEN_LICENSE_URL);
-if (!qwenLicenseResponse.ok) {
-  throw new Error(
-    "Qwen license download failed with HTTP " + qwenLicenseResponse.status,
-  );
+const providedQwenLicense = process.env.DIBUR_QWEN_LICENSE;
+let qwenLicense: Uint8Array;
+if (providedQwenLicense) {
+  qwenLicense = new Uint8Array(await readFile(providedQwenLicense));
+} else {
+  const qwenLicenseResponse = await fetch(QWEN_LICENSE_URL);
+  if (!qwenLicenseResponse.ok) {
+    throw new Error(
+      "Qwen license download failed with HTTP " + qwenLicenseResponse.status,
+    );
+  }
+  qwenLicense = new Uint8Array(await qwenLicenseResponse.arrayBuffer());
 }
-const qwenLicense = new Uint8Array(await qwenLicenseResponse.arrayBuffer());
 const qwenLicenseHasher = new Bun.CryptoHasher("sha256");
 qwenLicenseHasher.update(qwenLicense);
 const qwenLicenseHash = qwenLicenseHasher.digest("hex");
