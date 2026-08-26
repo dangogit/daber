@@ -63,7 +63,11 @@
       "retryDownload": "Try again",
       "finish": "Done",
       "skip": "Skip for now",
-      "preparing": "Getting it ready"
+      "preparing": "Getting it ready",
+      "hold": "Hold",
+      "whileSpeaking": "while you speak.",
+      "tapToStart": "Press",
+      "tapToFinish": "once to start, then again when you finish."
     },
     "percent": "{{percent}}%"
   },
@@ -319,6 +323,9 @@
         },
         "appleIntelligence": {
           "unavailable": "Apple Intelligence er ikke tilgængelig på denne enhed. Kræver en Apple Silicon Mac med macOS Tahoe (26.0) eller nyere med Apple Intelligence aktiveret i Systemindstillinger."
+        },
+        "local": {
+          "description": "Text is polished entirely on this computer. No recording or transcript is sent to the cloud. If the model tries to change content instead of only formatting it, Dibur automatically uses the original transcript."
         },
         "baseUrl": {
           "title": "Basis-URL",

@@ -214,6 +214,16 @@ impl HistoryManager {
         &self.recordings_dir
     }
 
+    pub fn has_successful_transcription(&self) -> Result<bool> {
+        let conn = self.get_connection()?;
+        let count: i64 = conn.query_row(
+            "SELECT COUNT(*) FROM transcription_history WHERE TRIM(transcription_text) <> ''",
+            [],
+            |row| row.get(0),
+        )?;
+        Ok(count > 0)
+    }
+
     /// Save a new history entry to the database.
     /// The WAV file should already have been written to the recordings directory.
     pub fn save_entry(

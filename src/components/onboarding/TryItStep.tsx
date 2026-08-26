@@ -6,11 +6,47 @@ import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import type { HebrewModelState } from "@/hooks/useHebrewModel";
+import { commands, events } from "@/bindings";
+import { canCompleteOnboarding, canStartDictation } from "@/lib/onboarding";
 
 interface TryItStepProps {
   model: HebrewModelState;
-  onDone: () => void;
+  onDone: () => Promise<boolean>;
 }
+
+const WAVE_BARS = [28, 52, 76, 46, 88, 58, 34];
+
+const PreparingAnimation: React.FC<{ phrase: string }> = ({ phrase }) => (
+  <div
+    className="dibur-preparing-animation glass rounded-xl"
+    aria-hidden="true"
+  >
+    <div className="dibur-speech-wave">
+      {WAVE_BARS.map((height, index) => (
+        <span
+          key={`${height}-${index}`}
+          className="dibur-speech-wave-bar"
+          style={
+            {
+              "--wave-height": `${height}px`,
+              "--wave-delay": `${index * -90}ms`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+
+    <div className="dibur-speech-bridge">
+      <span />
+      <span />
+      <span />
+    </div>
+
+    <div className="dibur-hebrew-example" dir="rtl">
+      <span className="dibur-hebrew-typing">{phrase}</span>
+    </div>
+  </div>
+);
 
 /**
  * Onboarding ends with the user having dictated something, not with a progress
@@ -24,16 +60,94 @@ interface TryItStepProps {
  * it in the middle of a conversation.
  */
 const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getSetting } = useSettings();
   const osType = useOsType();
   const [text, setText] = useState("");
+  const [dictationSucceeded, setDictationSucceeded] = useState(false);
+  const [pasteSucceeded, setPasteSucceeded] = useState(false);
+  const [controlsReady, setControlsReady] = useState(false);
+  const [controlsFailed, setControlsFailed] = useState(false);
+  const [finishing, setFinishing] = useState(false);
   const boxRef = useRef<HTMLTextAreaElement>(null);
+  const controlsStartedRef = useRef(false);
 
   const binding = getSetting("bindings")?.transcribe?.current_binding ?? "";
   const shortcut = formatKeyCombination(binding, osType);
-  const ready = model.status === "ready";
-  const spoke = text.trim().length > 0;
+  const pushToTalk = getSetting("push_to_talk") ?? true;
+  const modelReady = model.status === "ready";
+  const ready = canStartDictation({ modelReady, controlsReady });
+  const failed = model.status === "failed" || controlsFailed;
+  const complete = canCompleteOnboarding({
+    modelReady: ready,
+    dictationSucceeded,
+    pasteSucceeded,
+  });
+  const animationPhrase = i18n.getFixedT("he")("onboarding.try.andSpeak");
+
+  const finishOnboarding = async () => {
+    if (!complete || finishing) return;
+    setFinishing(true);
+    const succeeded = await onDone();
+    if (!succeeded) setFinishing(false);
+  };
+
+  useEffect(() => {
+    const unlisten = events.historyUpdatePayload.listen((event) => {
+      if (
+        event.payload.action === "added" &&
+        event.payload.entry.transcription_text.trim().length > 0
+      ) {
+        setDictationSucceeded(true);
+      }
+    });
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  // Clipboard paste dispatches `onPaste`, while the Direct setting injects
+  // characters and dispatches only `onChange`. In both cases the box must hold
+  // text from the same run that added a real history entry.
+  useEffect(() => {
+    if (dictationSucceeded && text.trim().length > 0) {
+      setPasteSucceeded(true);
+    }
+  }, [dictationSucceeded, text]);
+
+  const initializeControls = React.useCallback(async () => {
+    if (controlsStartedRef.current) return;
+    controlsStartedRef.current = true;
+    setControlsFailed(false);
+
+    try {
+      const [inputResult, shortcutResult] = await Promise.all([
+        commands.initializeEnigo(),
+        commands.initializeShortcuts(),
+      ]);
+      const audioResult = await commands.prepareOnboardingDictation();
+      if (
+        inputResult.status === "ok" &&
+        shortcutResult.status === "ok" &&
+        audioResult.status === "ok"
+      ) {
+        setControlsReady(true);
+        return;
+      }
+    } catch (error) {
+      console.warn("Failed to prepare onboarding controls:", error);
+    }
+
+    controlsStartedRef.current = false;
+    setControlsFailed(true);
+  }, []);
+
+  useEffect(() => {
+    if (modelReady && !controlsReady && !controlsFailed) {
+      void initializeControls();
+    }
+  }, [modelReady, controlsReady, controlsFailed, initializeControls]);
 
   // Focus has to be in the box for the paste to land there, and it is easy to
   // lose to a stray click while someone is reading the instructions.
@@ -48,37 +162,51 @@ const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
       <div className="max-w-md w-full flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-text mb-2">
-            {spoke ? t("onboarding.try.worked") : t("onboarding.try.title")}
+            {complete ? t("onboarding.try.worked") : t("onboarding.try.title")}
           </h2>
           <p className="text-text/70">
-            {spoke ? (
+            {complete ? (
               t("onboarding.try.workedDescription")
             ) : ready ? (
-              <>
-                {t("onboarding.try.press")}{" "}
-                <kbd className="px-2 py-0.5 mx-0.5 rounded-md bg-text/10 font-mono text-sm text-text">
-                  {shortcut}
-                </kbd>{" "}
-                {t("onboarding.try.andSpeak")}
-              </>
+              pushToTalk ? (
+                <>
+                  {t("onboarding.try.hold")}{" "}
+                  <kbd className="px-2 py-0.5 mx-0.5 rounded-md bg-text/10 font-mono text-sm text-text">
+                    {shortcut}
+                  </kbd>{" "}
+                  {t("onboarding.try.whileSpeaking")}
+                </>
+              ) : (
+                <>
+                  {t("onboarding.try.tapToStart")}{" "}
+                  <kbd className="px-2 py-0.5 mx-0.5 rounded-md bg-text/10 font-mono text-sm text-text">
+                    {shortcut}
+                  </kbd>{" "}
+                  {t("onboarding.try.tapToFinish")}
+                </>
+              )
             ) : (
               t("onboarding.try.stillPreparing")
             )}
           </p>
         </div>
 
-        <textarea
-          ref={boxRef}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          disabled={!ready}
-          dir="auto"
-          rows={4}
-          placeholder={ready ? t("onboarding.try.placeholder") : ""}
-          className="glass rounded-xl p-4 w-full resize-none text-text placeholder:text-text/30 outline-none focus:ring-2 focus:ring-logo-primary/50 disabled:opacity-50"
-        />
+        {ready ? (
+          <textarea
+            ref={boxRef}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onPaste={() => setPasteSucceeded(true)}
+            dir="auto"
+            rows={4}
+            placeholder={t("onboarding.try.placeholder")}
+            className="glass rounded-xl p-4 w-full resize-none text-text placeholder:text-text/30 outline-none focus:ring-2 focus:ring-logo-primary/50"
+          />
+        ) : (
+          <PreparingAnimation phrase={animationPhrase} />
+        )}
 
-        {!ready && model.status !== "failed" && (
+        {!ready && !failed && (
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between text-sm text-text/60">
               <span className="flex items-center gap-2">
@@ -110,11 +238,17 @@ const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
           </div>
         )}
 
-        {model.status === "failed" && (
+        {failed && (
           <div className="flex items-center justify-between gap-3 text-sm">
             <span className="text-error">{t("onboarding.try.failed")}</span>
             <button
-              onClick={model.retry}
+              onClick={() => {
+                if (controlsFailed) {
+                  void initializeControls();
+                } else {
+                  model.retry();
+                }
+              }}
               className="flex items-center gap-1.5 font-medium text-logo-primary hover:underline"
             >
               <RotateCcw className="w-4 h-4" />
@@ -125,14 +259,20 @@ const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
 
         <div className="flex items-center justify-center gap-4">
           <button
-            onClick={onDone}
+            onClick={() => void finishOnboarding()}
+            disabled={!complete || finishing}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors ${
-              spoke
+              complete
                 ? "bg-logo-primary hover:bg-logo-primary/90 text-white"
-                : "text-text/60 hover:text-text"
+                : "text-text/30 cursor-not-allowed"
             }`}
           >
-            {spoke ? (
+            {finishing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {t("onboarding.try.preparing")}
+              </>
+            ) : complete ? (
               <>
                 <Check className="w-4 h-4" />
                 {t("onboarding.try.finish")}
@@ -140,7 +280,7 @@ const TryItStep: React.FC<TryItStepProps> = ({ model, onDone }) => {
             ) : (
               <>
                 <Mic className="w-4 h-4" />
-                {t("onboarding.try.skip")}
+                {t("onboarding.try.finish")}
               </>
             )}
           </button>

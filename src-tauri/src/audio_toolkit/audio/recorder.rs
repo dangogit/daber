@@ -1,4 +1,5 @@
 use std::{
+    collections::VecDeque,
     io::Error,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -24,7 +25,7 @@ enum Cmd {
     /// long the command sat in the channel (and how much audio was dropped
     /// before it was seen).
     Start(VadPolicy, Instant),
-    Stop(mpsc::Sender<Vec<f32>>),
+    Stop(mpsc::Sender<RecordedAudio>),
     Shutdown,
 }
 
@@ -42,6 +43,49 @@ pub enum VadPolicy {
     Offline,
     /// VAD profile with a longer post-speech tail for streaming-capable models.
     Streaming,
+}
+
+/// The lossless result of one capture session.
+///
+/// `raw_samples` is the journal source and is never filtered by VAD.
+/// `transcription_samples` prefers the VAD-filtered speech, but falls back to
+/// raw audio when VAD found no speech. This makes VAD an optimization rather
+/// than a destructive storage boundary.
+#[derive(Debug, Clone, PartialEq)]
+pub struct RecordedAudio {
+    pub raw_samples: Vec<f32>,
+    pub transcription_samples: Vec<f32>,
+    pub vad_fallback: bool,
+}
+
+impl RecordedAudio {
+    fn from_buffers(raw_samples: Vec<f32>, speech_samples: Vec<f32>) -> Self {
+        let vad_fallback = speech_samples.is_empty() && !raw_samples.is_empty();
+        let transcription_samples = if vad_fallback {
+            raw_samples.clone()
+        } else {
+            speech_samples
+        };
+        Self {
+            raw_samples,
+            transcription_samples,
+            vad_fallback,
+        }
+    }
+
+    pub(crate) fn empty() -> Self {
+        Self::from_buffers(Vec::new(), Vec::new())
+    }
+}
+
+fn push_pre_roll(pre_roll: &mut VecDeque<Vec<f32>>, frame: &[f32], capacity: usize) {
+    if capacity == 0 {
+        return;
+    }
+    if pre_roll.len() == capacity {
+        pre_roll.pop_front();
+    }
+    pre_roll.push_back(frame.to_vec());
 }
 
 /// A single VAD engine plus the two hangover-tail lengths its smoothing wrapper
@@ -362,12 +406,16 @@ impl AudioRecorder {
         Ok(())
     }
 
-    pub fn stop(&self) -> Result<Vec<f32>, Box<dyn std::error::Error>> {
+    pub fn stop_recorded_audio(&self) -> Result<RecordedAudio, Box<dyn std::error::Error>> {
         let (resp_tx, resp_rx) = mpsc::channel();
         if let Some(tx) = &self.cmd_tx {
             tx.send(Cmd::Stop(resp_tx))?;
         }
-        Ok(resp_rx.recv()?) // wait for the samples
+        Ok(resp_rx.recv()?)
+    }
+
+    pub fn stop(&self) -> Result<Vec<f32>, Box<dyn std::error::Error>> {
+        Ok(self.stop_recorded_audio()?.transcription_samples)
     }
 
     /// True once the capture worker has exited without anyone calling `close`.
@@ -546,7 +594,45 @@ pub fn is_no_input_device_error(error_message: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_microphone_access_denied, is_no_input_device_error, AudioRecorder};
+    use super::{
+        is_microphone_access_denied, is_no_input_device_error, push_pre_roll, AudioRecorder,
+        RecordedAudio,
+    };
+    use std::collections::VecDeque;
+
+    #[test]
+    fn vad_empty_recording_falls_back_to_raw_audio_without_losing_journal() {
+        let raw = vec![0.1, -0.2, 0.3, -0.4];
+        let recorded = RecordedAudio::from_buffers(raw.clone(), Vec::new());
+
+        assert_eq!(recorded.raw_samples, raw);
+        assert_eq!(recorded.transcription_samples, raw);
+        assert!(recorded.vad_fallback);
+    }
+
+    #[test]
+    fn vad_speech_is_used_for_transcription_but_raw_audio_is_preserved() {
+        let raw = vec![0.1, 0.2, 0.3, 0.4];
+        let speech = vec![0.2, 0.3];
+        let recorded = RecordedAudio::from_buffers(raw.clone(), speech.clone());
+
+        assert_eq!(recorded.raw_samples, raw);
+        assert_eq!(recorded.transcription_samples, speech);
+        assert!(!recorded.vad_fallback);
+    }
+
+    #[test]
+    fn pre_roll_keeps_only_the_latest_frames_before_the_hotkey() {
+        let mut pre_roll = VecDeque::new();
+        push_pre_roll(&mut pre_roll, &[1.0], 2);
+        push_pre_roll(&mut pre_roll, &[2.0], 2);
+        push_pre_roll(&mut pre_roll, &[3.0], 2);
+
+        assert_eq!(
+            pre_roll.into_iter().collect::<Vec<_>>(),
+            vec![vec![2.0], vec![3.0]]
+        );
+    }
 
     #[test]
     fn unopened_recorder_is_not_reported_dead() {
@@ -613,9 +699,12 @@ fn run_consumer(
         Duration::from_millis(30),
     );
 
+    let mut raw_samples = Vec::<f32>::new();
     let mut processed_samples = Vec::<f32>::new();
     let mut recording = false;
     let mut vad_policy = VadPolicy::Offline;
+    const PRE_ROLL_FRAMES: usize = 25;
+    let mut pre_roll = VecDeque::<Vec<f32>>::with_capacity(PRE_ROLL_FRAMES);
 
     // ---------- latency instrumentation ---------------------------------- //
     // First-chunk arrival exposes the play()->samples-flowing gap; the
@@ -651,11 +740,14 @@ fn run_consumer(
         vad_policy: VadPolicy,
         vad: &Option<VadConfig>,
         audio_cb: &Option<AudioFrameCallback>,
+        raw_buf: &mut Vec<f32>,
         out_buf: &mut Vec<f32>,
     ) {
         if !recording {
             return;
         }
+
+        raw_buf.extend_from_slice(samples);
 
         let mut emit = |buf: &[f32]| {
             out_buf.extend_from_slice(buf);
@@ -697,6 +789,7 @@ fn run_consumer(
                     awaiting_first_captured_chunk = Some(Instant::now());
                     stop_flag.store(false, Ordering::Relaxed);
                     vad_policy = policy;
+                    raw_samples.clear();
                     processed_samples.clear();
                     recording = true;
                     visualizer.reset();
@@ -710,6 +803,22 @@ fn run_consumer(
                             det.set_hangover_frames(cfg.hangover_for(vad_policy));
                             det.reset();
                         }
+                    }
+                    // The stream is already open in instant mode. Replay only
+                    // the bounded in-memory tail through the freshly reset VAD
+                    // so speech that began with the hotkey cannot lose its
+                    // first phoneme. These frames are never persisted unless a
+                    // recording session actually starts.
+                    while let Some(frame) = pre_roll.pop_front() {
+                        handle_frame(
+                            &frame,
+                            true,
+                            vad_policy,
+                            &vad,
+                            &audio_cb,
+                            &mut raw_samples,
+                            &mut processed_samples,
+                        );
                     }
                 }
                 Cmd::Stop(reply_tx) => {
@@ -726,6 +835,7 @@ fn run_consumer(
                                 vad_policy,
                                 &vad,
                                 &audio_cb,
+                                &mut raw_samples,
                                 &mut processed_samples,
                             )
                         });
@@ -745,6 +855,7 @@ fn run_consumer(
                                         vad_policy,
                                         &vad,
                                         &audio_cb,
+                                        &mut raw_samples,
                                         &mut processed_samples,
                                     )
                                 });
@@ -764,11 +875,16 @@ fn run_consumer(
                             vad_policy,
                             &vad,
                             &audio_cb,
+                            &mut raw_samples,
                             &mut processed_samples,
                         )
                     });
 
-                    let _ = reply_tx.send(std::mem::take(&mut processed_samples));
+                    let captured = RecordedAudio::from_buffers(
+                        std::mem::take(&mut raw_samples),
+                        std::mem::take(&mut processed_samples),
+                    );
+                    let _ = reply_tx.send(captured);
 
                     // Resume the audio callback so the consumer loop can continue
                     // receiving chunks (important for always-on microphone mode).
@@ -806,14 +922,19 @@ fn run_consumer(
 
         // ---------- existing pipeline ------------------------------------ //
         frame_resampler.push(&raw, &mut |frame: &[f32]| {
-            handle_frame(
-                frame,
-                recording,
-                vad_policy,
-                &vad,
-                &audio_cb,
-                &mut processed_samples,
-            )
+            if recording {
+                handle_frame(
+                    frame,
+                    true,
+                    vad_policy,
+                    &vad,
+                    &audio_cb,
+                    &mut raw_samples,
+                    &mut processed_samples,
+                )
+            } else {
+                push_pre_roll(&mut pre_roll, frame, PRE_ROLL_FRAMES);
+            }
         });
 
         if recording {

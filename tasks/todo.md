@@ -1,3 +1,41 @@
+# Dibur 2.0: reliable capture, required provisioning, and local polish
+
+## Outcome
+
+Ship a distribution-ready macOS and Windows release that never loses recorded
+audio, captures the first spoken word, cannot finish setup without working local
+models, and improves Hebrew transcript readability with a bundled local model.
+
+## Work plan
+
+- [x] Add deterministic red-capable regression tests for VAD-empty audio,
+      first-frame capture, and incomplete model provisioning.
+- [x] Preserve raw audio separately from VAD-filtered audio and fall back to it
+      whenever speech filtering yields no samples.
+- [x] Move capture ahead of visual side effects and add a bounded in-memory
+      pre-roll for instant mode without persisting pre-trigger audio.
+- [x] Make model provisioning and a real test dictation a hard onboarding gate,
+      including returning-user recovery for missing/corrupt models.
+- [x] Bundle a cross-platform local text-refinement runtime and pinned Hebrew
+      model, with protected spans, validation, timeout, and fail-open behavior.
+- [x] Prove offline operation and real microphone behavior on this Mac.
+- [ ] Build and verify signed/notarized macOS artifacts and build/verify the
+      Windows release pipeline artifacts.
+- [ ] Run final review, security gates, CI, merge, release, and cleanup.
+
+## Review
+
+Current Mac proof passed in a Developer ID signed app installed under
+`/Applications`: the packaged window opens without blocking on CoreAudio, the
+always-on stream initializes, and Carmit began speaking 250 ms before the
+shortcut. Dibur preserved the first word, captured 118,080 raw samples,
+transcribed the full Hebrew sentence, ran exact-word local polishing, and pasted
+the result into TextEdit. Mandatory provisioning and local-runtime crash cleanup
+also passed. Notarized release artifacts, Windows CI package proof, merge,
+publication, and cleanup remain open.
+
+---
+
 # Dibur: a built-in vocabulary for the words developers actually say
 
 Dibur is being positioned as the dictation app for working with Claude Code in

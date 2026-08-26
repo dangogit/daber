@@ -3,9 +3,17 @@ pub mod history;
 pub mod models;
 pub mod transcription;
 
+use crate::managers::{
+    audio::{AudioRecordingManager, MicrophoneMode},
+    history::HistoryManager,
+    local_polisher::LocalPolisherManager,
+    model::{ModelManager, IVRIT_MODEL_ID},
+    transcription::TranscriptionManager,
+};
 use crate::settings::{get_settings, write_settings, AppSettings, LogLevel};
 use crate::utils::cancel_current_operation;
-use tauri::{AppHandle, Manager};
+use std::sync::Arc;
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_opener::OpenerExt;
 
 #[tauri::command]
@@ -39,6 +47,104 @@ pub fn get_app_settings(app: AppHandle) -> Result<AppSettings, String> {
 #[specta::specta]
 pub fn get_default_settings() -> Result<AppSettings, String> {
     Ok(crate::settings::get_default_settings())
+}
+
+fn validate_onboarding_completion(
+    model_downloaded: bool,
+    loaded_model: Option<&str>,
+    has_successful_transcription: bool,
+    local_polisher_ready: bool,
+) -> Result<(), String> {
+    if !model_downloaded {
+        return Err("The Hebrew model has not finished downloading".to_string());
+    }
+    if loaded_model != Some(IVRIT_MODEL_ID) {
+        return Err("The Hebrew model is not loaded".to_string());
+    }
+    if !has_successful_transcription {
+        return Err("Complete one successful test dictation first".to_string());
+    }
+    if !local_polisher_ready {
+        return Err("The local text polish model is not ready".to_string());
+    }
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn complete_onboarding(
+    app: AppHandle,
+    model_manager: State<'_, Arc<ModelManager>>,
+    transcription_manager: State<'_, Arc<TranscriptionManager>>,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    local_polisher: State<'_, Arc<LocalPolisherManager>>,
+) -> Result<(), String> {
+    let model_downloaded = model_manager
+        .get_model_info(IVRIT_MODEL_ID)
+        .is_some_and(|model| model.is_downloaded);
+    let loaded_model = transcription_manager.get_current_model();
+    let has_successful_transcription = history_manager
+        .has_successful_transcription()
+        .map_err(|error| format!("Failed to verify the test dictation: {error}"))?;
+    let local_status = local_polisher.status();
+
+    validate_onboarding_completion(
+        model_downloaded,
+        loaded_model.as_deref(),
+        has_successful_transcription,
+        local_status.model_downloaded && local_status.runtime_available,
+    )?;
+    local_polisher
+        .ensure_running()
+        .await
+        .map_err(|error| format!("Failed to start local text polish: {error}"))?;
+
+    let previous_settings = get_settings(&app);
+    let mut settings = previous_settings.clone();
+    settings.onboarding_completed = true;
+    settings.always_on_microphone = true;
+    write_settings(&app, settings);
+
+    let recorder = app.state::<Arc<AudioRecordingManager>>().inner().clone();
+    if let Err(error) =
+        tokio::task::spawn_blocking(move || recorder.update_mode(MicrophoneMode::AlwaysOn))
+            .await
+            .map_err(|error| format!("Audio task failed: {error}"))?
+    {
+        write_settings(&app, previous_settings);
+        return Err(format!("Failed to enable instant recording: {error}"));
+    }
+
+    Ok(())
+}
+
+/// Warm the microphone before the real onboarding dictation. The setting is
+/// persisted only after a successful test, but the recorder can already keep a
+/// short pre-roll so the first spoken word is present in that test too.
+#[tauri::command]
+#[specta::specta]
+pub async fn prepare_onboarding_dictation(
+    recorder: State<'_, Arc<AudioRecordingManager>>,
+) -> Result<(), String> {
+    let recorder = recorder.inner().clone();
+    tokio::task::spawn_blocking(move || recorder.update_mode(MicrophoneMode::AlwaysOn))
+        .await
+        .map_err(|error| format!("Audio task failed: {error}"))?
+        .map_err(|error| format!("Failed to prepare instant recording: {error}"))
+}
+
+#[cfg(test)]
+mod onboarding_tests {
+    use super::validate_onboarding_completion;
+
+    #[test]
+    fn onboarding_requires_model_load_and_real_dictation() {
+        assert!(validate_onboarding_completion(false, None, false, false).is_err());
+        assert!(validate_onboarding_completion(true, None, true, true).is_err());
+        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), false, true).is_err());
+        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), true, false).is_err());
+        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), true, true).is_ok());
+    }
 }
 
 #[tauri::command]
