@@ -1,3 +1,4 @@
+use super::local_polisher::LOCAL_POLISH_MODEL_FILENAME;
 use super::model_capabilities::{
     CapabilityProbe, CapabilityProber, Compatibility, GgufHeaderProber,
 };
@@ -1648,6 +1649,14 @@ impl ModelManager {
                 continue;
             }
 
+            // The local text polisher shares the models directory so downloads
+            // can reuse the existing integrity and progress machinery. It is a
+            // language model, not a speech model, and must never appear in the
+            // transcription model picker.
+            if filename == LOCAL_POLISH_MODEL_FILENAME {
+                continue;
+            }
+
             // Only process Whisper-family model files: legacy GGML `.bin` or
             // GGUF `.gguf` (both load through transcribe-cpp). Anything else —
             // including `.partial` downloads like "model.bin.partial" — is
@@ -2883,6 +2892,8 @@ mod tests {
             )]))
             .unwrap();
 
+        File::create(models_dir.join(LOCAL_POLISH_MODEL_FILENAME)).unwrap();
+
         // Create files that should be ignored
         File::create(models_dir.join(".hidden-model.bin")).unwrap(); // Hidden file
         File::create(models_dir.join("readme.txt")).unwrap(); // Non-model file
@@ -2958,6 +2969,7 @@ mod tests {
         assert!(!models.contains_key("readme"));
         assert!(!models.contains_key("download.bin"));
         assert!(!models.contains_key("some-directory"));
+        assert!(!models.contains_key("qwen3-4b-q4-k-m"));
     }
 
     #[test]
