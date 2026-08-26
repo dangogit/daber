@@ -9,7 +9,7 @@ pasting into whatever app is in front. Dibur changes what it opens as: the
 Hebrew model, the Hebrew interface, and the Hebrew transcription language are
 what you get on first launch, with nothing to configure.
 
-The model is
+The speech model is
 [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
 — Whisper Large v3 Turbo fine-tuned on Hebrew, and considerably better at it
 than the generic multilingual builds. Dibur ships it quantized to q8_0: 874 MB
@@ -18,12 +18,17 @@ Hebrew clips including real microphone recordings. Smaller quantizations exist
 and were tested; 4-bit lost word boundaries, and 5-bit costs several times more
 on a CPU without native fp16, which is the machine least able to afford it.
 
-It downloads in the background from the moment the app opens, so granting
-permissions and choosing a shortcut covers the wait. The download comes from a
-[GitHub release](https://github.com/dangogit/daber/releases/tag/models-v1)
-rather than the Hub and is pinned by SHA-256, because huggingface.co is blocked
-on a fair number of Israeli school and workplace networks and a blocked download
-looks exactly like a broken app.
+Dibur also downloads a 2.5 GB Qwen3 4B model that adds punctuation and paragraph
+breaks after transcription. It runs through a bundled llama.cpp server bound to
+localhost. Before Dibur uses the result, it verifies that every letter and number
+from the original transcript is still present in the same order. If that check
+fails, the original transcript is pasted instead.
+
+Both engines download during first-run setup, about 3.4 GB in total. Setup cannot
+finish until both downloads pass their SHA-256 checks and a real test dictation
+appears in the test box. The Hebrew speech engine comes from a
+[GitHub release](https://github.com/dangogit/daber/releases/tag/models-v1). The
+Qwen model comes from a pinned Hugging Face revision.
 
 Design notes:
 [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
@@ -31,8 +36,12 @@ Everything below the divider is upstream's README and still applies.
 
 ## Installing it
 
-Grab `Dibur_<version>_aarch64.dmg` from
-[Releases](https://github.com/dangogit/daber/releases), or build it yourself:
+Download the installer for your computer from
+[Releases](https://github.com/dangogit/daber/releases). macOS builds are
+available for Apple Silicon and Intel. Windows builds are available for x64 and
+ARM64.
+
+To build it yourself:
 
 ```bash
 bun install && bun run tauri build
@@ -46,20 +55,19 @@ It installs alongside an existing Handy rather than replacing it — different
 bundle id, so separate settings, models, history and permissions. Both can be
 installed at once; only the shortcuts would collide, and those are configurable.
 
-First launch fetches the 874 MB Hebrew engine while you work through the two
-setup screens, and ends by asking you to dictate one sentence. There is no model
-to choose — if the file is ever damaged, Advanced has a single row to fetch it
-again.
+First launch fetches both local engines while you grant permissions and choose a
+shortcut. Setup ends with a real dictation test. It stays on that screen until
+the microphone, shortcut, speech model, local text model, and paste all work.
 
 ## Sharing it with other people
 
-As built, Dibur is **ad-hoc signed and not notarized**, so macOS refuses the
-first double-click: _"Apple could not verify this app is free of malware."_ The
-person you send it to has to right-click once and choose **Open**. After that it
-launches normally, from a Release, AirDrop or a link alike.
+Official macOS release builds are signed with a Developer ID certificate,
+notarized by Apple, and stapled before publication. The release workflow checks
+the disk image with Gatekeeper before it is uploaded.
 
-**Apple Silicon only.** The bundle is `aarch64`; an Intel Mac needs its own
-`x86_64` build.
+Windows installers are built and opened in CI on both x64 and ARM64. They carry
+Tauri updater signatures, but they are not currently Authenticode-signed, so
+Windows SmartScreen may show a warning on first install.
 
 ### Signing and notarizing it properly
 

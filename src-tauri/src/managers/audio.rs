@@ -4,7 +4,7 @@ use crate::audio_toolkit::{
         SmoothedVad, VAD_OFFLINE_HANGOVER_FRAMES, VAD_ONSET_FRAMES, VAD_PREFILL_FRAMES,
         VAD_STREAMING_HANGOVER_FRAMES,
     },
-    AudioRecorder, SileroVad, VadPolicy,
+    AudioRecorder, RecordedAudio, SileroVad, VadPolicy,
 };
 use crate::helpers::clamshell;
 use crate::managers::transcription::StreamRouter;
@@ -365,11 +365,6 @@ impl AudioRecordingManager {
             recording_active: Arc::new(AtomicBool::new(false)),
             cached_device: Arc::new(Mutex::new(None)),
         };
-
-        // Always-on?  Open immediately.
-        if matches!(mode, MicrophoneMode::AlwaysOn) {
-            manager.start_microphone_stream()?;
-        }
 
         Ok(manager)
     }
@@ -799,7 +794,11 @@ impl AudioRecordingManager {
         self.cancel_generation.load(Ordering::Acquire) != generation
     }
 
-    pub fn stop_recording(&self, binding_id: &str, cancel_generation: u64) -> Option<Vec<f32>> {
+    pub fn stop_recording(
+        &self,
+        binding_id: &str,
+        cancel_generation: u64,
+    ) -> Option<RecordedAudio> {
         let mut state = self.state.lock().unwrap();
 
         match *state {
@@ -831,17 +830,17 @@ impl AudioRecordingManager {
                     }
                 }
 
-                let samples = if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
-                    match rec.stop() {
+                let mut captured = if let Some(rec) = self.recorder.lock().unwrap().as_ref() {
+                    match rec.stop_recorded_audio() {
                         Ok(buf) => buf,
                         Err(e) => {
                             error!("stop() failed: {e}");
-                            Vec::new()
+                            RecordedAudio::empty()
                         }
                     }
                 } else {
                     error!("Recorder not available");
-                    Vec::new()
+                    RecordedAudio::empty()
                 };
 
                 *self.is_recording.lock().unwrap() = false;
@@ -862,15 +861,13 @@ impl AudioRecordingManager {
                 }
 
                 // Pad if very short
-                let s_len = samples.len();
-                // debug!("Got {} samples", s_len);
+                let s_len = captured.transcription_samples.len();
                 if s_len < WHISPER_SAMPLE_RATE && s_len > 0 {
-                    let mut padded = samples;
-                    padded.resize(WHISPER_SAMPLE_RATE * 5 / 4, 0.0);
-                    Some(padded)
-                } else {
-                    Some(samples)
+                    captured
+                        .transcription_samples
+                        .resize(WHISPER_SAMPLE_RATE * 5 / 4, 0.0);
                 }
+                Some(captured)
             }
             _ => None,
         }

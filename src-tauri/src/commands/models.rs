@@ -1,3 +1,7 @@
+use crate::managers::local_polisher::{
+    LocalPolisherManager, LocalPolisherStatus, LOCAL_POLISH_MODEL_FILENAME, LOCAL_POLISH_MODEL_ID,
+    LOCAL_POLISH_MODEL_SHA256, LOCAL_POLISH_MODEL_SIZE, LOCAL_POLISH_MODEL_URL,
+};
 use crate::managers::model::{ModelInfo, ModelManager};
 use crate::managers::transcription::{ModelStateEvent, TranscriptionManager};
 use crate::settings::{get_settings, write_settings, ModelUnloadTimeout};
@@ -63,6 +67,42 @@ pub async fn download_model(
 
 #[tauri::command]
 #[specta::specta]
+pub fn get_local_polisher_status(
+    local_polisher: State<'_, Arc<LocalPolisherManager>>,
+) -> Result<LocalPolisherStatus, String> {
+    Ok(local_polisher.status())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn download_local_polisher_model(
+    app_handle: AppHandle,
+    model_manager: State<'_, Arc<ModelManager>>,
+) -> Result<(), String> {
+    let result = model_manager
+        .download_auxiliary_model(
+            LOCAL_POLISH_MODEL_ID,
+            LOCAL_POLISH_MODEL_FILENAME,
+            LOCAL_POLISH_MODEL_URL,
+            LOCAL_POLISH_MODEL_SIZE,
+            LOCAL_POLISH_MODEL_SHA256,
+        )
+        .await
+        .map(|_| ())
+        .map_err(|error| error.to_string());
+
+    if let Err(ref error) = result {
+        error!("Local polish model download failed: {error}");
+        let _ = app_handle.emit(
+            "model-download-failed",
+            serde_json::json!({ "model_id": LOCAL_POLISH_MODEL_ID, "error": error }),
+        );
+    }
+    result
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn delete_model(
     app_handle: AppHandle,
     model_manager: State<'_, Arc<ModelManager>>,
@@ -115,13 +155,11 @@ pub fn switch_active_model(app: &AppHandle, model_id: &str) -> Result<(), String
     let settings = get_settings(app);
     let unload_timeout = settings.model_unload_timeout;
     let old_model = settings.selected_model.clone();
-    let old_onboarding_completed = settings.onboarding_completed;
 
     // Persist the new selection early so the frontend sees the correct model
     // when it reacts to events emitted by load_model.
     let mut settings = settings;
     settings.selected_model = model_id.to_string();
-    settings.onboarding_completed = true;
 
     write_settings(app, settings);
 
@@ -150,7 +188,6 @@ pub fn switch_active_model(app: &AppHandle, model_id: &str) -> Result<(), String
     if let Err(e) = transcription_manager.load_model(model_id) {
         let mut settings = get_settings(app);
         settings.selected_model = old_model;
-        settings.onboarding_completed = old_onboarding_completed;
         write_settings(app, settings);
         return Err(e.to_string());
     }

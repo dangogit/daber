@@ -8,8 +8,9 @@ import TryItStep from "./TryItStep";
 import type { HebrewModelState } from "@/hooks/useHebrewModel";
 
 interface OnboardingProps {
-  onComplete: () => void;
+  onComplete: () => Promise<boolean>;
   model: HebrewModelState;
+  initialStep?: Step;
 }
 
 type Step = "permissions" | "hotkey" | "try";
@@ -25,7 +26,11 @@ type Step = "permissions" | "hotkey" | "try";
  * component, because someone can reach the end of onboarding before it
  * finishes and the model still has to be selected when it lands.
  */
-const Onboarding: React.FC<OnboardingProps> = ({ onComplete, model }) => {
+const Onboarding: React.FC<OnboardingProps> = ({
+  onComplete,
+  model,
+  initialStep,
+}) => {
   const { t } = useTranslation();
 
   const steps = useMemo<Step[]>(() => {
@@ -36,18 +41,18 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, model }) => {
       : ["hotkey", "try"];
   }, []);
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() =>
+    initialStep ? Math.max(0, steps.indexOf(initialStep)) : 0,
+  );
   const step = steps[index];
 
-  const next = useCallback(() => {
-    setIndex((i) => {
-      if (i + 1 >= steps.length) {
-        onComplete();
-        return i;
-      }
-      return i + 1;
-    });
-  }, [steps.length, onComplete]);
+  const next = useCallback(async () => {
+    if (index + 1 >= steps.length) {
+      return onComplete();
+    }
+    setIndex(index + 1);
+    return true;
+  }, [index, steps.length, onComplete]);
 
   return (
     <div className="titlebar-inset h-screen w-screen flex flex-col">
@@ -55,9 +60,9 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete, model }) => {
 
       <div className="flex-1 min-h-0">
         {step === "permissions" && (
-          <AccessibilityOnboarding onComplete={next} />
+          <AccessibilityOnboarding onComplete={() => void next()} />
         )}
-        {step === "hotkey" && <HotkeyStep onContinue={next} />}
+        {step === "hotkey" && <HotkeyStep onContinue={() => void next()} />}
         {step === "try" && <TryItStep model={model} onDone={next} />}
       </div>
 

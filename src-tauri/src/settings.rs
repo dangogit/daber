@@ -9,6 +9,8 @@ use tauri_plugin_store::StoreExt;
 
 pub const APPLE_INTELLIGENCE_PROVIDER_ID: &str = "apple_intelligence";
 pub const APPLE_INTELLIGENCE_DEFAULT_MODEL_ID: &str = "Apple Intelligence";
+pub const LOCAL_POLISH_PROVIDER_ID: &str = "local_dibur";
+pub const LOCAL_POLISH_DEFAULT_MODEL_ID: &str = "Qwen3 4B";
 
 #[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "lowercase")]
@@ -485,7 +487,7 @@ fn default_model() -> String {
     "".to_string()
 }
 
-const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 1;
+const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 2;
 
 fn default_settings_schema_version() -> u32 {
     CURRENT_SETTINGS_SCHEMA_VERSION
@@ -601,7 +603,7 @@ fn default_theme() -> Theme {
 }
 
 fn default_post_process_enabled() -> bool {
-    false
+    true
 }
 
 fn default_app_language() -> String {
@@ -615,11 +617,19 @@ fn default_show_tray_icon() -> bool {
 }
 
 fn default_post_process_provider_id() -> String {
-    "openai".to_string()
+    LOCAL_POLISH_PROVIDER_ID.to_string()
 }
 
 fn default_post_process_providers() -> Vec<PostProcessProvider> {
     let mut providers = vec![
+        PostProcessProvider {
+            id: LOCAL_POLISH_PROVIDER_ID.to_string(),
+            label: "מקומי וחכם".to_string(),
+            base_url: "dibur-local://polisher".to_string(),
+            allow_base_url_edit: false,
+            models_endpoint: None,
+            supports_structured_output: true,
+        },
         PostProcessProvider {
             id: "openai".to_string(),
             label: "OpenAI".to_string(),
@@ -718,6 +728,9 @@ fn default_post_process_api_keys() -> SecretMap {
 }
 
 fn default_model_for_provider(provider_id: &str) -> String {
+    if provider_id == LOCAL_POLISH_PROVIDER_ID {
+        return LOCAL_POLISH_DEFAULT_MODEL_ID.to_string();
+    }
     if provider_id == APPLE_INTELLIGENCE_PROVIDER_ID {
         return APPLE_INTELLIGENCE_DEFAULT_MODEL_ID.to_string();
     }
@@ -901,7 +914,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_api_keys: default_post_process_api_keys(),
         post_process_models: default_post_process_models(),
         post_process_prompts: default_post_process_prompts(),
-        post_process_selected_prompt_id: None,
+        post_process_selected_prompt_id: Some("default_improve_transcriptions".to_string()),
         mute_while_recording: false,
         append_trailing_space: false,
         app_language: default_app_language(),
@@ -1086,6 +1099,31 @@ fn apply_settings_migrations(
             settings.transcribe_accelerator = TranscribeAcceleratorSetting::Auto;
             settings.transcribe_gpu_device = default_transcribe_gpu_device();
         }
+        updated = true;
+    }
+    if stored_schema_version < 2 {
+        let api_key = settings
+            .post_process_api_keys
+            .get(&settings.post_process_provider_id)
+            .map(String::as_str)
+            .unwrap_or_default();
+        let has_configured_provider = settings.post_process_enabled
+            && (settings.post_process_provider_id == APPLE_INTELLIGENCE_PROVIDER_ID
+                || !api_key.trim().is_empty()
+                || settings.post_process_provider_id == "custom");
+        if !has_configured_provider {
+            settings.post_process_enabled = true;
+            settings.post_process_provider_id = LOCAL_POLISH_PROVIDER_ID.to_string();
+            settings.post_process_models.insert(
+                LOCAL_POLISH_PROVIDER_ID.to_string(),
+                LOCAL_POLISH_DEFAULT_MODEL_ID.to_string(),
+            );
+            settings.post_process_selected_prompt_id =
+                Some("default_improve_transcriptions".to_string());
+        }
+        updated = true;
+    }
+    if stored_schema_version < u64::from(CURRENT_SETTINGS_SCHEMA_VERSION) {
         settings.settings_schema_version = CURRENT_SETTINGS_SCHEMA_VERSION;
         updated = true;
     }
@@ -1165,7 +1203,8 @@ mod tests {
 
     /// Frozen snapshot of a real v0.9.0-era settings store, as written to
     /// disk. This pins backwards compatibility: it must always parse strictly
-    /// (no salvage) and require no migration rewrite.
+    /// (no salvage). Product migrations may deliberately rewrite current
+    /// defaults while preserving every unrelated user choice.
     ///
     /// If a schema change breaks this test, do NOT just update the fixture —
     /// it stands in for the stores on users' machines. Add a
@@ -1173,7 +1212,7 @@ mod tests {
     /// `apply_settings_migrations` so old values keep loading, and only extend
     /// the fixture alongside that.
     #[test]
-    fn frozen_v0_9_store_parses_strictly_without_migration() {
+    fn frozen_v0_9_store_parses_strictly_and_migrates_to_local_polish() {
         // Note "log_level": 2 — the legacy numeric format, kept deliberately.
         let stored: serde_json::Value = serde_json::from_str(
             r##"{
@@ -1277,8 +1316,31 @@ mod tests {
         assert_eq!(settings.log_level, LogLevel::Debug);
         assert_eq!(settings.sound_theme, SoundTheme::Pop);
 
-        // A current-format store must not be rewritten on every read.
-        assert!(!apply_settings_migrations(&mut settings, &stored));
+        assert!(apply_settings_migrations(&mut settings, &stored));
+        assert_eq!(
+            settings.settings_schema_version,
+            CURRENT_SETTINGS_SCHEMA_VERSION
+        );
+        assert!(settings.post_process_enabled);
+        assert_eq!(settings.post_process_provider_id, LOCAL_POLISH_PROVIDER_ID);
+        assert_eq!(settings.bindings["transcribe"].current_binding, "f13");
+    }
+
+    #[test]
+    fn local_polish_migration_preserves_a_configured_cloud_provider() {
+        let mut stored = default_settings_json();
+        stored["settings_schema_version"] = serde_json::json!(1);
+        stored["post_process_provider_id"] = serde_json::json!("openai");
+        stored["post_process_enabled"] = serde_json::json!(true);
+        stored["post_process_api_keys"]["openai"] = serde_json::json!("synthetic-test-key");
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+
+        assert!(apply_settings_migrations(&mut settings, &stored));
+        assert_eq!(settings.post_process_provider_id, "openai");
+        assert_eq!(
+            settings.settings_schema_version,
+            CURRENT_SETTINGS_SCHEMA_VERSION
+        );
     }
 
     #[test]

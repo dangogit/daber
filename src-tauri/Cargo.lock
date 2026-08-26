@@ -1323,7 +1323,7 @@ dependencies = [
 
 [[package]]
 name = "dibur"
-version = "1.0.2"
+version = "2.0.0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1385,6 +1385,7 @@ dependencies = [
  "transcribe-cpp",
  "transcribe-rs",
  "vad-rs",
+ "win32job",
  "window-vibrancy",
  "windows 0.61.3",
  "winreg 0.55.0",
@@ -7968,6 +7969,16 @@ name = "widestring"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72069c3113ab32ab29e5584db3c6ec55d416895e60715417b5b883a357c3e471"
+
+[[package]]
+name = "win32job"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c6a6724ccfbf34154a8691bd868b0fcd2be2ca3f7b47b32614654f1a01b191c"
+dependencies = [
+ "thiserror 1.0.69",
+ "windows 0.61.3",
+]
 
 [[package]]
 name = "winapi"

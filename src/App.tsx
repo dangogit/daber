@@ -20,10 +20,11 @@ import { useHebrewModel } from "./hooks/useHebrewModel";
 import { useSettingsStore } from "./stores/settingsStore";
 import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
+import { HEBREW_MODEL_ID } from "@/lib/constants/models";
 
 /// "onboarding" is the full first run; "permissions" is the shortened path for
 /// someone who has already been through it and only lost a permission since.
-type OnboardingStep = "onboarding" | "permissions" | "done";
+type OnboardingStep = "onboarding" | "provisioning" | "permissions" | "done";
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -229,6 +230,26 @@ function App() {
           }
         }
 
+        const [modelResult, polisherResult] = await Promise.all([
+          commands.getModelInfo(HEBREW_MODEL_ID),
+          commands.getLocalPolisherStatus(),
+        ]);
+        const instantRecordingEnabled =
+          settingsResult.status === "ok" &&
+          settingsResult.data.always_on_microphone === true;
+        if (
+          modelResult.status !== "ok" ||
+          !modelResult.data?.is_downloaded ||
+          polisherResult.status !== "ok" ||
+          !polisherResult.data.model_downloaded ||
+          !polisherResult.data.runtime_available ||
+          !instantRecordingEnabled
+        ) {
+          await commands.showMainWindowCommand();
+          setOnboardingStep("provisioning");
+          return;
+        }
+
         setOnboardingStep("done");
       } else {
         setOnboardingStep("onboarding");
@@ -239,12 +260,21 @@ function App() {
     }
   };
 
-  const handleOnboardingComplete = () => {
-    // Selecting a model normally sets this, and the background download does
-    // select it — but someone can reach the end of onboarding before the
-    // download has finished, and they should not be walked through it twice.
-    updateSetting("onboarding_completed", true);
-    setOnboardingStep("done");
+  const handleOnboardingComplete = async () => {
+    try {
+      const completion = await commands.completeOnboarding();
+      if (completion.status === "ok") {
+        setOnboardingStep("done");
+        return true;
+      }
+      toast.error(t("onboarding.try.failed"), {
+        description: completion.error,
+      });
+    } catch (error) {
+      console.warn("Failed to complete onboarding:", error);
+      toast.error(t("onboarding.try.failed"));
+    }
+    return false;
   };
 
   // Rendered once around every step below (including onboarding) so
@@ -278,15 +308,19 @@ function App() {
   // stable wrapper around this node, so crossing between onboarding steps and
   // the main app never remounts it (which would drop any in-flight toast).
   let content: ReactNode;
-  if (onboardingStep === "onboarding") {
+  if (onboardingStep === "onboarding" || onboardingStep === "provisioning") {
     content = (
-      <Onboarding onComplete={handleOnboardingComplete} model={hebrewModel} />
+      <Onboarding
+        onComplete={handleOnboardingComplete}
+        model={hebrewModel}
+        initialStep={onboardingStep === "provisioning" ? "try" : undefined}
+      />
     );
   } else if (onboardingStep === "permissions") {
     content = (
       <div className="titlebar-inset h-screen w-screen">
         <div className="titlebar-drag absolute inset-x-0 top-0 h-7" />
-        <AccessibilityOnboarding onComplete={() => setOnboardingStep("done")} />
+        <AccessibilityOnboarding onComplete={checkOnboardingStatus} />
       </div>
     );
   } else {

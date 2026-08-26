@@ -1,11 +1,12 @@
 {
   "name": "handy-app",
   "private": true,
-  "version": "1.0.2",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "prepare:polisher": "bun scripts/prepare-local-polisher-runtime.ts",
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "eslint src",

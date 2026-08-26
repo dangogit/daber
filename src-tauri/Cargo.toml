@@ -1,6 +1,6 @@
 [package]
 name = "dibur"
-version = "1.0.2"
+version = "2.0.0"
 description = "Dibur"
 authors = ["cjpais"]
 edition = "2021"
@@ -87,6 +87,7 @@ hf-hub = { git = "https://github.com/cjpais/hf-hub", branch = "cancellable-downl
 
 [target.'cfg(unix)'.dependencies]
 signal-hook = "0.3"
+libc = "0.2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2.5.1"
@@ -117,6 +118,7 @@ windows = { version = "0.61.3", features = [
   "Win32_UI_WindowsAndMessaging",
 ] }
 winreg = "0.55"
+win32job = "2.0.3"
 
 # Whisper backend per Windows arch. x86_64 ships the Vulkan GPU backend and
 # keeps the dynamic-backends posture (loadable per-ISA CPU modules + Vulkan),
