@@ -152,7 +152,11 @@ try {
       }
     }),
   );
-  if (markerMatches && filesPresent.every(Boolean)) {
+  if (
+    markerMatches &&
+    filesPresent.every(Boolean) &&
+    !process.env.APPLE_SIGNING_IDENTITY
+  ) {
     console.log(
       `llama.cpp runtime ${LLAMA_VERSION} already prepared for ${target}.`,
     );
@@ -261,5 +265,31 @@ await writeFile(
     "",
   ].join("\n"),
 );
+
+const appleSigningIdentity = process.env.APPLE_SIGNING_IDENTITY;
+if (process.platform === "darwin" && appleSigningIdentity) {
+  const outputFiles = await readdir(outputDir, { withFileTypes: true });
+  const signableFiles = outputFiles
+    .filter(
+      (entry) =>
+        entry.isFile() &&
+        (entry.name === runtime.server || entry.name.endsWith(".dylib")),
+    )
+    .map((entry) => join(outputDir, entry.name));
+
+  for (const path of signableFiles) {
+    await run([
+      "codesign",
+      "--force",
+      "--timestamp",
+      "--options",
+      "runtime",
+      "--sign",
+      appleSigningIdentity,
+      path,
+    ]);
+  }
+}
+
 await writeFile(markerPath, marker);
 console.log(`Prepared llama.cpp ${LLAMA_VERSION} runtime for ${target}.`);
