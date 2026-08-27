@@ -120,14 +120,19 @@
             buildAndTestSubdir = "src-tauri";
             tauriBundleType = "deb";
 
-            cargoLock = {
+            # crates.io's API download endpoint can reject fixed-output
+            # fetchers with 403. Keep Cargo's registry identity unchanged and
+            # rewrite only the download host used by importCargoLock.
+            cargoDeps = (pkgs.rustPlatform.importCargoLock.override {
+              fetchurl = args:
+                pkgs.fetchurl (args // {
+                  url = pkgs.lib.replaceStrings
+                    [ "https://crates.io/api/v1/crates" ]
+                    [ "https://static.crates.io/crates" ]
+                    args.url;
+                });
+            }) {
               lockFile = ./src-tauri/Cargo.lock;
-              # crates.io's API download endpoint can reject fixed-output
-              # fetchers with 403. The static host serves the same checksummed
-              # crate path and keeps Nix builds deterministic.
-              extraRegistries = {
-                "https://github.com/rust-lang/crates.io-index" = "https://static.crates.io/crates";
-              };
               # Automatically fetch git dependencies using builtins.fetchGit.
               # This eliminates the need for manual outputHashes that had to be
               # updated every time a git dependency changed in Cargo.lock.
