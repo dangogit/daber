@@ -4,14 +4,10 @@ use crate::audio_feedback::{play_feedback_sound, play_feedback_sound_blocking, S
 use crate::audio_toolkit::{is_microphone_access_denied, is_no_input_device_error, VadPolicy};
 use crate::managers::audio::AudioRecordingManager;
 use crate::managers::history::HistoryManager;
-use crate::managers::local_polisher::LocalPolisherManager;
 use crate::managers::model::ModelManager;
 use crate::managers::transcription::StreamWorkKind;
 use crate::managers::transcription::TranscriptionManager;
-use crate::settings::{
-    get_settings, AppSettings, OverlayStyle, APPLE_INTELLIGENCE_PROVIDER_ID,
-    LOCAL_POLISH_PROVIDER_ID,
-};
+use crate::settings::{get_settings, AppSettings, OverlayStyle, APPLE_INTELLIGENCE_PROVIDER_ID};
 use crate::shortcut;
 use crate::tray::{change_tray_icon, TrayIconState};
 use crate::utils::{
@@ -122,11 +118,7 @@ fn should_use_streaming_overlay(style: OverlayStyle, is_streaming: bool) -> bool
     style == OverlayStyle::Live && is_streaming
 }
 
-async fn post_process_transcription(
-    app: &AppHandle,
-    settings: &AppSettings,
-    transcription: &str,
-) -> Option<String> {
+async fn post_process_transcription(settings: &AppSettings, transcription: &str) -> Option<String> {
     if is_blank_transcription(transcription) {
         debug!("Post-processing skipped because the transcription is empty");
         return None;
@@ -186,17 +178,6 @@ async fn post_process_transcription(
         "Starting LLM post-processing with provider '{}' (model: {})",
         provider.id, model
     );
-
-    if provider.id == LOCAL_POLISH_PROVIDER_ID {
-        let polisher = app.state::<Arc<LocalPolisherManager>>();
-        return match polisher.polish(transcription).await {
-            Ok(output) => Some(output),
-            Err(error) => {
-                warn!("Local text polish failed safely; using original transcription: {error}");
-                None
-            }
-        };
-    }
 
     let api_key = settings
         .post_process_api_keys
@@ -459,8 +440,7 @@ pub(crate) async fn process_transcription_output(
     }
 
     if post_process {
-        if let Some(processed_text) = post_process_transcription(app, &settings, &final_text).await
-        {
+        if let Some(processed_text) = post_process_transcription(&settings, &final_text).await {
             post_processed_text = Some(processed_text.clone());
             final_text = processed_text;
 

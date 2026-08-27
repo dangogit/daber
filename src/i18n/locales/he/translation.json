@@ -59,15 +59,15 @@
       "placeholder": "מה שתגיד יופיע כאן",
       "worked": "זהו, זה עובד",
       "workedDescription": "בדיוק ככה זה יעבוד בכל אפליקציה: מייל, וואטסאפ, כל מקום שאפשר להקליד בו.",
-      "stillPreparing": "מכינים את מנועי הדיבור והסידור המקומיים. רגע.",
-      "downloading": "מוריד את המנועים המקומיים",
+      "stillPreparing": "מכינים את מנוע התמלול בעברית. רגע.",
+      "downloading": "מוריד את מנוע התמלול בעברית",
       "verifying": "בודק את ההורדה",
       "speed": "{{percent}}% · {{speed}} MB/s",
       "failed": "ההורדה לא הסתיימה.",
       "retryDownload": "נסה שוב",
       "finish": "סיימנו",
       "skip": "אחר כך",
-      "preparing": "מכין את המנועים"
+      "preparing": "מכין את מנוע התמלול"
     },
     "percent": "{{percent}}%"
   },
@@ -323,9 +323,6 @@
         },
         "appleIntelligence": {
           "unavailable": "Apple Intelligence לא זמין במכשיר הזה. נדרש Mac עם Apple Silicon שמריץ macOS Tahoe (26.0) ומעלה, עם Apple Intelligence מופעל בהגדרות המערכת."
-        },
-        "local": {
-          "description": "הטקסט מסודר מקומית על המחשב. שום הקלטה או תמלול לא נשלחים לענן. אם המודל מנסה לשנות תוכן במקום רק לפסק ולסדר אותו, דיבור משתמש אוטומטית בתמלול המקורי."
         },
         "baseUrl": {
           "title": "כתובת URL בסיסית",

@@ -50,10 +50,6 @@ const PostProcessingSettingsApiComponent: React.FC = () => {
             {t("settings.postProcessing.api.appleIntelligence.unavailable")}
           </Alert>
         ) : null
-      ) : state.isLocalProvider ? (
-        <Alert variant="info" contained>
-          {t("settings.postProcessing.api.local.description")}
-        </Alert>
       ) : (
         <>
           {state.selectedProvider?.id === "custom" && (
@@ -100,7 +96,7 @@ const PostProcessingSettingsApiComponent: React.FC = () => {
         </>
       )}
 
-      {!state.isAppleProvider && !state.isLocalProvider && (
+      {!state.isAppleProvider && (
         <SettingContainer
           title={t("settings.postProcessing.api.model.title")}
           description={

@@ -1653,12 +1653,60 @@ fn post_process_transcription_text(raw: String, settings: &AppSettings) -> Strin
             apply_custom_words(&raw, &custom_words, settings.word_correction_threshold)
         };
 
-        filter_transcription_output(
+        let filtered = filter_transcription_output(
             &corrected,
             &settings.app_language,
             &settings.custom_filler_words,
-        )
+        );
+
+        if settings.selected_language == "he" {
+            format_hebrew_transcription(&filtered)
+        } else {
+            filtered
+        }
     })
+}
+
+/// Make the Hebrew model's own punctuation easier to read without guessing
+/// content. This transform only changes whitespace. Long text gets a paragraph
+/// break after two existing sentence boundaries, while short dictations remain
+/// on one line.
+fn format_hebrew_transcription(raw: &str) -> String {
+    const MIN_PARAGRAPH_CHARS: usize = 56;
+
+    let compact = raw.split_whitespace().collect::<Vec<_>>().join(" ");
+    let mut normalized = String::with_capacity(compact.len());
+    for character in compact.chars() {
+        if matches!(character, ',' | '.' | ';' | ':' | '!' | '?') && normalized.ends_with(' ') {
+            normalized.pop();
+        }
+        normalized.push(character);
+    }
+
+    let mut formatted = String::with_capacity(normalized.len() + 8);
+    let mut characters = normalized.chars().peekable();
+    let mut paragraph_chars = 0usize;
+    let mut sentence_boundaries = 0usize;
+
+    while let Some(character) = characters.next() {
+        formatted.push(character);
+        if !character.is_whitespace() {
+            paragraph_chars += 1;
+        }
+
+        let ends_sentence = matches!(character, '.' | '!' | '?');
+        if ends_sentence && characters.peek() == Some(&' ') {
+            sentence_boundaries += 1;
+            if sentence_boundaries >= 2 && paragraph_chars >= MIN_PARAGRAPH_CHARS {
+                characters.next();
+                formatted.push_str("\n\n");
+                paragraph_chars = 0;
+                sentence_boundaries = 0;
+            }
+        }
+    }
+
+    formatted
 }
 
 /// Optional text cleanup must never discard a successful model result. The
@@ -2053,6 +2101,34 @@ mod tests {
         });
 
         assert_eq!(result, raw);
+    }
+
+    #[test]
+    fn hebrew_readability_formatting_changes_only_spacing() {
+        let raw = "בדקתי את דיבור  ,   והתמלול עצמו היה מהיר מאוד. המודל הנוסף היה איטי מאוד. עכשיו נשאיר רק את מודל התמלול  ,   וזהו?";
+        let formatted = format_hebrew_transcription(raw);
+
+        assert_eq!(
+            formatted,
+            "בדקתי את דיבור, והתמלול עצמו היה מהיר מאוד. המודל הנוסף היה איטי מאוד.\n\nעכשיו נשאיר רק את מודל התמלול, וזהו?"
+        );
+        assert_eq!(
+            formatted
+                .chars()
+                .filter(|character| character.is_alphanumeric())
+                .collect::<String>(),
+            raw.chars()
+                .filter(|character| character.is_alphanumeric())
+                .collect::<String>()
+        );
+    }
+
+    #[test]
+    fn hebrew_readability_formatting_leaves_short_dictation_on_one_line() {
+        assert_eq!(
+            format_hebrew_transcription("  שלום  ,   זה עובד.  "),
+            "שלום, זה עובד."
+        );
     }
 
     #[test]

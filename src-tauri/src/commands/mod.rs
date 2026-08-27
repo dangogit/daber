@@ -6,7 +6,6 @@ pub mod transcription;
 use crate::managers::{
     audio::{AudioRecordingManager, MicrophoneMode},
     history::HistoryManager,
-    local_polisher::LocalPolisherManager,
     model::{ModelManager, IVRIT_MODEL_ID},
     transcription::TranscriptionManager,
 };
@@ -53,7 +52,6 @@ fn validate_onboarding_completion(
     model_downloaded: bool,
     loaded_model: Option<&str>,
     has_successful_transcription: bool,
-    local_polisher_ready: bool,
 ) -> Result<(), String> {
     if !model_downloaded {
         return Err("The Hebrew model has not finished downloading".to_string());
@@ -63,9 +61,6 @@ fn validate_onboarding_completion(
     }
     if !has_successful_transcription {
         return Err("Complete one successful test dictation first".to_string());
-    }
-    if !local_polisher_ready {
-        return Err("The local text polish model is not ready".to_string());
     }
     Ok(())
 }
@@ -77,7 +72,6 @@ pub async fn complete_onboarding(
     model_manager: State<'_, Arc<ModelManager>>,
     transcription_manager: State<'_, Arc<TranscriptionManager>>,
     history_manager: State<'_, Arc<HistoryManager>>,
-    local_polisher: State<'_, Arc<LocalPolisherManager>>,
 ) -> Result<(), String> {
     let model_downloaded = model_manager
         .get_model_info(IVRIT_MODEL_ID)
@@ -86,18 +80,11 @@ pub async fn complete_onboarding(
     let has_successful_transcription = history_manager
         .has_successful_transcription()
         .map_err(|error| format!("Failed to verify the test dictation: {error}"))?;
-    let local_status = local_polisher.status();
-
     validate_onboarding_completion(
         model_downloaded,
         loaded_model.as_deref(),
         has_successful_transcription,
-        local_status.model_downloaded && local_status.runtime_available,
     )?;
-    local_polisher
-        .ensure_running()
-        .await
-        .map_err(|error| format!("Failed to start local text polish: {error}"))?;
 
     let previous_settings = get_settings(&app);
     let mut settings = previous_settings.clone();
@@ -139,11 +126,10 @@ mod onboarding_tests {
 
     #[test]
     fn onboarding_requires_model_load_and_real_dictation() {
-        assert!(validate_onboarding_completion(false, None, false, false).is_err());
-        assert!(validate_onboarding_completion(true, None, true, true).is_err());
-        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), false, true).is_err());
-        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), true, false).is_err());
-        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), true, true).is_ok());
+        assert!(validate_onboarding_completion(false, None, false).is_err());
+        assert!(validate_onboarding_completion(true, None, true).is_err());
+        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), false).is_err());
+        assert!(validate_onboarding_completion(true, Some("ivrit-turbo"), true).is_ok());
     }
 }
 

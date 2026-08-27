@@ -230,19 +230,13 @@ function App() {
           }
         }
 
-        const [modelResult, polisherResult] = await Promise.all([
-          commands.getModelInfo(HEBREW_MODEL_ID),
-          commands.getLocalPolisherStatus(),
-        ]);
+        const modelResult = await commands.getModelInfo(HEBREW_MODEL_ID);
         const instantRecordingEnabled =
           settingsResult.status === "ok" &&
           settingsResult.data.always_on_microphone === true;
         if (
           modelResult.status !== "ok" ||
           !modelResult.data?.is_downloaded ||
-          polisherResult.status !== "ok" ||
-          !polisherResult.data.model_downloaded ||
-          !polisherResult.data.runtime_available ||
           !instantRecordingEnabled
         ) {
           await commands.showMainWindowCommand();

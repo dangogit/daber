@@ -84,27 +84,6 @@
               "${pkgs.alsa-plugins}/lib/alsa-lib"
             ];
           };
-          localPolisherRuntime =
-            if system == "x86_64-linux" then
-              {
-                target = "x86_64-unknown-linux-gnu";
-                archive = pkgs.fetchurl {
-                  url = "https://github.com/ggml-org/llama.cpp/releases/download/b10621/llama-b10621-bin-ubuntu-x64.tar.gz";
-                  hash = "sha256-kdewPdrkmKOfKP24XYTStKD9ODjRC0+Jfg74l1u5tYM=";
-                };
-              }
-            else
-              {
-                target = "aarch64-unknown-linux-gnu";
-                archive = pkgs.fetchurl {
-                  url = "https://github.com/ggml-org/llama.cpp/releases/download/b10621/llama-b10621-bin-ubuntu-arm64.tar.gz";
-                  hash = "sha256-lZQBUb5jSS9w9lnaQgsmgkTMg6bucOMQ0mAMzbfqTes=";
-                };
-              };
-          qwenLicense = pkgs.fetchurl {
-            url = "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/bc640142c66e1fdd12af0bd68f40445458f3869b/LICENSE";
-            hash = "sha256-XeNllMEIOXiKjFiUQ6jvnYuNF8ZaG1gHIGrgN/w2xr0=";
-          };
         in
         {
           handy = pkgs.rustPlatform.buildRustPackage {
@@ -184,9 +163,6 @@
 
             env = commonEnv pkgs // {
               OPENSSL_NO_VENDOR = "1";
-              DIBUR_BUILD_TARGET = localPolisherRuntime.target;
-              DIBUR_LOCAL_POLISHER_ARCHIVE = "${localPolisherRuntime.archive}";
-              DIBUR_QWEN_LICENSE = "${qwenLicense}";
             };
 
             preFixup = ''
