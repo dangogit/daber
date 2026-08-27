@@ -11,7 +11,12 @@ import {
 } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 
+import { assertRequiredFiles } from "./local-polisher-files";
+
 const LLAMA_VERSION = "b10621";
+const LLAMA_LICENSE_URL = `https://raw.githubusercontent.com/ggml-org/llama.cpp/${LLAMA_VERSION}/LICENSE`;
+const LLAMA_LICENSE_SHA256 =
+  "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d";
 const QWEN_LICENSE_URL =
   "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/bc640142c66e1fdd12af0bd68f40445458f3869b/LICENSE";
 const QWEN_LICENSE_SHA256 =
@@ -101,6 +106,35 @@ async function sha256(path: string): Promise<string> {
   return hasher.digest("hex");
 }
 
+async function loadPinnedFile(
+  label: string,
+  providedPath: string | undefined,
+  url: string,
+  expectedHash: string,
+): Promise<Uint8Array> {
+  let bytes: Uint8Array;
+  if (providedPath) {
+    bytes = new Uint8Array(await readFile(providedPath));
+  } else {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`${label} download failed with HTTP ${response.status}`);
+    }
+    bytes = new Uint8Array(await response.arrayBuffer());
+  }
+
+  const hasher = new Bun.CryptoHasher("sha256");
+  hasher.update(bytes);
+  const actualHash = hasher.digest("hex");
+  if (actualHash !== expectedHash) {
+    throw new Error(
+      `${label} SHA-256 mismatch: expected ${expectedHash}, got ${actualHash}`,
+    );
+  }
+
+  return bytes;
+}
+
 async function findRuntimeRoot(
   directory: string,
   server: string,
@@ -132,7 +166,15 @@ if (!runtime) {
 const repoRoot = resolve(import.meta.dir, "..");
 const outputDir = join(repoRoot, "src-tauri", "resources", "local-polisher");
 const markerPath = join(outputDir, "runtime-version.txt");
-const marker = LLAMA_VERSION + ":" + target + ":" + QWEN_LICENSE_SHA256 + "\n";
+const marker =
+  LLAMA_VERSION +
+  ":" +
+  target +
+  ":" +
+  LLAMA_LICENSE_SHA256 +
+  ":" +
+  QWEN_LICENSE_SHA256 +
+  "\n";
 const requiredOutputFiles = [
   runtime.server,
   "LICENSE",
@@ -223,30 +265,20 @@ if (process.platform !== "win32") {
   await chmod(join(outputDir, runtime.server), 0o755);
 }
 
-const providedQwenLicense = process.env.DIBUR_QWEN_LICENSE;
-let qwenLicense: Uint8Array;
-if (providedQwenLicense) {
-  qwenLicense = new Uint8Array(await readFile(providedQwenLicense));
-} else {
-  const qwenLicenseResponse = await fetch(QWEN_LICENSE_URL);
-  if (!qwenLicenseResponse.ok) {
-    throw new Error(
-      "Qwen license download failed with HTTP " + qwenLicenseResponse.status,
-    );
-  }
-  qwenLicense = new Uint8Array(await qwenLicenseResponse.arrayBuffer());
-}
-const qwenLicenseHasher = new Bun.CryptoHasher("sha256");
-qwenLicenseHasher.update(qwenLicense);
-const qwenLicenseHash = qwenLicenseHasher.digest("hex");
-if (qwenLicenseHash !== QWEN_LICENSE_SHA256) {
-  throw new Error(
-    "Qwen license SHA-256 mismatch: expected " +
-      QWEN_LICENSE_SHA256 +
-      ", got " +
-      qwenLicenseHash,
-  );
-}
+const llamaLicense = await loadPinnedFile(
+  "llama.cpp license",
+  process.env.DIBUR_LLAMA_LICENSE,
+  LLAMA_LICENSE_URL,
+  LLAMA_LICENSE_SHA256,
+);
+await writeFile(join(outputDir, "LICENSE"), llamaLicense);
+
+const qwenLicense = await loadPinnedFile(
+  "Qwen license",
+  process.env.DIBUR_QWEN_LICENSE,
+  QWEN_LICENSE_URL,
+  QWEN_LICENSE_SHA256,
+);
 await writeFile(join(outputDir, "QWEN3-APACHE-2.0.txt"), qwenLicense);
 await writeFile(
   join(outputDir, "THIRD-PARTY-NOTICE.txt"),
@@ -291,5 +323,6 @@ if (process.platform === "darwin" && appleSigningIdentity) {
   }
 }
 
+await assertRequiredFiles(outputDir, requiredOutputFiles);
 await writeFile(markerPath, marker);
 console.log(`Prepared llama.cpp ${LLAMA_VERSION} runtime for ${target}.`);

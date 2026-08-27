@@ -105,6 +105,10 @@
             url = "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/bc640142c66e1fdd12af0bd68f40445458f3869b/LICENSE";
             hash = "sha256-XeNllMEIOXiKjFiUQ6jvnYuNF8ZaG1gHIGrgN/w2xr0=";
           };
+          llamaLicense = pkgs.fetchurl {
+            url = "https://raw.githubusercontent.com/ggml-org/llama.cpp/b10621/LICENSE";
+            hash = "sha256-lPKbvtaiLDW5ksXG6/DnyS8TuDa5Dzb0YcnPLw8dAQ0=";
+          };
         in
         {
           handy = pkgs.rustPlatform.buildRustPackage {
@@ -186,6 +190,7 @@
               OPENSSL_NO_VENDOR = "1";
               DIBUR_BUILD_TARGET = localPolisherRuntime.target;
               DIBUR_LOCAL_POLISHER_ARCHIVE = "${localPolisherRuntime.archive}";
+              DIBUR_LLAMA_LICENSE = "${llamaLicense}";
               DIBUR_QWEN_LICENSE = "${qwenLicense}";
             };
 
