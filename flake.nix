@@ -122,6 +122,12 @@
 
             cargoLock = {
               lockFile = ./src-tauri/Cargo.lock;
+              # crates.io's API download endpoint can reject fixed-output
+              # fetchers with 403. The static host serves the same checksummed
+              # crate path and keeps Nix builds deterministic.
+              extraRegistries = {
+                "https://github.com/rust-lang/crates.io-index" = "https://static.crates.io/crates";
+              };
               # Automatically fetch git dependencies using builtins.fetchGit.
               # This eliminates the need for manual outputHashes that had to be
               # updated every time a git dependency changed in Cargo.lock.
