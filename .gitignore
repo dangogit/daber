@@ -29,7 +29,6 @@ dist-ssr
 .claude/
 
 /target/
-src-tauri/resources/local-polisher/
 recording_*
 .crush/
 
