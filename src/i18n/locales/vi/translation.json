@@ -324,9 +324,6 @@
         "appleIntelligence": {
           "unavailable": "Apple Intelligence không khả dụng trên thiết bị này. Yêu cầu Mac Apple Silicon chạy macOS Tahoe (26.0) trở lên với Apple Intelligence được bật trong Cài đặt Hệ thống."
         },
-        "local": {
-          "description": "Text is polished entirely on this computer. No recording or transcript is sent to the cloud. If the model tries to change content instead of only formatting it, Dibur automatically uses the original transcript."
-        },
         "baseUrl": {
           "title": "URL cơ sở",
           "description": "URL cơ sở API cho nhà cung cấp đã chọn. Chỉ có thể chỉnh sửa nhà cung cấp tùy chỉnh.",

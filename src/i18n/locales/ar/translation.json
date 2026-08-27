@@ -324,9 +324,6 @@
         "appleIntelligence": {
           "unavailable": "Apple Intelligence غير متاح على هذا الجهاز. يتطلب جهاز Mac بمعالج Apple Silicon يعمل بنظام macOS Tahoe (26.0) أو أحدث مع تمكين Apple Intelligence في إعدادات النظام."
         },
-        "local": {
-          "description": "Text is polished entirely on this computer. No recording or transcript is sent to the cloud. If the model tries to change content instead of only formatting it, Dibur automatically uses the original transcript."
-        },
         "baseUrl": {
           "title": "URL الأساسي",
           "description": "URL الأساسي لـ API للمزود المختار. يمكن تعديل المزود المخصص فقط.",

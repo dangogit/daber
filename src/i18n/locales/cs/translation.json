@@ -324,9 +324,6 @@
         "appleIntelligence": {
           "unavailable": "Apple Intelligence není na tomto zařízení k dispozici. Vyžaduje Mac s Apple Silicon a macOS Tahoe (26.0) nebo novější a povolené Apple Intelligence v Nastavení systému."
         },
-        "local": {
-          "description": "Text is polished entirely on this computer. No recording or transcript is sent to the cloud. If the model tries to change content instead of only formatting it, Dibur automatically uses the original transcript."
-        },
         "baseUrl": {
           "title": "Základní URL",
           "description": "Základní URL API pro vybraného poskytovatele. Upravitelné je pouze u vlastního poskytovatele.",

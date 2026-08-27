@@ -1,19 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ModelInfo } from "@/bindings";
-import {
-  HEBREW_MODEL_ID,
-  LOCAL_POLISH_MODEL_ID,
-  LOCAL_POLISH_MODEL_SIZE_BYTES,
-} from "@/lib/constants/models";
+import { HEBREW_MODEL_ID } from "@/lib/constants/models";
 import { useModelStore } from "@/stores/modelStore";
 import { commands } from "@/bindings";
 
 export type HebrewModelStatus =
-  | "checking"
-  | "downloading"
-  | "verifying"
-  | "ready"
-  | "failed";
+  "checking" | "downloading" | "verifying" | "ready" | "failed";
 
 export interface HebrewModelState {
   status: HebrewModelStatus;
@@ -48,67 +40,12 @@ export function useHebrewModel(): HebrewModelState {
 
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
-  const [polisherReady, setPolisherReady] = useState(false);
-  const [polisherFailed, setPolisherFailed] = useState(false);
-  const [polisherDownloading, setPolisherDownloading] = useState(false);
-  const [polisherAttempt, setPolisherAttempt] = useState(0);
   // Guards against the effect below firing a second download (or a second
   // select) while the first is still in flight.
   const startedRef = useRef(false);
   const selectingRef = useRef(false);
 
   const model = models.find((m: ModelInfo) => m.id === HEBREW_MODEL_ID);
-
-  useEffect(() => {
-    let cancelled = false;
-    const prepare = async () => {
-      setPolisherFailed(false);
-      try {
-        const initial = await commands.getLocalPolisherStatus();
-        if (cancelled) return;
-        if (
-          initial.status === "ok" &&
-          initial.data.model_downloaded &&
-          initial.data.runtime_available
-        ) {
-          setPolisherReady(true);
-          return;
-        }
-        if (initial.status !== "ok" || !initial.data.runtime_available) {
-          setPolisherFailed(true);
-          return;
-        }
-
-        setPolisherDownloading(true);
-        const result = await commands.downloadLocalPolisherModel();
-        if (cancelled) return;
-        setPolisherDownloading(false);
-        if (result.status !== "ok") {
-          setPolisherFailed(true);
-          return;
-        }
-        const finalStatus = await commands.getLocalPolisherStatus();
-        if (
-          finalStatus.status === "ok" &&
-          finalStatus.data.model_downloaded &&
-          finalStatus.data.runtime_available
-        ) {
-          setPolisherReady(true);
-        } else {
-          setPolisherFailed(true);
-        }
-      } catch (error) {
-        if (cancelled) return;
-        console.warn("Failed to prepare local text polish:", error);
-        setPolisherDownloading(false);
-        setPolisherFailed(true);
-      }
-    };
-    void prepare();
-    return () => {
-      cancelled = true;
-    };
-  }, [polisherAttempt]);
 
   const start = useCallback(async () => {
     startedRef.current = true;
@@ -157,44 +94,18 @@ export function useHebrewModel(): HebrewModelState {
   const retry = useCallback(() => {
     startedRef.current = false;
     setFailed(false);
-    setPolisherReady(false);
-    setPolisherFailed(false);
-    setPolisherAttempt((attempt) => attempt + 1);
   }, []);
 
   let status: HebrewModelStatus = "checking";
-  if (ready && polisherReady) status = "ready";
-  else if (failed || polisherFailed) status = "failed";
-  else if (
-    HEBREW_MODEL_ID in verifyingModels ||
-    LOCAL_POLISH_MODEL_ID in verifyingModels
-  )
-    status = "verifying";
-  else if (
-    HEBREW_MODEL_ID in downloadingModels ||
-    polisherDownloading ||
-    LOCAL_POLISH_MODEL_ID in downloadProgress
-  )
-    status = "downloading";
-
-  const asrProgress = downloadProgress[HEBREW_MODEL_ID];
-  const polishProgress = downloadProgress[LOCAL_POLISH_MODEL_ID];
-  const asrTotal =
-    asrProgress?.total ?? Math.round((model?.size_mb ?? 0) * 1024 * 1024);
-  const polishTotal = polishProgress?.total ?? LOCAL_POLISH_MODEL_SIZE_BYTES;
-  const downloaded =
-    (asrProgress?.downloaded ??
-      (ready || model?.is_downloaded ? asrTotal : (model?.partial_size ?? 0))) +
-    (polishProgress?.downloaded ?? (polisherReady ? polishTotal : 0));
-  const total = asrTotal + polishTotal;
+  if (ready) status = "ready";
+  else if (failed) status = "failed";
+  else if (HEBREW_MODEL_ID in verifyingModels) status = "verifying";
+  else if (HEBREW_MODEL_ID in downloadingModels) status = "downloading";
 
   return {
     status,
-    percentage:
-      total > 0 ? Math.min(100, Math.round((downloaded / total) * 100)) : 0,
-    speed:
-      (downloadStats[HEBREW_MODEL_ID]?.speed ?? 0) +
-        (downloadStats[LOCAL_POLISH_MODEL_ID]?.speed ?? 0) || null,
+    percentage: downloadProgress[HEBREW_MODEL_ID]?.percentage ?? 0,
+    speed: downloadStats[HEBREW_MODEL_ID]?.speed ?? null,
     retry,
   };
 }

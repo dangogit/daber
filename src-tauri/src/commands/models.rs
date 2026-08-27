@@ -1,7 +1,3 @@
-use crate::managers::local_polisher::{
-    LocalPolisherManager, LocalPolisherStatus, LOCAL_POLISH_MODEL_FILENAME, LOCAL_POLISH_MODEL_ID,
-    LOCAL_POLISH_MODEL_SHA256, LOCAL_POLISH_MODEL_SIZE, LOCAL_POLISH_MODEL_URL,
-};
 use crate::managers::model::{ModelInfo, ModelManager};
 use crate::managers::transcription::{ModelStateEvent, TranscriptionManager};
 use crate::settings::{get_settings, write_settings, ModelUnloadTimeout};
@@ -62,42 +58,6 @@ pub async fn download_model(
         );
     }
 
-    result
-}
-
-#[tauri::command]
-#[specta::specta]
-pub fn get_local_polisher_status(
-    local_polisher: State<'_, Arc<LocalPolisherManager>>,
-) -> Result<LocalPolisherStatus, String> {
-    Ok(local_polisher.status())
-}
-
-#[tauri::command]
-#[specta::specta]
-pub async fn download_local_polisher_model(
-    app_handle: AppHandle,
-    model_manager: State<'_, Arc<ModelManager>>,
-) -> Result<(), String> {
-    let result = model_manager
-        .download_auxiliary_model(
-            LOCAL_POLISH_MODEL_ID,
-            LOCAL_POLISH_MODEL_FILENAME,
-            LOCAL_POLISH_MODEL_URL,
-            LOCAL_POLISH_MODEL_SIZE,
-            LOCAL_POLISH_MODEL_SHA256,
-        )
-        .await
-        .map(|_| ())
-        .map_err(|error| error.to_string());
-
-    if let Err(ref error) = result {
-        error!("Local polish model download failed: {error}");
-        let _ = app_handle.emit(
-            "model-download-failed",
-            serde_json::json!({ "model_id": LOCAL_POLISH_MODEL_ID, "error": error }),
-        );
-    }
     result
 }
 

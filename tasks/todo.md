@@ -1,10 +1,10 @@
-# Dibur 2.0: reliable capture, required provisioning, and local polish
+# Dibur 2.0: reliable capture and fast Hebrew transcription
 
 ## Outcome
 
 Ship a distribution-ready macOS and Windows release that never loses recorded
 audio, captures the first spoken word, cannot finish setup without working local
-models, and improves Hebrew transcript readability with a bundled local model.
+transcription, and formats Hebrew output without a second language model.
 
 ## Work plan
 
@@ -16,8 +16,10 @@ models, and improves Hebrew transcript readability with a bundled local model.
       pre-roll for instant mode without persisting pre-trigger audio.
 - [x] Make model provisioning and a real test dictation a hard onboarding gate,
       including returning-user recovery for missing/corrupt models.
-- [x] Bundle a cross-platform local text-refinement runtime and pinned Hebrew
-      model, with protected spans, validation, timeout, and fail-open behavior.
+- [x] Remove the slow local text model and its runtime after a real dictation
+      spent 31 seconds waiting for it and then fell back to the original text.
+- [x] Normalize whitespace and add paragraph breaks at existing sentence
+      boundaries without changing letters or numbers.
 - [x] Prove offline operation and real microphone behavior on this Mac.
 - [ ] Build and verify signed/notarized macOS artifacts and build/verify the
       Windows release pipeline artifacts.
@@ -29,10 +31,11 @@ Current Mac proof passed in a Developer ID signed app installed under
 `/Applications`: the packaged window opens without blocking on CoreAudio, the
 always-on stream initializes, and Carmit began speaking 250 ms before the
 shortcut. Dibur preserved the first word, captured 118,080 raw samples,
-transcribed the full Hebrew sentence, ran exact-word local polishing, and pasted
-the result into TextEdit. Mandatory provisioning and local-runtime crash cleanup
-also passed. Notarized release artifacts, Windows CI package proof, merge,
-publication, and cleanup remain open.
+transcribed the full Hebrew sentence and pasted the result into TextEdit. A later
+16.47-second dictation took 1.99 seconds in the transcription engine, while the
+retired text model added 31 seconds and returned no usable result. Mandatory
+speech-model provisioning also passed. Notarized release artifacts, Windows CI
+package proof, merge, publication, and cleanup remain open.
 
 ---
 

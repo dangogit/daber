@@ -9,7 +9,7 @@ pasting into whatever app is in front. Dibur changes what it opens as: the
 Hebrew model, the Hebrew interface, and the Hebrew transcription language are
 what you get on first launch, with nothing to configure.
 
-The speech model is
+The model is
 [ivrit-ai/whisper-large-v3-turbo-ggml](https://huggingface.co/ivrit-ai/whisper-large-v3-turbo-ggml)
 — Whisper Large v3 Turbo fine-tuned on Hebrew, and considerably better at it
 than the generic multilingual builds. Dibur ships it quantized to q8_0: 874 MB
@@ -18,17 +18,17 @@ Hebrew clips including real microphone recordings. Smaller quantizations exist
 and were tested; 4-bit lost word boundaries, and 5-bit costs several times more
 on a CPU without native fp16, which is the machine least able to afford it.
 
-Dibur also downloads a 2.5 GB Qwen3 4B model that adds punctuation and paragraph
-breaks after transcription. It runs through a bundled llama.cpp server bound to
-localhost. Before Dibur uses the result, it verifies that every letter and number
-from the original transcript is still present in the same order. If that check
-fails, the original transcript is pasted instead.
+It downloads in the background from the moment the app opens, so granting
+permissions and choosing a shortcut covers the wait. The 874 MB download comes
+from a [GitHub release](https://github.com/dangogit/daber/releases/tag/models-v1)
+and is pinned by SHA-256, because huggingface.co is blocked on a fair number of
+Israeli school and workplace networks and a blocked download looks exactly like
+a broken app.
 
-Both engines download during first-run setup, about 3.4 GB in total. Setup cannot
-finish until both downloads pass their SHA-256 checks and a real test dictation
-appears in the test box. The Hebrew speech engine comes from a
-[GitHub release](https://github.com/dangogit/daber/releases/tag/models-v1). The
-Qwen model comes from a pinned Hugging Face revision.
+The speech model supplies the punctuation. Dibur then normalizes whitespace and
+adds paragraph breaks to long Hebrew transcripts at existing sentence
+boundaries. This formatting changes only whitespace and runs immediately, with
+no second language model.
 
 Design notes:
 [docs/superpowers/specs](docs/superpowers/specs/2026-08-06-hebrew-by-default-design.md).
@@ -55,9 +55,9 @@ It installs alongside an existing Handy rather than replacing it — different
 bundle id, so separate settings, models, history and permissions. Both can be
 installed at once; only the shortcuts would collide, and those are configurable.
 
-First launch fetches both local engines while you grant permissions and choose a
-shortcut. Setup ends with a real dictation test. It stays on that screen until
-the microphone, shortcut, speech model, local text model, and paste all work.
+First launch fetches the 874 MB Hebrew engine while you grant permissions and
+choose a shortcut. Setup ends with a real dictation test. It stays on that screen
+until the microphone, shortcut, speech model, and paste all work.
 
 ## Sharing it with other people
 

@@ -213,10 +213,6 @@ jobs:
         if: ${{ contains(inputs.platform, 'windows') && contains(inputs.target, 'aarch64') }}
         run: bun install --cpu=arm64
 
-      - name: Select local polisher runtime target
-        shell: bash
-        run: echo "DIBUR_BUILD_TARGET=${{ inputs.target }}" >> "$GITHUB_ENV"
-
       - name: rustup install target
         if: ${{ inputs.target != '' && !contains(inputs.target, 'x86_64-unknown-linux-gnu') && !contains(inputs.target, 'aarch64-unknown-linux-gnu') && !contains(inputs.target, 'x86_64-pc-windows-msvc') }}
         run: rustup target add ${{ inputs.target }}
@@ -593,20 +589,6 @@ jobs:
           assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
           args: ${{ inputs.build-args }}
 
-      - name: Audit bundled local polisher (macOS)
-        if: contains(inputs.platform, 'macos')
-        shell: bash
-        run: |
-          set -euo pipefail
-          APP=$(find src-tauri/target -name "*.app" -type d | head -1)
-          RUNTIME="$APP/Contents/Resources/resources/local-polisher"
-          test -x "$RUNTIME/llama-server"
-          test -f "$RUNTIME/LICENSE"
-          test -f "$RUNTIME/QWEN3-APACHE-2.0.txt"
-          test -f "$RUNTIME/THIRD-PARTY-NOTICE.txt"
-          "$RUNTIME/llama-server" --version
-          echo "Bundled local polisher runtime passed the macOS audit."
-
       # tauri-action notarizes and staples the .app, then wraps it in a disk
       # image it does not notarize, and uploads that. The app is genuinely fine
       # once it reaches /Applications, but the .dmg is what people actually
@@ -949,21 +931,6 @@ jobs:
               if (-not (Get-ChildItem $Root -Filter $dll.Name -Recurse -ErrorAction SilentlyContinue)) {
                 throw "$Label package is missing staged runtime DLL $($dll.Name)"
               }
-            }
-
-            $polisher = Get-ChildItem $Root -Filter "llama-server.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-            if (-not $polisher) {
-              throw "$Label package is missing the local polisher runtime"
-            }
-            $polisherDir = $polisher.Directory.FullName
-            foreach ($notice in @("LICENSE", "QWEN3-APACHE-2.0.txt", "THIRD-PARTY-NOTICE.txt")) {
-              if (-not (Test-Path (Join-Path $polisherDir $notice))) {
-                throw "$Label package is missing local polisher notice $notice"
-              }
-            }
-            & $polisher.FullName --version
-            if ($LASTEXITCODE -ne 0) {
-              throw "$Label llama-server.exe --version failed"
             }
 
             $deviceOutput = (& $dibur.FullName --list-devices | Out-String)

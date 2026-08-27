@@ -33,7 +33,6 @@ use tauri_specta::{collect_commands, collect_events, Builder};
 use env_filter::Builder as EnvFilterBuilder;
 use managers::audio::AudioRecordingManager;
 use managers::history::HistoryManager;
-use managers::local_polisher::LocalPolisherManager;
 use managers::model::ModelManager;
 use managers::transcription::TranscriptionManager;
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
@@ -168,10 +167,6 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     );
     let history_manager =
         Arc::new(HistoryManager::new(app_handle).expect("Failed to initialize history manager"));
-    let local_polisher = Arc::new(
-        LocalPolisherManager::new(app_handle).expect("Failed to initialize local polisher"),
-    );
-
     // Initialize the transcribe-cpp native backend (logging + backend module
     // registration) once, before any whisper model is loaded.
     managers::transcription::init_transcribe_backend();
@@ -184,7 +179,6 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(model_manager.clone());
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
-    app_handle.manage(local_polisher);
     app_handle.manage(tray::CurrentTrayIconState::new());
 
     // CoreAudio may synchronously dispatch work back to the main queue while an
@@ -702,8 +696,6 @@ pub fn run(cli_args: CliArgs) {
             commands::models::get_available_models,
             commands::models::get_model_info,
             commands::models::download_model,
-            commands::models::get_local_polisher_status,
-            commands::models::download_local_polisher_model,
             commands::models::delete_model,
             commands::models::cancel_download,
             commands::models::set_active_model,

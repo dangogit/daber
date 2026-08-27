@@ -324,9 +324,6 @@
         "appleIntelligence": {
           "unavailable": "Apple Intelligence non è disponibile su questo dispositivo. Necessita di un Mac con Apple Silicon e macOS Tahoe (26.0) o successivi con Apple Intelligence abilitata nelle Impostazioni di Sistema."
         },
-        "local": {
-          "description": "Text is polished entirely on this computer. No recording or transcript is sent to the cloud. If the model tries to change content instead of only formatting it, Dibur automatically uses the original transcript."
-        },
         "baseUrl": {
           "title": "URL Base",
           "description": "URL di base per l'API del provider selezionato. Solo per i provider personalizzati.",

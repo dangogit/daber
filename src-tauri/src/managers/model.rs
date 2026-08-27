@@ -1,4 +1,3 @@
-use super::local_polisher::LOCAL_POLISH_MODEL_FILENAME;
 use super::model_capabilities::{
     CapabilityProbe, CapabilityProber, Compatibility, GgufHeaderProber,
 };
@@ -516,10 +515,6 @@ pub struct ModelManager {
     /// Single-flight guard for [`Self::rescan_local_models`] so concurrent
     /// refresh requests coalesce instead of scanning the disk in parallel.
     is_rescanning: Arc<AtomicBool>,
-    /// Provisioning can be requested twice by React development checks or by
-    /// two windows. Serialize auxiliary downloads so both callers observe the
-    /// same atomic final file instead of racing the final rename.
-    auxiliary_download_lock: tokio::sync::Mutex<()>,
 }
 
 impl ModelManager {
@@ -1189,7 +1184,6 @@ impl ModelManager {
             cancel_flags: Arc::new(Mutex::new(HashMap::new())),
             extracting_models: Arc::new(Mutex::new(HashSet::new())),
             is_rescanning: Arc::new(AtomicBool::new(false)),
-            auxiliary_download_lock: tokio::sync::Mutex::new(()),
         };
 
         // Migrate any bundled models to user directory
@@ -1649,11 +1643,10 @@ impl ModelManager {
                 continue;
             }
 
-            // The local text polisher shares the models directory so downloads
-            // can reuse the existing integrity and progress machinery. It is a
-            // language model, not a speech model, and must never appear in the
-            // transcription model picker.
-            if filename == LOCAL_POLISH_MODEL_FILENAME {
+            // Version 2.0 briefly downloaded a Qwen text model into this speech
+            // model directory. Keep ignoring that retired filename so an
+            // upgrade never offers it as a transcription engine.
+            if filename == "qwen3-4b-q4-k-m.gguf" {
                 continue;
             }
 
@@ -2431,89 +2424,6 @@ impl ModelManager {
         Ok(())
     }
 
-    /// Download a pinned auxiliary model with the same resumable, SHA-verified
-    /// transport used by transcription models, without adding it to the ASR
-    /// model picker.
-    pub async fn download_auxiliary_model(
-        &self,
-        model_id: &str,
-        filename: &str,
-        url: &str,
-        expected_size: u64,
-        expected_sha256: &str,
-    ) -> Result<std::path::PathBuf> {
-        let _download_guard = self.auxiliary_download_lock.lock().await;
-        let model_path = self.models_dir.join(filename);
-        let partial_path = self.models_dir.join(format!("{filename}.partial"));
-        let verified_path = self.models_dir.join(format!("{filename}.sha256"));
-        if model_path.exists() {
-            let marker_matches = model_path
-                .metadata()
-                .is_ok_and(|metadata| metadata.len() == expected_size)
-                && fs::read_to_string(&verified_path)
-                    .is_ok_and(|hash| hash.trim() == expected_sha256);
-            if marker_matches {
-                return Ok(model_path);
-            }
-
-            let _ = self.app_handle.emit("model-verification-started", model_id);
-            let verify_path = model_path.clone();
-            let verify_hash = expected_sha256.to_string();
-            let verify_id = model_id.to_string();
-            let verification = tokio::task::spawn_blocking(move || {
-                Self::verify_sha256(&verify_path, Some(&verify_hash), &verify_id)
-            })
-            .await
-            .map_err(|error| anyhow::anyhow!("SHA256 task panicked: {error}"))?;
-            match verification {
-                Ok(()) => {
-                    let _ = self
-                        .app_handle
-                        .emit("model-verification-completed", model_id);
-                    fs::write(&verified_path, format!("{expected_sha256}\n"))?;
-                    return Ok(model_path);
-                }
-                Err(error) => {
-                    warn!(
-                        "Existing auxiliary model {} failed verification and will be downloaded again: {}",
-                        model_id, error
-                    );
-                    let _ = fs::remove_file(&verified_path);
-                }
-            }
-        }
-
-        let cancel_token = CancellationToken::new();
-        self.cancel_flags
-            .lock()
-            .unwrap()
-            .insert(model_id.to_string(), cancel_token.clone());
-
-        let result = self
-            .download_http_resumable(
-                model_id,
-                url,
-                &partial_path,
-                Some(expected_size),
-                Some(expected_sha256),
-                &cancel_token,
-            )
-            .await;
-        self.cancel_flags.lock().unwrap().remove(model_id);
-
-        match result? {
-            HttpDownloadOutcome::Cancelled => {
-                Err(anyhow::anyhow!("Auxiliary model download was cancelled"))
-            }
-            HttpDownloadOutcome::Completed => {
-                fs::rename(&partial_path, &model_path)?;
-                fs::write(&verified_path, format!("{expected_sha256}\n"))?;
-                let _ = self.app_handle.emit("model-download-complete", model_id);
-                Ok(model_path)
-            }
-        }
-    }
-
     pub fn delete_model(&self, model_id: &str) -> Result<()> {
         debug!("ModelManager: delete_model called for: {}", model_id);
 
@@ -2892,7 +2802,7 @@ mod tests {
             )]))
             .unwrap();
 
-        File::create(models_dir.join(LOCAL_POLISH_MODEL_FILENAME)).unwrap();
+        File::create(models_dir.join("qwen3-4b-q4-k-m.gguf")).unwrap();
 
         // Create files that should be ignored
         File::create(models_dir.join(".hidden-model.bin")).unwrap(); // Hidden file
